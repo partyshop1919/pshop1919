@@ -1,0 +1,10 @@
+[
+  {
+    "id": "8caa04c1-cdbb-4455-8533-7095189e53a3",
+    "email": "partyshop1919@gmail.com",
+    "passwordHash": "8bca32803d1e83d79ca2806c2175629a:d36d04b2665e7de6f4f6a22b5d91ffcbca5f7ffdeba488a0c1081363fa4adafabb1e053fb450120d706db714335d7a0305aac099a5da8ed4eefa9ea8777763b6",
+    "emailVerified": false,
+    "emailTokenHash": "4038a0928880b1a9f4c5511509566a688f6a2c3b303e127a88f424db3c18d699",
+    "createdAt": "2026-02-08T15:43:41.282Z"
+  }
+]

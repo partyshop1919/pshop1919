@@ -1,0 +1,22 @@
+[
+  {
+    "id": 1770558815765,
+    "userId": "3d3a1057-f949-4219-a259-07b10dad6846",
+    "createdAt": "2026-02-08T13:53:35.765Z",
+    "customer": {
+      "name": "asa",
+      "email": "partyshop1919@gmail.com",
+      "address": "asasa"
+    },
+    "items": [
+      {
+        "productId": 2,
+        "name": "Party Hats (Pack of 6)",
+        "priceCents": 799,
+        "quantity": 1
+      }
+    ],
+    "totalCents": 799,
+    "status": "pending"
+  }
+]

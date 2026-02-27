@@ -1,0 +1,9 @@
+[
+  { "id": 1, "name": "Balon latex roșu", "priceCents": 300, "stock": 50, "image": "/images/products/Balon-latex-rosu.jpg" },
+  { "id": 2, "name": "Balon cifră 5", "priceCents": 1500, "stock": 50, "image": "/images/products/Balon-latex-5.jpg" },
+  { "id": 3, "name": "Ghirlandă aniversară", "priceCents": 2500, "stock": 50, "image": "/images/products/Ghirlanda-aniversara.jpg" },
+  { "id": 4, "name": "Set pahare petrecere", "priceCents": 1200, "stock": 50, "image": "/images/products/set-pahare-petrecere.jpg" },
+  { "id": 5, "name": "Balon folie", "priceCents": 1500, "stock": 50, "image": "/images/products/baloane-folie.png" },
+  { "id": 6, "name": "Confetti colorat", "priceCents": 1500, "stock": 50, "image": "/images/products/confetti-pop.jpg" },
+  { "id": 7, "name": "Banner Happy New Year", "priceCents": 1500, "stock": 50, "image": "/images/products/happynewyear.jpg" }
+]

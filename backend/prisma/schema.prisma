@@ -1,0 +1,96 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id             String   @id @default(uuid())
+  email          String   @unique
+  passwordHash   String
+  emailVerified  Boolean  @default(false)
+  emailTokenHash String?
+  createdAt      DateTime @default(now())
+  favorites Favorite[]
+
+  orders Order[]
+}
+
+model Product {
+  id         String   @id @default(uuid())
+  name       String
+  priceCents Int
+  stock      Int      @default(0)
+  image      String   @default("")
+
+  category   String   @default("uncategorized")
+  featured   Boolean  @default(false)
+
+  slug      String    @unique
+  deletedAt DateTime?
+
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  favorites  Favorite[]
+  items      OrderItem[]
+}
+
+model Order {
+  id              String   @id @default(uuid())
+  userId          String
+  user            User     @relation(fields: [userId], references: [id])
+
+  createdAt       DateTime @default(now())
+  status          String   @default("pending") // pending, confirmed, shipped, delivered, cancelled
+  totalCents      Int
+
+  customerName    String
+  customerEmail   String
+  customerAddress String
+
+  // ✅ noi
+  customerPhone   String
+  customerCity    String
+  customerCounty  String
+  postalCode      String?
+
+  paymentMethod   String   @default("cod")     // cod | card
+  paymentStatus   String   @default("unpaid")  // unpaid | paid | failed
+
+  shippingCents   Int      @default(0)
+
+  stripeSessionId   String?  @unique
+  stripePaymentIntentId String?
+
+  items OrderItem[]
+}
+
+model OrderItem {
+  id         String  @id @default(uuid())
+  orderId    String
+  order      Order   @relation(fields: [orderId], references: [id])
+
+  productId  String
+  product    Product @relation(fields: [productId], references: [id])
+
+  name       String
+  priceCents Int
+  quantity   Int
+}
+
+model Favorite {
+  userId    String
+  productId String
+
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  product Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+
+  @@id([userId, productId])
+}
+

@@ -19,6 +19,28 @@ router.post("/register", async (req, res) => {
 
     const existing = await findUserByEmail(email);
     if (existing) {
+      if (!existing.emailVerified) {
+        const passwordHash = await hashPassword(password);
+        const emailToken = generateToken();
+        const emailTokenHash = hashToken(emailToken);
+
+        await updateUser(existing.id, {
+          passwordHash,
+          emailVerified: false,
+          emailTokenHash
+        });
+
+        try {
+          await sendConfirmationEmail({ to: email, token: emailToken });
+        } catch (e) {
+          console.error("CONFIRM EMAIL RESEND FAILED:", e.message);
+        }
+
+        return res.status(200).json({
+          message: "Cont existent, dar neconfirmat. Am retrimis emailul de confirmare."
+        });
+      }
+
       return res.status(409).json({ message: "Email deja folosit" });
     }
 

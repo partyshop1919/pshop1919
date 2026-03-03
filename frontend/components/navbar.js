@@ -44,12 +44,15 @@ export default function Navbar() {
         Party Shop
       </Link>
 
-      <div className="nav-categories" onMouseLeave={() => setActiveCategory(null)}>
+      <div className="nav-categories">
         {categories.map((cat) => (
           <div
             key={cat.id}
             className="nav-category-wrapper"
             onMouseEnter={() => setActiveCategory(cat)}
+            onMouseLeave={() => {
+              setActiveCategory((prev) => (prev?.id === cat.id ? null : prev));
+            }}
           >
             <span className="nav-category-label">{cat.name}</span>
 

@@ -109,5 +109,61 @@ export const categories = [
           "Bannerele sunt elemente decorative esențiale pentru a transmite mesaje festive la petreceri."
       }
     ]
+  },
+
+  {
+    id: 3,
+    name: "Articole aniversare",
+    slug: "articole-aniversare",
+    image: "/images/products/hats.jpg",
+
+    seoTitle: "Articole aniversare - Party Shop",
+    seoDescription:
+      "Lumanari, coifuri, pahare si alte articole aniversare pentru petreceri reusite.",
+    h1: "Articole aniversare pentru petreceri",
+    intro:
+      "Alege articole aniversare esentiale pentru mesele festive si momente memorabile.",
+
+    children: [
+      {
+        id: 31,
+        name: "Lumanari",
+        slug: "lumanari",
+        image: "/images/products/candles.jpeg",
+
+        seoTitle: "Lumanari aniversare - Party Shop",
+        seoDescription:
+          "Lumanari aniversare pentru tort, in culori si modele variate.",
+        h1: "Lumanari pentru tort",
+        intro:
+          "Completeaza tortul aniversar cu lumanari potrivite pentru orice varsta."
+      },
+      {
+        id: 32,
+        name: "Coifuri si accesorii",
+        slug: "coifuri-si-accesorii",
+        image: "/images/products/hats.jpg",
+
+        seoTitle: "Coifuri si accesorii petrecere - Party Shop",
+        seoDescription:
+          "Coifuri si accesorii festive pentru aniversari si petreceri tematice.",
+        h1: "Coifuri si accesorii de petrecere",
+        intro:
+          "Accesorii distractive care aduc energie si culoare la orice petrecere."
+      },
+      {
+        id: 33,
+        name: "Pahare si farfurii",
+        slug: "pahare-si-farfurii",
+        image: "/images/products/set-pahare-petrecere.jpg",
+
+        seoTitle: "Pahare si farfurii petrecere - Party Shop",
+        seoDescription:
+          "Seturi de pahare si farfurii pentru aniversari, evenimente si petreceri.",
+        h1: "Pahare si farfurii pentru petreceri",
+        intro:
+          "Seturi practice si festive pentru servirea bauturilor si deserturilor."
+      }
+    ]
   }
 ];

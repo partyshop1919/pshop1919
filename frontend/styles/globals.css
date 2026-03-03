@@ -667,10 +667,10 @@ body.dark textarea {
   margin-top: 26px;
 
   display: grid;
-  gap: 28px;
+  gap: 20px;
 
   /* carduri mai mici, nu se întind */
-  grid-template-columns: repeat(auto-fit, minmax(260px, 500px));
+  grid-template-columns: repeat(auto-fit, minmax(220px, 300px));
 
   /* centrează grid-ul în container */
   justify-content: center;
@@ -682,7 +682,7 @@ body.dark textarea {
 @media (max-width: 480px) {
   .categories-grid {
     grid-template-columns: 1fr;
-    gap: 18px;
+    gap: 14px;
   }
 }
 
@@ -991,3 +991,6 @@ html {
   background: var(--accent-soft);
   color: var(--primary);
 }
+
+
+

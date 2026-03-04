@@ -122,6 +122,12 @@ async function ensureUniqueSlug(base, excludeId = null) {
   }
 }
 
+function clampInt(value, min, max) {
+  const n = Number(value);
+  if (!Number.isFinite(n)) return min;
+  return Math.max(min, Math.min(max, Math.floor(n)));
+}
+
 
 /* ============================================================
    ADMIN LOGIN
@@ -151,6 +157,138 @@ router.post("/upload/product-image", adminAuth, uploadProductImage.single("image
     console.error("UPLOAD PRODUCT IMAGE ERROR:", e);
     return jsonError(res, 500, "Failed to upload image");
   }
+});
+
+/* =====================
+   PARTY BUILDER (PUBLIC)
+   POST /api/party-builder
+   Body: { eventType, guests, budgetTier, location }
+===================== */
+router.post("/party-builder", async (req, res) => {
+  const eventType = String(req.body?.eventType || "adult-birthday").trim().toLowerCase();
+  const budgetTier = String(req.body?.budgetTier || "medium").trim().toLowerCase();
+  const location = String(req.body?.location || "indoor").trim().toLowerCase();
+  const guests = clampInt(req.body?.guests, 5, 200);
+
+  const categories = new Set(["Baloane latex", "Baloane folie", "Ghirlande", "Confetti", "Bannere"]);
+  if (eventType === "child-birthday") {
+    categories.add("Coifuri si accesorii");
+    categories.add("Pahare si farfurii");
+  }
+  if (eventType === "baby-shower" || eventType === "gender-reveal") {
+    categories.add("Pahare si farfurii");
+  }
+  if (budgetTier === "low") {
+    categories.delete("Baloane folie");
+  }
+
+  const products = await prisma.product.findMany({
+    where: {
+      deletedAt: null,
+      stock: { gt: 0 },
+      category: { in: Array.from(categories) }
+    },
+    orderBy: [{ featured: "desc" }, { priceCents: "asc" }],
+    select: {
+      id: true,
+      name: true,
+      slug: true,
+      image: true,
+      priceCents: true,
+      stock: true,
+      category: true
+    }
+  });
+
+  if (!products.length) {
+    return res.json({
+      eventType,
+      guests,
+      budgetTier,
+      location,
+      notes: ["Nu am gasit produse suficiente pentru acest plan."],
+      items: [],
+      totalCents: 0
+    });
+  }
+
+  const byCategory = new Map();
+  for (const p of products) {
+    const key = String(p.category || "uncategorized");
+    if (!byCategory.has(key)) byCategory.set(key, []);
+    byCategory.get(key).push(p);
+  }
+
+  function pickOne(category) {
+    const arr = byCategory.get(category) || [];
+    return arr[0] || null;
+  }
+
+  const basePlan = [];
+  const balloonQty = Math.max(15, Math.ceil(guests * (location === "outdoor" ? 1.8 : 1.5)));
+  const bannerQty = guests > 20 ? 2 : 1;
+  const confettiQty = guests > 25 ? 3 : 1;
+  const cupsQty = Math.max(1, Math.ceil(guests / 8));
+  const hatsQty = Math.max(1, Math.ceil(guests / 10));
+
+  const latex = pickOne("Baloane latex");
+  if (latex) basePlan.push({ product: latex, quantity: balloonQty });
+
+  const foil = pickOne("Baloane folie");
+  if (foil && budgetTier !== "low") basePlan.push({ product: foil, quantity: Math.max(1, Math.ceil(guests / 12)) });
+
+  const garland = pickOne("Ghirlande");
+  if (garland) basePlan.push({ product: garland, quantity: guests > 30 ? 2 : 1 });
+
+  const confetti = pickOne("Confetti");
+  if (confetti) basePlan.push({ product: confetti, quantity: confettiQty });
+
+  const banner = pickOne("Bannere");
+  if (banner) basePlan.push({ product: banner, quantity: bannerQty });
+
+  if (eventType === "child-birthday") {
+    const hats = pickOne("Coifuri si accesorii");
+    if (hats) basePlan.push({ product: hats, quantity: hatsQty });
+  }
+
+  if (eventType === "child-birthday" || eventType === "baby-shower" || eventType === "gender-reveal") {
+    const table = pickOne("Pahare si farfurii");
+    if (table) basePlan.push({ product: table, quantity: cupsQty });
+  }
+
+  // Avoid zero/negative quantities and clamp by stock.
+  const items = basePlan
+    .map(({ product, quantity }) => {
+      const qty = Math.max(1, Math.min(Number(product.stock) || 1, Number(quantity) || 1));
+      return {
+        id: product.id,
+        name: product.name,
+        slug: product.slug,
+        image: product.image,
+        category: product.category,
+        priceCents: product.priceCents,
+        quantity: qty,
+        lineTotalCents: qty * (Number(product.priceCents) || 0)
+      };
+    })
+    .filter((x) => x.quantity > 0);
+
+  const totalCents = items.reduce((sum, it) => sum + (Number(it.lineTotalCents) || 0), 0);
+
+  const notes = [];
+  if (guests > 20) notes.push("Am inclus mai mult decor pentru grupuri mari.");
+  if (budgetTier === "low") notes.push("Am ales variante orientate spre buget.");
+  if (location === "outdoor") notes.push("Pentru exterior se recomanda cantitate mai mare de baloane.");
+
+  return res.json({
+    eventType,
+    guests,
+    budgetTier,
+    location,
+    notes,
+    items,
+    totalCents
+  });
 });
 /* =====================
    PRODUCTS (PUBLIC)

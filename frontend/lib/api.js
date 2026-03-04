@@ -68,6 +68,18 @@ export async function fetchProductsByIds(ids) {
 }
 
 /* =====================
+   PARTY BUILDER
+===================== */
+export async function buildPartyPlan(payload) {
+  try {
+    const res = await api.post("/party-builder", payload || {});
+    return res.data || null;
+  } catch (err) {
+    return handleError("buildPartyPlan", err, null);
+  }
+}
+
+/* =====================
    PRODUCT (SINGLE)
    GET /products/slug/:slug  -> { item }
 ===================== */

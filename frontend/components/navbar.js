@@ -71,6 +71,10 @@ export default function Navbar() {
         ))}
       </div>
 
+      <Link href="/party-builder" className="nav-category-label">
+        Party Builder
+      </Link>
+
       <div className="nav-right">
         <Link href="/favorites" className="cart-link">
           ❤️

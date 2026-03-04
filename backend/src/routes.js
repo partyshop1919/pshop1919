@@ -2,7 +2,7 @@
 import { Router } from "express";
 import jwt from "jsonwebtoken";
 import { PrismaClient } from "@prisma/client";
-import { uploadProductImage } from "../upload.js";
+import { uploadProductImage, storeProductImage } from "../upload.js";
 import { z } from "zod";
 
 // dacă nu ai fișierul, comentează linia următoare
@@ -136,6 +136,21 @@ router.post("/admin/login", (req, res) => {
 
   const token = jwt.sign({ role: "admin" }, JWT_SECRET, { expiresIn: "2h" });
   return res.json({ token });
+});
+
+/* =====================
+   UPLOAD PRODUCT IMAGE (ADMIN)
+   POST /api/upload/product-image
+===================== */
+router.post("/upload/product-image", adminAuth, uploadProductImage.single("image"), async (req, res) => {
+  try {
+    if (!req.file) return jsonError(res, 400, "Missing image file");
+    const image = await storeProductImage(req.file);
+    return res.json({ ok: true, image });
+  } catch (e) {
+    console.error("UPLOAD PRODUCT IMAGE ERROR:", e);
+    return jsonError(res, 500, "Failed to upload image");
+  }
 });
 /* =====================
    PRODUCTS (PUBLIC)
@@ -746,9 +761,11 @@ router.post(
           });
 
           if (emailPayload) {
-            Promise.resolve(sendOrderConfirmationEmail?.(emailPayload)).catch((e) =>
-              console.error("ORDER EMAIL ERROR (STRIPE):", e)
-            );
+            Promise.resolve(sendOrderConfirmationEmail?.(emailPayload))
+              .then(() =>
+                console.log("ORDER EMAIL SENT (STRIPE):", emailPayload.order?.id, "->", emailPayload.to)
+              )
+              .catch((e) => console.error("ORDER EMAIL ERROR (STRIPE):", e));
           }
         }
       }
@@ -961,7 +978,11 @@ router.post("/orders", userAuth, async (req, res) => {
           }))
         }
       })
-    ).catch((e) => console.error("ORDER EMAIL ERROR:", e));
+    )
+      .then(() =>
+        console.log("ORDER EMAIL SENT:", created.id, "->", created.customerEmail)
+      )
+      .catch((e) => console.error("ORDER EMAIL ERROR:", e));
 
     return res.status(201).json(created);
   } catch (e) {

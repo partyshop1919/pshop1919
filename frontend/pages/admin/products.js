@@ -10,7 +10,17 @@ import {
 } from "../../lib/api";
 import { useAdmin } from "../../lib/auth";
 
-const CATEGORIES = ["Baloane", "Ghirlande", "Confetti", "Pahare", "uncategorized"];
+const CATEGORIES = [
+  "Baloane latex",
+  "Baloane cifre",
+  "Baloane folie",
+  "Ghirlande",
+  "Confetti",
+  "Bannere",
+  "Pahare si farfurii",
+  "Coifuri si accesorii",
+  "uncategorized"
+];
 
 function resolveImage(image) {
   if (!image) return null;
@@ -48,6 +58,7 @@ export default function AdminProductsPage() {
     priceCents: 0,
     stock: 0,
     image: "",
+    images: "",
     category: "uncategorized",
     featured: false
   });
@@ -59,6 +70,7 @@ export default function AdminProductsPage() {
     priceCents: 0,
     stock: 0,
     image: "",
+    images: "",
     category: "uncategorized",
     featured: false
   });
@@ -148,6 +160,10 @@ export default function AdminProductsPage() {
       priceCents: Number(form.priceCents) || 0,
       stock: Number(form.stock) || 0,
       image: String(form.image || "").trim(),
+      images: String(form.images || "")
+        .split(",")
+        .map((x) => x.trim())
+        .filter(Boolean),
       category: String(form.category || "uncategorized"),
       featured: Boolean(form.featured)
     };
@@ -165,6 +181,7 @@ export default function AdminProductsPage() {
       priceCents: 0,
       stock: 0,
       image: "",
+      images: "",
       category: "uncategorized",
       featured: false
     });
@@ -179,6 +196,7 @@ export default function AdminProductsPage() {
       priceCents: Number(p.priceCents) || 0,
       stock: Number(p.stock) || 0,
       image: p.image || "",
+      images: Array.isArray(p.images) ? p.images.join(", ") : "",
       category: p.category || "uncategorized",
       featured: Boolean(p.featured)
     });
@@ -224,6 +242,10 @@ export default function AdminProductsPage() {
       priceCents: Number(edit.priceCents) || 0,
       stock: Number(edit.stock) || 0,
       image: String(edit.image || "").trim(),
+      images: String(edit.images || "")
+        .split(",")
+        .map((x) => x.trim())
+        .filter(Boolean),
       category: String(edit.category || "uncategorized"),
       featured: Boolean(edit.featured)
     };
@@ -319,6 +341,13 @@ export default function AdminProductsPage() {
             placeholder="Image path (/uploads/... sau /images/...)"
           />
 
+          <input
+            name="images"
+            value={form.images}
+            onChange={updateField}
+            placeholder="Imagini extra (max 2), separate prin virgula"
+          />
+
           {resolveImage(form.image) && (
             <img
               src={resolveImage(form.image)}
@@ -401,6 +430,12 @@ export default function AdminProductsPage() {
                         <div style={{ display: "grid", gap: 6 }}>
                           <input type="file" accept="image/*" onChange={handleEditImageFile} />
                           <input name="image" value={edit.image} onChange={updateEditField} />
+                          <input
+                            name="images"
+                            value={edit.images}
+                            onChange={updateEditField}
+                            placeholder="Imagini extra (max 2), separate prin virgula"
+                          />
                         </div>
                       </div>
                     )}
@@ -409,21 +444,21 @@ export default function AdminProductsPage() {
                   <div style={{ display: "grid", gap: 8, alignContent: "start" }}>
                     {!isEditing ? (
                       <>
-                        <button className="btn" onClick={() => startEdit(p)} disabled={saving || uploading}>
+                        <button className="btn" type="button" onClick={() => startEdit(p)} disabled={saving || uploading}>
                           Edit
                         </button>
 
-                        <button className="btn" onClick={() => toggleFeatured(p)} disabled={saving || uploading}>
+                        <button className="btn" type="button" onClick={() => toggleFeatured(p)} disabled={saving || uploading}>
                           Toggle Featured
                         </button>
 
-                        <button className="btn" onClick={() => remove(p)} disabled={saving || uploading}>
+                        <button className="btn" type="button" onClick={() => remove(p)} disabled={saving || uploading}>
                           Delete
                         </button>
                       </>
                     ) : (
                       <>
-                        <button className="btn" onClick={() => saveEdit(p.id)} disabled={saving || uploading}>
+                        <button className="btn" type="button" onClick={() => saveEdit(p.id)} disabled={saving || uploading}>
                           {saving ? "Saving..." : "Save"}
                         </button>
                         <button className="btn" type="button" onClick={cancelEdit} disabled={saving || uploading}>

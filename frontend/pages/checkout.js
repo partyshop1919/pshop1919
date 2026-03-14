@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/router";
+import Link from "next/link";
 
 import { useCart } from "../lib/cart";
 import { API_URL } from "../lib/api";
@@ -38,6 +39,7 @@ export default function CheckoutPage() {
   });
 
   const [paymentMethod, setPaymentMethod] = useState("cod"); // cod | card
+  const [acceptedLegal, setAcceptedLegal] = useState(false);
 
   const hasItems = items.length > 0;
 
@@ -85,6 +87,7 @@ export default function CheckoutPage() {
     Boolean(stockErrorProductId) ||
     isFormInvalid ||
     hasBlockingErrors ||
+    !acceptedLegal ||
     !hasItems;
 
   useEffect(() => {
@@ -248,6 +251,12 @@ export default function CheckoutPage() {
 
       <h1>Finalizează comanda</h1>
 
+      <div style={{ display: "flex", gap: 10, flexWrap: "wrap", marginBottom: 12 }}>
+        <span style={{ border: "1px solid #ddd", borderRadius: 999, padding: "4px 10px" }}>Plata securizata Stripe</span>
+        <span style={{ border: "1px solid #ddd", borderRadius: 999, padding: "4px 10px" }}>Date protejate GDPR</span>
+        <span style={{ border: "1px solid #ddd", borderRadius: 999, padding: "4px 10px" }}>Suport rapid</span>
+      </div>
+
       {error && <p style={{ color: "red" }}>{error}</p>}
 
       {hasBlockingErrors && (
@@ -383,6 +392,19 @@ export default function CheckoutPage() {
           </label>
         </div>
 
+        <label style={{ display: "flex", gap: 8, alignItems: "center", marginTop: 8 }}>
+          <input
+            type="checkbox"
+            checked={acceptedLegal}
+            onChange={(e) => setAcceptedLegal(e.target.checked)}
+            required
+          />
+          <span>
+            Am citit si sunt de acord cu <Link href="/termeni-si-conditii">Termenii si Conditiile</Link> si{" "}
+            <Link href="/politica-confidentialitate">Politica de Confidentialitate</Link>.
+          </span>
+        </label>
+
         <button className="btn full" disabled={disableSubmit}>
           {submitting
             ? "Plasăm comanda…"
@@ -396,5 +418,6 @@ export default function CheckoutPage() {
     </div>
   );
 }
+
 
 

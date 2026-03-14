@@ -128,6 +128,18 @@ function clampInt(value, min, max) {
   return Math.max(min, Math.min(max, Math.floor(n)));
 }
 
+function normalizeProductImages(product) {
+  const gallery = Array.isArray(product?.images)
+    ? product.images
+        .map((x) => String(x?.url || ""))
+        .filter(Boolean)
+    : [];
+
+  const primary = String(product?.image || "").trim();
+  const all = [primary, ...gallery].filter(Boolean);
+  return Array.from(new Set(all)).slice(0, 3);
+}
+
 
 /* ============================================================
    ADMIN LOGIN
@@ -322,11 +334,20 @@ router.get("/products", async (req, res) => {
       stock: true,
       image: true,
       category: true,
-      featured: true
+      featured: true,
+      images: {
+        orderBy: { sortOrder: "asc" },
+        select: { url: true }
+      }
     }
   });
 
-  res.json({ items });
+  res.json({
+    items: items.map((p) => ({
+      ...p,
+      images: normalizeProductImages(p)
+    }))
+  });
 });
 
 /* =====================
@@ -347,24 +368,103 @@ router.get("/products/slug/:slug", async (req, res) => {
       stock: true,
       image: true,
       category: true,
-      featured: true
+      featured: true,
+      images: {
+        orderBy: { sortOrder: "asc" },
+        select: { url: true }
+      }
     }
   });
 
   if (!product) return res.status(404).json({ error: "Product not found" });
-  res.json({ item: product });
+  res.json({
+    item: {
+      ...product,
+      images: normalizeProductImages(product)
+    }
+  });
+});
+
+/* =====================
+   PRODUCT RECOMMENDATIONS (SMART UPSELL)
+   GET /api/products/:id/recommendations
+===================== */
+router.get("/products/:id/recommendations", async (req, res) => {
+  const id = String(req.params.id || "").trim();
+  if (!id) return jsonError(res, 400, "Missing product id");
+
+  const current = await prisma.product.findFirst({
+    where: { id, deletedAt: null },
+    select: { id: true, category: true, name: true }
+  });
+  if (!current) return jsonError(res, 404, "Product not found");
+
+  const rulesByCategory = {
+    "Baloane latex": ["Coifuri si accesorii", "Bannere", "Confetti"],
+    "Baloane folie": ["Coifuri si accesorii", "Bannere"],
+    Ghirlande: ["Baloane latex", "Confetti"],
+    Confetti: ["Bannere", "Pahare si farfurii"],
+    Bannere: ["Baloane latex", "Confetti"],
+    "Pahare si farfurii": ["Coifuri si accesorii", "Bannere"],
+    "Coifuri si accesorii": ["Baloane latex", "Pahare si farfurii"]
+  };
+
+  const targetCategories = rulesByCategory[current.category] || ["Baloane latex", "Bannere"];
+
+  const items = await prisma.product.findMany({
+    where: {
+      deletedAt: null,
+      id: { not: current.id },
+      stock: { gt: 0 },
+      OR: [
+        { category: { in: targetCategories } },
+        { featured: true }
+      ]
+    },
+    orderBy: [{ featured: "desc" }, { priceCents: "asc" }],
+    take: 6,
+    select: {
+      id: true,
+      name: true,
+      slug: true,
+      priceCents: true,
+      stock: true,
+      image: true,
+      category: true,
+      featured: true,
+      images: {
+        orderBy: { sortOrder: "asc" },
+        select: { url: true }
+      }
+    }
+  });
+
+  return res.json({
+    items: items.map((p) => ({
+      ...p,
+      images: normalizeProductImages(p)
+    }))
+  });
 });
 
 /* =====================
    PRODUCTS (ADMIN CREATE)
 ===================== */
 router.post("/products", adminAuth, async (req, res) => {
-  // NOTE: presupunem că ai deja slug required + unique în DB
-  const { name, priceCents, stock, image, category, featured, slug } = req.body || {};
+  const { name, priceCents, stock, image, images, category, featured, slug } = req.body || {};
 
   if (!name || priceCents === undefined) {
     return res.status(400).json({ error: "Missing product data" });
   }
+
+  const galleryInput = Array.isArray(images)
+    ? images.map((x) => String(x || "").trim()).filter(Boolean)
+    : String(images || "")
+        .split(",")
+        .map((x) => x.trim())
+        .filter(Boolean);
+
+  const gallery = Array.from(new Set([String(image || "").trim(), ...galleryInput].filter(Boolean))).slice(0, 3);
 
   const data = {
     name: String(name),
@@ -373,13 +473,27 @@ router.post("/products", adminAuth, async (req, res) => {
     image: image ? String(image) : "",
     category: category ? String(category) : "uncategorized",
     featured: Boolean(featured),
-    // dacă nu trimiți slug din admin, îl poți genera în frontend sau îl pui aici ulterior
-    slug: slug ? String(slug) : undefined
+    slug: slug ? String(slug) : undefined,
+    images: {
+      create: gallery.map((url, idx) => ({ url, sortOrder: idx }))
+    }
   };
 
   try {
-    const product = await prisma.product.create({ data });
-    res.json({ ok: true, product });
+    const product = await prisma.product.create({
+      data,
+      include: {
+        images: { orderBy: { sortOrder: "asc" }, select: { url: true } }
+      }
+    });
+
+    res.json({
+      ok: true,
+      product: {
+        ...product,
+        images: normalizeProductImages(product)
+      }
+    });
   } catch (e) {
     console.error("CREATE PRODUCT ERROR:", e);
     return res.status(400).json({ error: "Failed to create product (slug might be duplicate)" });
@@ -391,12 +505,23 @@ router.post("/products", adminAuth, async (req, res) => {
 ===================== */
 router.put("/products/:id", adminAuth, async (req, res) => {
   const id = String(req.params.id);
-  const { name, priceCents, stock, image, category, featured, slug } = req.body || {};
+  const { name, priceCents, stock, image, images, category, featured, slug } = req.body || {};
 
   const existing = await prisma.product.findUnique({
-  where: { id }
-});
+    where: { id },
+    select: { id: true, image: true }
+  });
   if (!existing) return res.status(404).json({ error: "Product not found" });
+
+  const galleryInput = Array.isArray(images)
+    ? images.map((x) => String(x || "").trim()).filter(Boolean)
+    : String(images || "")
+        .split(",")
+        .map((x) => x.trim())
+        .filter(Boolean);
+
+  const resolvedImage = image !== undefined ? String(image || "").trim() : String(existing.image || "");
+  const gallery = Array.from(new Set([resolvedImage, ...galleryInput].filter(Boolean))).slice(0, 3);
 
   try {
     const product = await prisma.product.update({
@@ -408,11 +533,24 @@ router.put("/products/:id", adminAuth, async (req, res) => {
         ...(image !== undefined ? { image: image ? String(image) : "" } : {}),
         ...(category !== undefined ? { category: category ? String(category) : "uncategorized" } : {}),
         ...(featured !== undefined ? { featured: Boolean(featured) } : {}),
-        ...(slug !== undefined ? { slug: String(slug) } : {})
+        ...(slug !== undefined ? { slug: String(slug) } : {}),
+        images: {
+          deleteMany: {},
+          create: gallery.map((url, idx) => ({ url, sortOrder: idx }))
+        }
+      },
+      include: {
+        images: { orderBy: { sortOrder: "asc" }, select: { url: true } }
       }
     });
 
-    res.json({ ok: true, product });
+    res.json({
+      ok: true,
+      product: {
+        ...product,
+        images: normalizeProductImages(product)
+      }
+    });
   } catch (e) {
     console.error("UPDATE PRODUCT ERROR:", e);
     return res.status(400).json({ error: "Failed to update product (slug might be duplicate)" });
@@ -1332,3 +1470,4 @@ router.patch("/orders/:id/cancel", userAuth, async (req, res) => {
 
 
 export default router;
+

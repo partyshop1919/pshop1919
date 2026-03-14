@@ -24,32 +24,40 @@ export default function CookieBanner() {
     <div
       style={{
         position: "fixed",
-        left: 16,
-        right: 16,
-        bottom: 16,
+        inset: 0,
         zIndex: 3000,
-        background: "#fff",
-        border: "1px solid #ddd",
-        borderRadius: 12,
-        padding: 14,
-        boxShadow: "0 12px 24px rgba(0,0,0,0.12)"
+        background: "rgba(0,0,0,0.35)",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        padding: 16
       }}
     >
-      <p style={{ margin: 0 }}>
-        Folosim cookie-uri esentiale pentru functionarea site-ului. Cookie-urile de analiza se activeaza doar cu
-        acordul tau. Vezi{" "}
-        <Link href="/politica-cookies">Politica Cookies</Link> si{" "}
-        <Link href="/politica-confidentialitate">Politica de Confidentialitate</Link>.
-      </p>
-      <div style={{ display: "flex", gap: 8, marginTop: 10, flexWrap: "wrap" }}>
-        <button className="btn" type="button" onClick={() => saveConsent({ essential: true, analytics: false })}>
-          Refuz analytics
-        </button>
-        <button className="btn" type="button" onClick={() => saveConsent({ essential: true, analytics: true })}>
-          Accept toate
-        </button>
+      <div
+        style={{
+          width: "min(680px, 100%)",
+          background: "#fff",
+          border: "1px solid #ddd",
+          borderRadius: 12,
+          padding: 16,
+          boxShadow: "0 18px 30px rgba(0,0,0,0.22)"
+        }}
+      >
+        <p style={{ margin: 0 }}>
+          Folosim cookie-uri esentiale pentru functionarea site-ului. Cookie-urile de analiza se activeaza doar cu
+          acordul tau. Vezi{" "}
+          <Link href="/politica-cookies">Politica Cookies</Link> si{" "}
+          <Link href="/politica-confidentialitate">Politica de Confidentialitate</Link>.
+        </p>
+        <div style={{ display: "flex", gap: 8, marginTop: 12, flexWrap: "wrap" }}>
+          <button className="btn" type="button" onClick={() => saveConsent({ essential: true, analytics: false })}>
+            Refuz analytics
+          </button>
+          <button className="btn" type="button" onClick={() => saveConsent({ essential: true, analytics: true })}>
+            Accept toate
+          </button>
+        </div>
       </div>
     </div>
   );
 }
-

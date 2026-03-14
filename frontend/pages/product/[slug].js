@@ -2,7 +2,8 @@ import { useRouter } from "next/router";
 import Head from "next/head";
 import { useEffect, useMemo, useState, useContext } from "react";
 
-import { fetchProductBySlug, BACKEND_URL } from "../../lib/api";
+import Link from "next/link";
+import { fetchProductBySlug, fetchProductRecommendations, BACKEND_URL } from "../../lib/api";
 import { useCart } from "../../lib/cart";
 import { FavoritesContext } from "../../lib/favorites";
 
@@ -22,6 +23,8 @@ export default function ProductPage() {
   const { addFavorite, removeFavorite, isFavorite } = useContext(FavoritesContext);
 
   const [product, setProduct] = useState(null);
+  const [reco, setReco] = useState([]);
+  const [activeIndex, setActiveIndex] = useState(0);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -33,7 +36,10 @@ export default function ProductPage() {
       setLoading(true);
       try {
         const item = await fetchProductBySlug(String(slug));
-        if (active) setProduct(item || null);
+        if (active) {
+          setProduct(item || null);
+          setActiveIndex(0);
+        }
       } finally {
         if (active) setLoading(false);
       }
@@ -44,9 +50,39 @@ export default function ProductPage() {
     };
   }, [router.isReady, slug]);
 
+  useEffect(() => {
+    if (!product?.id) return;
+    let active = true;
+    (async () => {
+      const list = await fetchProductRecommendations(product.id);
+      if (active) setReco(Array.isArray(list) ? list : []);
+    })();
+    return () => {
+      active = false;
+    };
+  }, [product?.id]);
+
   const productId = useMemo(() => (product?.id != null ? String(product.id) : null), [product?.id]);
   const fav = productId ? isFavorite(productId) : false;
-  const imageUrl = useMemo(() => resolveImage(product?.image), [product?.image]);
+  const imageUrls = useMemo(() => {
+    const list = Array.isArray(product?.images) ? product.images : [];
+    const normalized = list.map(resolveImage).filter(Boolean);
+    if (normalized.length > 0) return normalized.slice(0, 3);
+    const fallback = resolveImage(product?.image);
+    return fallback ? [fallback] : [];
+  }, [product?.images, product?.image]);
+
+  const mainImage = imageUrls[activeIndex] || imageUrls[0] || null;
+
+  function prevImage() {
+    if (imageUrls.length <= 1) return;
+    setActiveIndex((prev) => (prev - 1 + imageUrls.length) % imageUrls.length);
+  }
+
+  function nextImage() {
+    if (imageUrls.length <= 1) return;
+    setActiveIndex((prev) => (prev + 1) % imageUrls.length);
+  }
 
   if (!router.isReady || loading) {
     return (
@@ -87,12 +123,46 @@ export default function ProductPage() {
         >
           <div>
             <div className="product-image" style={{ minHeight: 320 }}>
-              {imageUrl ? (
-                <img src={imageUrl} alt={product.name} style={{ width: "100%", height: "auto" }} />
+              {mainImage ? (
+                <img src={mainImage} alt={product.name} style={{ width: "100%", height: "auto" }} />
               ) : (
                 <div className="image-placeholder" />
               )}
             </div>
+            {imageUrls.length > 1 && (
+              <div style={{ display: "flex", justifyContent: "center", gap: 8, marginTop: 10 }}>
+                <button className="btn" type="button" onClick={prevImage} aria-label="Imagine anterioara">
+                  ←
+                </button>
+                <button className="btn" type="button" onClick={nextImage} aria-label="Imagine urmatoare">
+                  →
+                </button>
+              </div>
+            )}
+            {imageUrls.length > 1 && (
+              <div style={{ display: "flex", gap: 8, marginTop: 10 }}>
+                {imageUrls.map((img, idx) => (
+                  <button
+                    key={img}
+                    type="button"
+                    onClick={() => setActiveIndex(idx)}
+                    style={{
+                      border: "1px solid #ddd",
+                      borderRadius: 8,
+                      padding: 0,
+                      background: idx === activeIndex ? "#f4ece9" : "white",
+                      cursor: "pointer"
+                    }}
+                  >
+                    <img
+                      src={img}
+                      alt="preview"
+                      style={{ width: 72, height: 72, objectFit: "cover", borderRadius: 8 }}
+                    />
+                  </button>
+                ))}
+              </div>
+            )}
           </div>
 
           <div>
@@ -135,6 +205,35 @@ export default function ProductPage() {
             </p>
           </div>
         </div>
+
+        {reco.length > 0 && (
+          <section style={{ marginTop: 32 }}>
+            <h2>Completează setul</h2>
+            <div className="products-grid">
+              {reco.map((it) => {
+                const img = resolveImage(Array.isArray(it.images) ? it.images[0] : it.image);
+                return (
+                  <div key={it.id} className="product-card">
+                    <Link href={`/product/${it.slug}`} className="product-image" style={{ display: "block" }}>
+                      {img ? <img src={img} alt={it.name} loading="lazy" /> : <div className="image-placeholder" />}
+                    </Link>
+                    <Link href={`/product/${it.slug}`} style={{ textDecoration: "none", color: "inherit" }}>
+                      <h3>{it.name}</h3>
+                    </Link>
+                    <p>{((Number(it.priceCents) || 0) / 100).toFixed(2)} RON</p>
+                    <button
+                      className="btn"
+                      type="button"
+                      onClick={() => addToCart({ ...it, id: String(it.id) })}
+                    >
+                      Adaugă în coș
+                    </button>
+                  </div>
+                );
+              })}
+            </div>
+          </section>
+        )}
       </div>
     </>
   );

@@ -37,6 +37,18 @@ model Product {
 
   favorites  Favorite[]
   items      OrderItem[]
+  images     ProductImage[]
+}
+
+model ProductImage {
+  id        String   @id @default(uuid())
+  productId String
+  product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  url       String
+  sortOrder Int      @default(0)
+  createdAt DateTime @default(now())
+
+  @@index([productId, sortOrder])
 }
 
 model Order {
@@ -93,4 +105,3 @@ model Favorite {
 
   @@id([userId, productId])
 }
-

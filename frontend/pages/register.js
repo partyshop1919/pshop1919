@@ -1,4 +1,5 @@
 import { useState } from "react";
+import Link from "next/link";
 import { API_URL } from "../lib/api";
 
 export default function RegisterPage() {
@@ -10,6 +11,7 @@ export default function RegisterPage() {
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState(null);
   const [error, setError] = useState(null);
+  const [acceptedLegal, setAcceptedLegal] = useState(false);
 
   function onChange(e) {
     setForm({
@@ -20,6 +22,11 @@ export default function RegisterPage() {
 
   async function submit(e) {
     e.preventDefault();
+    if (!acceptedLegal) {
+      setError("Trebuie sa accepti Termenii si Politica de Confidentialitate.");
+      return;
+    }
+
     setLoading(true);
     setError(null);
     setMessage(null);
@@ -39,12 +46,11 @@ export default function RegisterPage() {
         throw new Error(data.message);
       }
 
-      setMessage(
-        "Cont creat. Verifică emailul pentru confirmare."
-      );
+      setMessage("Cont creat. Verifica emailul pentru confirmare.");
       setForm({ email: "", password: "" });
+      setAcceptedLegal(false);
     } catch (err) {
-      setError(err.message || "Eroare la înregistrare");
+      setError(err.message || "Eroare la inregistrare");
     } finally {
       setLoading(false);
     }
@@ -52,7 +58,7 @@ export default function RegisterPage() {
 
   return (
     <div className="container auth-page">
-      <h1>Creează cont</h1>
+      <h1>Creeaza cont</h1>
 
       {message && <p style={{ color: "green" }}>{message}</p>}
       {error && <p style={{ color: "red" }}>{error}</p>}
@@ -70,7 +76,7 @@ export default function RegisterPage() {
         </label>
 
         <label>
-          Parolă
+          Parola
           <input
             type="password"
             name="password"
@@ -80,8 +86,21 @@ export default function RegisterPage() {
           />
         </label>
 
-        <button className="btn full" disabled={loading}>
-          {loading ? "Se creează…" : "Înregistrează-te"}
+        <label style={{ display: "flex", gap: 8, alignItems: "center" }}>
+          <input
+            type="checkbox"
+            checked={acceptedLegal}
+            onChange={(e) => setAcceptedLegal(e.target.checked)}
+            required
+          />
+          <span>
+            Sunt de acord cu <Link href="/termeni-si-conditii">Termenii si Conditiile</Link> si cu{" "}
+            <Link href="/politica-confidentialitate">Politica de Confidentialitate</Link>.
+          </span>
+        </label>
+
+        <button className="btn full" disabled={loading || !acceptedLegal}>
+          {loading ? "Se creeaza..." : "Inregistreaza-te"}
         </button>
       </form>
     </div>

@@ -93,6 +93,16 @@ export async function fetchProductBySlug(slug) {
   }
 }
 
+export async function fetchProductRecommendations(productId) {
+  try {
+    if (!productId) return [];
+    const res = await api.get(`/products/${encodeURIComponent(String(productId))}/recommendations`);
+    return Array.isArray(res.data?.items) ? res.data.items : [];
+  } catch (err) {
+    return handleError("fetchProductRecommendations", err, []);
+  }
+}
+
 /* =====================
    CART
 ===================== */

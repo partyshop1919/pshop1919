@@ -34,7 +34,12 @@ export default function ProductCard({ product }) {
   }, [product?.slug]);
 
   const favorite = productId ? isFavorite(productId) : false;
-  const imageUrl = useMemo(() => resolveImage(product?.image), [product?.image]);
+  const imageUrl = useMemo(() => {
+    if (Array.isArray(product?.images) && product.images.length > 0) {
+      return resolveImage(product.images[0]);
+    }
+    return resolveImage(product?.image);
+  }, [product?.images, product?.image]);
 
   const onToggleFavorite = useCallback(
     (e) => {

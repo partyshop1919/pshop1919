@@ -11,6 +11,26 @@ import ProductCard from "../components/ProductCard";
 export default function HomePage() {
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(true);
+  const testimonials = [
+    {
+      id: 1,
+      name: "Andreea, Bucuresti",
+      text: "Comanda a ajuns rapid, iar decorul a iesit exact cum ne-am dorit pentru aniversare.",
+      rating: 5
+    },
+    {
+      id: 2,
+      name: "Mihai, Cluj-Napoca",
+      text: "Party Builder m-a ajutat mult sa aleg produsele potrivite pentru numarul de invitati.",
+      rating: 5
+    },
+    {
+      id: 3,
+      name: "Ioana, Iasi",
+      text: "Produse bune, preturi corecte si comunicare clara pe tot parcursul comenzii.",
+      rating: 4
+    }
+  ];
 
   useEffect(() => {
     let active = true;
@@ -68,6 +88,12 @@ export default function HomePage() {
             <Link href="#categorii" className="hero-btn">
               Vezi categoriile
             </Link>
+
+            <div style={{ display: "flex", gap: 12, justifyContent: "center", flexWrap: "wrap", marginTop: 14 }}>
+              <span style={{ border: "1px solid #ddd", borderRadius: 999, padding: "6px 10px" }}>Plata securizata</span>
+              <span style={{ border: "1px solid #ddd", borderRadius: 999, padding: "6px 10px" }}>Retur 14 zile</span>
+              <span style={{ border: "1px solid #ddd", borderRadius: 999, padding: "6px 10px" }}>Livrare 24-48h</span>
+            </div>
           </div>
         </section>
 
@@ -160,6 +186,29 @@ export default function HomePage() {
               <h3>Suport dedicat</h3>
               <p>Suntem aici să te ajutăm să alegi produsele potrivite.</p>
             </div>
+          </div>
+        </section>
+
+        <section className="home-testimonials">
+          <h2>Feedback clienti</h2>
+          <p className="testimonials-subtitle">
+            Testimoniale selectate manual din feedback primit de la clienti.
+          </p>
+          <div className="testimonials-grid">
+            {testimonials.map((t) => (
+              <article key={t.id} className="testimonial-card">
+                <div className="testimonial-head">
+                  <div className="testimonial-avatar">{t.name.charAt(0)}</div>
+                  <div>
+                    <h3>{t.name}</h3>
+                    <div className="testimonial-stars" aria-label={`Rating ${t.rating} din 5 stele`}>
+                      {"★".repeat(t.rating)}{"☆".repeat(5 - t.rating)}
+                    </div>
+                  </div>
+                </div>
+                <p>{t.text}</p>
+              </article>
+            ))}
           </div>
         </section>
       </main>

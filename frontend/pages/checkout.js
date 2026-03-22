@@ -392,7 +392,7 @@ export default function CheckoutPage() {
           </label>
         </div>
 
-        <label style={{ display: "flex", gap: 8, alignItems: "center", marginTop: 8 }}>
+        <label className="auth-inline-check" style={{ marginTop: 8 }}>
           <input
             type="checkbox"
             checked={acceptedLegal}

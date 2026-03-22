@@ -104,7 +104,7 @@ export default function RegisterPage() {
           />
         </label>
 
-        <label style={{ display: "flex", gap: 8, alignItems: "center" }}>
+        <label className="auth-inline-check">
           <input
             type="checkbox"
             checked={acceptedLegal}

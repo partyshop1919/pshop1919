@@ -493,6 +493,18 @@ body.dark .auth-form input {
   border-color: #444;
   color: #e6e4e0;
 }
+.auth-inline-check {
+  display: flex;
+  flex-direction: row !important;
+  align-items: flex-start;
+  gap: 10px;
+}
+.auth-inline-check input[type="checkbox"] {
+  margin-top: 2px;
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+}
 .auth-card {
   max-width: 620px;
   margin: 42px auto;

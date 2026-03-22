@@ -15,17 +15,25 @@ export default function App({ Component, pageProps }) {
           <FavoritesProvider>
             <Navbar />
             <Component {...pageProps} />
-            <footer className="container" style={{ paddingTop: 10, paddingBottom: 30, fontSize: 14, opacity: 0.9 }}>
-              <div style={{ display: "flex", gap: 14, flexWrap: "wrap", marginBottom: 8 }}>
-                <Link href="/contact">Contact</Link>
-                <Link href="/livrare">Livrare</Link>
-                <Link href="/retur">Retur</Link>
-                <Link href="/faq">FAQ</Link>
-              </div>
-              <div style={{ display: "flex", gap: 14, flexWrap: "wrap" }}>
-                <Link href="/politica-confidentialitate">Politica de Confidentialitate</Link>
-                <Link href="/politica-cookies">Politica Cookies</Link>
-                <Link href="/termeni-si-conditii">Termeni si Conditii</Link>
+            <footer className="site-footer-wrap">
+              <div className="container site-footer">
+                <div className="site-footer-top">
+                  <h3>Informatii utile</h3>
+                  <p>Date de contact, livrare, retur si raspunsuri rapide intr-un singur loc.</p>
+                </div>
+
+                <div className="site-footer-links">
+                  <Link href="/contact">Contact</Link>
+                  <Link href="/livrare">Livrare</Link>
+                  <Link href="/retur">Retur</Link>
+                  <Link href="/faq">FAQ</Link>
+                </div>
+
+                <div className="site-footer-links legal">
+                  <Link href="/politica-confidentialitate">Politica de Confidentialitate</Link>
+                  <Link href="/politica-cookies">Politica Cookies</Link>
+                  <Link href="/termeni-si-conditii">Termeni si Conditii</Link>
+                </div>
               </div>
             </footer>
             <CookieBanner />

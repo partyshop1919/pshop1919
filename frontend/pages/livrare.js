@@ -6,13 +6,26 @@ export default function DeliveryPage() {
       <Head>
         <title>Livrare - Party Shop</title>
       </Head>
-      <main className="container">
-        <h1>Informatii Livrare</h1>
-        <p>Livrare standard: 24-48h pentru produsele aflate in stoc.</p>
-        <p>Cost transport: 19.99 RON. Gratuit peste 199 RON.</p>
-        <p>Livrarea se face prin curier rapid, in toata Romania.</p>
+      <main className="container info-page">
+        <section className="info-card">
+          <h1>Informatii Livrare</h1>
+          <p className="info-lead">Comenzile sunt procesate rapid, direct din stoc, cu urmarire simpla.</p>
+          <div className="info-grid">
+            <div>
+              <h3>Timp de livrare</h3>
+              <p>24-48h pentru produsele aflate in stoc.</p>
+            </div>
+            <div>
+              <h3>Cost transport</h3>
+              <p>19.99 RON. Gratuit pentru comenzi peste 199 RON.</p>
+            </div>
+            <div>
+              <h3>Acoperire</h3>
+              <p>Livram in toata Romania prin curier rapid.</p>
+            </div>
+          </div>
+        </section>
       </main>
     </>
   );
 }
-

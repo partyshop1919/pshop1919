@@ -1,6 +1,6 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
-import { API_URL } from "../lib/api";
+import { API_URL, BACKEND_URL } from "../lib/api";
 import { useAuth } from "../lib/auth";
 
 export default function LoginPage() {
@@ -14,6 +14,12 @@ export default function LoginPage() {
 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+
+  useEffect(() => {
+    if (!router.isReady) return;
+    const oauthError = String(router.query?.oauthError || "").trim();
+    if (oauthError) setError(oauthError);
+  }, [router.isReady, router.query?.oauthError]);
 
   function updateField(e) {
     setForm({
@@ -39,14 +45,10 @@ export default function LoginPage() {
       const data = await res.json();
 
       if (!res.ok) {
-        throw new Error(
-          data.message || "Autentificare eșuată"
-        );
+        throw new Error(data.message || "Autentificare esuata");
       }
 
-      // salvează în AuthContext (REACTIV)
       loginUser(data.token, data.user);
-
       router.push("/");
     } catch (err) {
       setError(err.message);
@@ -56,52 +58,65 @@ export default function LoginPage() {
   }
 
   return (
-    <div style={{ maxWidth: 380, margin: "60px auto" }}>
-      <h2>Autentificare</h2>
+    <div className="container auth-page">
+      <div className="auth-card">
+        <h2>Autentificare</h2>
+        <p className="auth-muted">Poti intra rapid cu social login.</p>
 
-      <form onSubmit={handleLogin}>
-        <label>Email</label>
-        <input
-          type="email"
-          name="email"
-          value={form.email}
-          onChange={updateField}
-          required
-          style={{ width: "100%", padding: 8, marginTop: 6 }}
-        />
+        <div className="auth-social">
+          <a className="auth-social-btn google" href={`${BACKEND_URL}/api/auth/oauth/google/start`}>
+            Continua cu Google
+          </a>
+          <a className="auth-social-btn github" href={`${BACKEND_URL}/api/auth/oauth/github/start`}>
+            Continua cu GitHub
+          </a>
+          <a className="auth-social-btn facebook" href={`${BACKEND_URL}/api/auth/oauth/facebook/start`}>
+            Continua cu Facebook
+          </a>
+        </div>
 
-        <label style={{ marginTop: 12, display: "block" }}>
-          Parolă
-        </label>
-        <input
-          type="password"
-          name="password"
-          value={form.password}
-          onChange={updateField}
-          required
-          style={{ width: "100%", padding: 8, marginTop: 6 }}
-        />
+        <div className="auth-divider">
+          <span>sau</span>
+        </div>
 
-        {error && (
-          <div style={{ color: "red", marginTop: 12 }}>
-            {error}
-          </div>
-        )}
+        <form onSubmit={handleLogin}>
+          <label>Email</label>
+          <input
+            type="email"
+            name="email"
+            value={form.email}
+            onChange={updateField}
+            required
+            style={{ width: "100%", padding: 8, marginTop: 6 }}
+          />
 
-        <button
-          type="submit"
-          disabled={loading}
-          style={{ marginTop: 18, padding: "8px 16px" }}
-        >
-          {loading ? "Se autentifică…" : "Login"}
-        </button>
+          <label style={{ marginTop: 12, display: "block" }}>
+            Parola
+          </label>
+          <input
+            type="password"
+            name="password"
+            value={form.password}
+            onChange={updateField}
+            required
+            style={{ width: "100%", padding: 8, marginTop: 6 }}
+          />
 
-        <p style={{ marginTop: 12 }}>
-          Nu ai cont?{" "}
-          <a href="/register">Înregistrează-te</a>
-        </p>
+          {error && <div style={{ color: "red", marginTop: 12 }}>{error}</div>}
 
-      </form>
+          <button
+            type="submit"
+            disabled={loading}
+            style={{ marginTop: 18, padding: "8px 16px" }}
+          >
+            {loading ? "Se autentifica..." : "Login"}
+          </button>
+
+          <p style={{ marginTop: 12 }}>
+            Nu ai cont? <a href="/register">Inregistreaza-te</a>
+          </p>
+        </form>
+      </div>
     </div>
   );
 }

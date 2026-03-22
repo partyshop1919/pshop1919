@@ -1,6 +1,6 @@
 import { useState } from "react";
 import Link from "next/link";
-import { API_URL } from "../lib/api";
+import { API_URL, BACKEND_URL } from "../lib/api";
 
 export default function RegisterPage() {
   const [form, setForm] = useState({
@@ -58,10 +58,28 @@ export default function RegisterPage() {
 
   return (
     <div className="container auth-page">
+      <div className="auth-card">
       <h1>Creeaza cont</h1>
 
       {message && <p style={{ color: "green" }}>{message}</p>}
       {error && <p style={{ color: "red" }}>{error}</p>}
+
+      <p className="auth-muted">Poti crea cont instant cu social login.</p>
+      <div className="auth-social">
+        <a className="auth-social-btn google" href={`${BACKEND_URL}/api/auth/oauth/google/start`}>
+          Inregistrare rapida cu Google
+        </a>
+        <a className="auth-social-btn github" href={`${BACKEND_URL}/api/auth/oauth/github/start`}>
+          Inregistrare rapida cu GitHub
+        </a>
+        <a className="auth-social-btn facebook" href={`${BACKEND_URL}/api/auth/oauth/facebook/start`}>
+          Inregistrare rapida cu Facebook
+        </a>
+      </div>
+
+      <div className="auth-divider">
+        <span>sau</span>
+      </div>
 
       <form onSubmit={submit} className="auth-form">
         <label>
@@ -103,6 +121,7 @@ export default function RegisterPage() {
           {loading ? "Se creeaza..." : "Inregistreaza-te"}
         </button>
       </form>
+      </div>
     </div>
   );
 }

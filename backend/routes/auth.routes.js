@@ -15,6 +15,18 @@ const BACKEND_URL = process.env.BACKEND_URL || "http://localhost:4000";
 
 const OAUTH_PROVIDERS = new Set(["google", "github", "facebook"]);
 
+function cleanEnv(value) {
+  return String(value || "").trim().replace(/^['"]|['"]$/g, "");
+}
+
+function readEnv(...keys) {
+  for (const key of keys) {
+    const value = cleanEnv(process.env[key]);
+    if (value) return value;
+  }
+  return "";
+}
+
 function buildRedirectUri(provider) {
   return `${BACKEND_URL.replace(/\/+$/, "")}/api/auth/oauth/${provider}/callback`;
 }
@@ -39,8 +51,12 @@ async function fetchJson(url, options = {}) {
 }
 
 async function getGoogleProfile(code) {
-  const clientId = String(process.env.GOOGLE_CLIENT_ID || "").trim();
-  const clientSecret = String(process.env.GOOGLE_CLIENT_SECRET || "").trim();
+  const clientId = readEnv("GOOGLE_CLIENT_ID", "GOOGLE_OAUTH_CLIENT_ID");
+  const clientSecret = readEnv(
+    "GOOGLE_CLIENT_SECRET",
+    "GOOGLE_OAUTH_CLIENT_SECRET",
+    "GOOGLE_CLIENTSECRET"
+  );
   if (!clientId || !clientSecret) throw new Error("Google OAuth is not configured");
 
   const redirectUri = buildRedirectUri("google");
@@ -68,8 +84,12 @@ async function getGoogleProfile(code) {
 }
 
 async function getGithubProfile(code) {
-  const clientId = String(process.env.GITHUB_CLIENT_ID || "").trim();
-  const clientSecret = String(process.env.GITHUB_CLIENT_SECRET || "").trim();
+  const clientId = readEnv("GITHUB_CLIENT_ID", "GITHUB_OAUTH_CLIENT_ID");
+  const clientSecret = readEnv(
+    "GITHUB_CLIENT_SECRET",
+    "GITHUB_OAUTH_CLIENT_SECRET",
+    "GITHUB_CLIENTSECRET"
+  );
   if (!clientId || !clientSecret) throw new Error("GitHub OAuth is not configured");
 
   const redirectUri = buildRedirectUri("github");
@@ -109,8 +129,13 @@ async function getGithubProfile(code) {
 }
 
 async function getFacebookProfile(code) {
-  const clientId = String(process.env.FACEBOOK_CLIENT_ID || "").trim();
-  const clientSecret = String(process.env.FACEBOOK_CLIENT_SECRET || "").trim();
+  const clientId = readEnv("FACEBOOK_CLIENT_ID", "FACEBOOK_OAUTH_CLIENT_ID", "FB_CLIENT_ID");
+  const clientSecret = readEnv(
+    "FACEBOOK_CLIENT_SECRET",
+    "FACEBOOK_OAUTH_CLIENT_SECRET",
+    "FB_CLIENT_SECRET",
+    "FACEBOOK_CLIENTSECRET"
+  );
   if (!clientId || !clientSecret) throw new Error("Facebook OAuth is not configured");
 
   const redirectUri = buildRedirectUri("facebook");
@@ -221,7 +246,7 @@ router.get("/oauth/:provider/start", async (req, res) => {
     const redirectUri = buildRedirectUri(provider);
 
     if (provider === "google") {
-      const clientId = String(process.env.GOOGLE_CLIENT_ID || "").trim();
+      const clientId = readEnv("GOOGLE_CLIENT_ID", "GOOGLE_OAUTH_CLIENT_ID");
       if (!clientId) return res.status(500).json({ message: "Google OAuth missing config" });
 
       const authUrl = `https://accounts.google.com/o/oauth2/v2/auth?${new URLSearchParams({
@@ -238,7 +263,7 @@ router.get("/oauth/:provider/start", async (req, res) => {
     }
 
     if (provider === "github") {
-      const clientId = String(process.env.GITHUB_CLIENT_ID || "").trim();
+      const clientId = readEnv("GITHUB_CLIENT_ID", "GITHUB_OAUTH_CLIENT_ID");
       if (!clientId) return res.status(500).json({ message: "GitHub OAuth missing config" });
 
       const authUrl = `https://github.com/login/oauth/authorize?${new URLSearchParams({
@@ -251,7 +276,7 @@ router.get("/oauth/:provider/start", async (req, res) => {
       return res.redirect(authUrl);
     }
 
-    const clientId = String(process.env.FACEBOOK_CLIENT_ID || "").trim();
+    const clientId = readEnv("FACEBOOK_CLIENT_ID", "FACEBOOK_OAUTH_CLIENT_ID", "FB_CLIENT_ID");
     if (!clientId) return res.status(500).json({ message: "Facebook OAuth missing config" });
 
     const authUrl = `https://www.facebook.com/v19.0/dialog/oauth?${new URLSearchParams({

@@ -165,9 +165,14 @@ export default function HomePage() {
           <h2>Organizezi o petrecere?</h2>
           <p>Alege din sute de produse festive și pregătește rapid un decor memorabil.</p>
 
-          <Link href="/category/baloane" className="promo-btn">
-            Vezi produsele
-          </Link>
+          <div className="promo-actions">
+            <Link href="/category/baloane" className="promo-btn">
+              Vezi produsele
+            </Link>
+            <Link href="/party-builder" className="promo-btn promo-btn-secondary">
+              Incearca Party Builder
+            </Link>
+          </div>
         </section>
 
         <section className="home-benefits">

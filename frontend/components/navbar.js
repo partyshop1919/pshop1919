@@ -105,7 +105,9 @@ export default function Navbar() {
 
         {isAdmin && (
           <>
-            <Link href="/admin/products">Admin</Link>
+            <Link href="/admin/products" className="admin-shortcut">
+              Panel Admin
+            </Link>
             <button type="button" onClick={logoutAdmin}>
               Logout Admin
             </button>

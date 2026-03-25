@@ -103,15 +103,13 @@ export default function Navbar() {
           </>
         )}
 
-        {isAdmin ? (
+        {isAdmin && (
           <>
             <Link href="/admin/products">Admin</Link>
             <button type="button" onClick={logoutAdmin}>
               Logout Admin
             </button>
           </>
-        ) : (
-          <Link href="/admin/login">Admin Login</Link>
         )}
       </div>
     </nav>

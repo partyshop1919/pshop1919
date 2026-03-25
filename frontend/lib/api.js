@@ -5,7 +5,10 @@ import { getAdminToken, getUserToken } from "./auth";
    AXIOS INSTANCE
 ===================== */
 export const API_URL =
-  process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000/api";
+  process.env.NEXT_PUBLIC_API_URL ||
+  (process.env.NODE_ENV === "production"
+    ? "https://partyshop-backend.onrender.com/api"
+    : "http://localhost:4000/api");
 export const BACKEND_URL =
   process.env.NEXT_PUBLIC_BACKEND_URL ||
   API_URL.replace(/\/api\/?$/, "");
@@ -195,9 +198,9 @@ export async function cancelOrder(orderId) {
 /* =====================
    ADMIN AUTH
 ===================== */
-export async function adminLogin(password) {
+export async function adminLogin(email, password) {
   try {
-    const res = await api.post("/admin/login", { password });
+    const res = await api.post("/admin/login", { email, password });
     return res.data;
   } catch (err) {
     return handleError("adminLogin", err, null);

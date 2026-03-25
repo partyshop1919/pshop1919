@@ -4,6 +4,7 @@ import { adminLogin } from "../../lib/api";
 import { useAdmin } from "../../lib/auth";
 
 export default function AdminLogin() {
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -17,7 +18,7 @@ export default function AdminLogin() {
     setLoading(true);
 
     try {
-      const res = await adminLogin(password);
+      const res = await adminLogin(email, password);
 
       if (!res?.token) {
         throw new Error(res?.error || "Login failed");
@@ -37,7 +38,16 @@ export default function AdminLogin() {
       <h2>Admin Login</h2>
 
       <form onSubmit={handleLogin}>
-        <label>Password</label>
+        <label>Email</label>
+        <input
+          type="email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          required
+          style={{ width: "100%", padding: 8, marginTop: 6 }}
+        />
+
+        <label style={{ marginTop: 12, display: "block" }}>Password</label>
 
         <input
           type="password"

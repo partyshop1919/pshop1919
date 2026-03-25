@@ -11,6 +11,7 @@ export default function OauthSuccessPage() {
 
     const token = String(router.query?.token || "").trim();
     const email = String(router.query?.email || "").trim();
+    const role = String(router.query?.role || "user").trim() || "user";
     const error = String(router.query?.error || "").trim();
 
     if (error) {
@@ -24,7 +25,7 @@ export default function OauthSuccessPage() {
     }
 
     const fallbackEmail = email || "oauth-user@partyshop.local";
-    loginUser(token, { email: fallbackEmail });
+    loginUser(token, { email: fallbackEmail, role });
     router.replace("/");
   }, [router, loginUser]);
 
@@ -34,4 +35,3 @@ export default function OauthSuccessPage() {
     </div>
   );
 }
-

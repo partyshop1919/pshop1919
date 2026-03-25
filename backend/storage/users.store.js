@@ -12,6 +12,7 @@ export async function listUsers() {
     select: {
       id: true,
       email: true,
+      role: true,
       emailVerified: true,
       createdAt: true
     },
@@ -54,6 +55,7 @@ export async function createUser({ id, email, passwordHash, emailVerified, email
       id,
       email: e,
       passwordHash,
+      role: "user",
       emailVerified: Boolean(emailVerified),
       emailTokenHash
     }
@@ -66,6 +68,7 @@ export async function updateUser(id, patch) {
   const data = {};
   if (patch?.email !== undefined) data.email = normalizeEmail(patch.email);
   if (patch?.passwordHash !== undefined) data.passwordHash = patch.passwordHash;
+  if (patch?.role !== undefined) data.role = String(patch.role || "user");
   if (patch?.emailVerified !== undefined) data.emailVerified = Boolean(patch.emailVerified);
   if (patch?.emailTokenHash !== undefined) data.emailTokenHash = patch.emailTokenHash;
 

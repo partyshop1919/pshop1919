@@ -343,11 +343,16 @@ router.get("/oauth/:provider/callback", async (req, res) => {
       });
     }
 
-    const token = jwt.sign({ userId: user.id }, JWT_SECRET, { expiresIn: "30d" });
+    const token = jwt.sign(
+      { userId: user.id, role: user.role || "user" },
+      JWT_SECRET,
+      { expiresIn: "30d" }
+    );
     return res.redirect(
       buildFrontendOAuthRedirect({
         token,
-        email: user.email
+        email: user.email,
+        role: user.role || "user"
       })
     );
   } catch (err) {
@@ -392,11 +397,15 @@ router.post("/login", async (req, res) => {
     const ok = await verifyPassword(password, user.passwordHash);
     if (!ok) return res.status(401).json({ message: "Email sau parolă incorecte" });
 
-    const token = jwt.sign({ userId: user.id }, JWT_SECRET, { expiresIn: "30d" });
+    const token = jwt.sign(
+      { userId: user.id, role: user.role || "user" },
+      JWT_SECRET,
+      { expiresIn: "30d" }
+    );
 
     return res.json({
       token,
-      user: { id: user.id, email: user.email }
+      user: { id: user.id, email: user.email, role: user.role || "user" }
     });
   } catch (err) {
     console.error("LOGIN ERROR:", err);

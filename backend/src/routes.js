@@ -4,6 +4,7 @@ import jwt from "jsonwebtoken";
 import { PrismaClient } from "@prisma/client";
 import { uploadProductImage, storeProductImage } from "../upload.js";
 import { z } from "zod";
+import { verifyPassword } from "./utils/crypto.js";
 
 // dacă nu ai fișierul, comentează linia următoare
 import { sendOrderConfirmationEmail } from "./utils/mailer.js";
@@ -145,15 +146,47 @@ function normalizeProductImages(product) {
    ADMIN LOGIN
    POST /api/admin/login
 ============================================================ */
-router.post("/admin/login", (req, res) => {
-  const inputPass = String(req.body?.password || "").trim();
-  const envPass = String(process.env.ADMIN_PASSWORD || "").trim();
+router.post("/admin/login", async (req, res) => {
+  try {
+    const email = String(req.body?.email || "").trim().toLowerCase();
+    const password = String(req.body?.password || "").trim();
 
-  if (!envPass) return jsonError(res, 500, "ADMIN_PASSWORD missing in .env");
-  if (inputPass !== envPass) return jsonError(res, 401, "Invalid password");
+    if (!email || !password) {
+      return jsonError(res, 400, "Email and password are required");
+    }
 
-  const token = jwt.sign({ role: "admin" }, JWT_SECRET, { expiresIn: "2h" });
-  return res.json({ token });
+    const user = await prisma.user.findUnique({
+      where: { email },
+      select: {
+        id: true,
+        email: true,
+        role: true,
+        passwordHash: true,
+        emailVerified: true
+      }
+    });
+
+    if (!user) return jsonError(res, 401, "Invalid credentials");
+    if ((user.role || "user") !== "admin") return jsonError(res, 403, "Forbidden");
+    if (!user.emailVerified) return jsonError(res, 403, "Email not verified");
+
+    const ok = await verifyPassword(password, user.passwordHash);
+    if (!ok) return jsonError(res, 401, "Invalid credentials");
+
+    const token = jwt.sign(
+      { role: "admin", userId: user.id, email: user.email },
+      JWT_SECRET,
+      { expiresIn: "8h" }
+    );
+
+    return res.json({
+      token,
+      admin: { id: user.id, email: user.email }
+    });
+  } catch (e) {
+    console.error("ADMIN LOGIN ERROR:", e);
+    return jsonError(res, 500, "Internal error");
+  }
 });
 
 /* =====================

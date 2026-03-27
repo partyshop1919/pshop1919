@@ -2,13 +2,17 @@ import Head from "next/head";
 import { useMemo, useState } from "react";
 import Link from "next/link";
 
-import { BACKEND_URL, buildPartyPlan } from "../lib/api";
+import { BACKEND_URL, buildPartyPlan, fetchProducts } from "../lib/api";
 import { useCart } from "../lib/cart";
 
 export default function PartyBuilderPage() {
   const { items: cartItems, addToCart, updateQty } = useCart();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [catalog, setCatalog] = useState([]);
+  const [catalogLoading, setCatalogLoading] = useState(false);
+  const [catalogOpen, setCatalogOpen] = useState(false);
+  const [customItems, setCustomItems] = useState([]);
   const [plan, setPlan] = useState(null);
   const [form, setForm] = useState({
     eventType: "adult-birthday",
@@ -18,9 +22,50 @@ export default function PartyBuilderPage() {
   });
 
   const totalRON = useMemo(() => {
-    const cents = Number(plan?.totalCents || 0);
+    const base = Number(plan?.totalCents || 0);
+    const extra = customItems.reduce(
+      (sum, x) => sum + (Number(x.priceCents) || 0) * (Number(x.quantity) || 1),
+      0
+    );
+    const cents = base + extra;
     return (cents / 100).toFixed(2);
-  }, [plan?.totalCents]);
+  }, [plan?.totalCents, customItems]);
+
+  const mergedItems = useMemo(() => {
+    const baseItems = Array.isArray(plan?.items) ? plan.items : [];
+    if (!customItems.length) return baseItems;
+
+    const map = new Map();
+    for (const it of baseItems) {
+      map.set(String(it.id), { ...it });
+    }
+
+    for (const extra of customItems) {
+      const id = String(extra.id);
+      const existing = map.get(id);
+      if (existing) {
+        const qty = (Number(existing.quantity) || 0) + (Number(extra.quantity) || 1);
+        map.set(id, {
+          ...existing,
+          quantity: qty,
+          lineTotalCents: qty * (Number(existing.priceCents) || 0)
+        });
+      } else {
+        map.set(id, {
+          id,
+          name: extra.name,
+          slug: extra.slug,
+          image: extra.image,
+          category: extra.category,
+          priceCents: Number(extra.priceCents) || 0,
+          quantity: Number(extra.quantity) || 1,
+          lineTotalCents: (Number(extra.priceCents) || 0) * (Number(extra.quantity) || 1)
+        });
+      }
+    }
+
+    return Array.from(map.values());
+  }, [plan?.items, customItems]);
 
   function onChange(e) {
     const { name, value } = e.target;
@@ -48,10 +93,11 @@ export default function PartyBuilderPage() {
       return;
     }
     setPlan(data);
+    setCustomItems([]);
   }
 
   function addPlanToCart() {
-    const entries = Array.isArray(plan?.items) ? plan.items : [];
+    const entries = mergedItems;
     if (!entries.length) return;
 
     const currentById = new Map((cartItems || []).map((x) => [String(x.id), Number(x.quantity) || 0]));
@@ -71,6 +117,57 @@ export default function PartyBuilderPage() {
         currentById.set(id, qty);
       }
     }
+  }
+
+  async function openCatalog() {
+    setCatalogOpen(true);
+    if (catalog.length > 0) return;
+    setCatalogLoading(true);
+    const list = await fetchProducts();
+    setCatalogLoading(false);
+    setCatalog(Array.isArray(list) ? list : []);
+  }
+
+  function addProductToPlan(product) {
+    const id = String(product?.id || "");
+    if (!id) return;
+
+    setCustomItems((prev) => {
+      const next = [...prev];
+      const i = next.findIndex((x) => String(x.id) === id);
+      if (i >= 0) {
+        next[i] = { ...next[i], quantity: (Number(next[i].quantity) || 1) + 1 };
+        return next;
+      }
+      return [
+        ...next,
+        {
+          id,
+          name: String(product.name || "Produs"),
+          slug: String(product.slug || ""),
+          image: String(product.image || ""),
+          category: String(product.category || "uncategorized"),
+          priceCents: Number(product.priceCents) || 0,
+          quantity: 1
+        }
+      ];
+    });
+  }
+
+  function addSingleProductToCart(item) {
+    const id = String(item?.id || "");
+    if (!id) return;
+
+    const current = (cartItems || []).find((x) => String(x.id) === id);
+    const currentQty = Number(current?.quantity) || 0;
+
+    if (currentQty > 0) {
+      updateQty(id, currentQty + 1);
+      return;
+    }
+
+    addToCart({ id });
+    updateQty(id, 1);
   }
 
   return (
@@ -147,12 +244,12 @@ export default function PartyBuilderPage() {
               </ul>
             )}
 
-            {!plan.items?.length ? (
+            {!mergedItems.length ? (
               <p>Nu exista produse potrivite momentan.</p>
             ) : (
               <>
                 <div className="party-builder-items">
-                  {plan.items.map((it) => (
+                  {mergedItems.map((it) => (
                     <article key={it.id} className="party-builder-item">
                       <img
                         src={resolveImage(it.image)}
@@ -163,6 +260,14 @@ export default function PartyBuilderPage() {
                         <strong>{it.name}</strong>
                         <div className="party-builder-item-category">{it.category}</div>
                         <div className="party-builder-item-qty">Cantitate: {it.quantity}</div>
+                        <button
+                          type="button"
+                          className="btn secondary"
+                          onClick={() => addSingleProductToCart(it)}
+                          style={{ marginTop: 8 }}
+                        >
+                          + Adauga produs
+                        </button>
                       </div>
                       <div className="party-builder-item-price">
                         {((Number(it.lineTotalCents) || 0) / 100).toFixed(2)} RON
@@ -179,13 +284,59 @@ export default function PartyBuilderPage() {
                   <button className="btn" type="button" onClick={addPlanToCart}>
                     Adauga planul in cos
                   </button>
+                  <button className="btn secondary" type="button" onClick={openCatalog}>
+                    + Adauga produse
+                  </button>
+                  <button
+            className="btn secondary full"
+            type="button"
+            onClick={() => {
+              if (window.confirm("Vrei sa golesti planul generat?")) setPlan(null);
+            }}
+            style={{ marginTop: 10 }}
+          >
+            Goleste planul
+          </button>
                   <Link className="btn" href="/cart">
                     Vezi cosul
+                  </Link>
+                  <Link className="btn secondary" href="/products">
+                    Vezi toate produsele
                   </Link>
                 </div>
               </>
             )}
           </section>
+        )}
+
+        {catalogOpen && (
+          <div className="pb-modal-overlay" onClick={() => setCatalogOpen(false)}>
+            <div className="pb-modal" onClick={(e) => e.stopPropagation()}>
+              <div className="pb-modal-head">
+                <h3>Adauga produse in plan</h3>
+                <button type="button" className="btn secondary" onClick={() => setCatalogOpen(false)}>
+                  Inchide
+                </button>
+              </div>
+
+              {catalogLoading ? (
+                <p>Se incarca produse...</p>
+              ) : (
+                <div className="pb-modal-grid">
+                  {catalog.map((p) => (
+                    <article key={p.id} className="pb-modal-card">
+                      <img src={resolveImage(p.image)} alt={p.name} />
+                      <h4>{p.name}</h4>
+                      <p>{(Number(p.priceCents || 0) / 100).toFixed(2)} RON</p>
+                      <button type="button" className="btn" onClick={() => addProductToPlan(p)}>
+                        + Adauga
+                      </button>
+                    </article>
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
         )}
       </main>
     </>

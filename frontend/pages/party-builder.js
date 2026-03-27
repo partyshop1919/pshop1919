@@ -2,7 +2,7 @@ import Head from "next/head";
 import { useMemo, useState } from "react";
 import Link from "next/link";
 
-import { buildPartyPlan } from "../lib/api";
+import { BACKEND_URL, buildPartyPlan } from "../lib/api";
 import { useCart } from "../lib/cart";
 
 export default function PartyBuilderPage() {
@@ -25,6 +25,16 @@ export default function PartyBuilderPage() {
   function onChange(e) {
     const { name, value } = e.target;
     setForm((prev) => ({ ...prev, [name]: name === "guests" ? Number(value) || 5 : value }));
+  }
+
+  function resolveImage(src) {
+    const raw = String(src || "").trim();
+    if (!raw) return "/images/products/baloane.jpg";
+    if (/^https?:\/\//i.test(raw)) return raw;
+    if (raw.startsWith("/uploads/")) {
+      return `${BACKEND_URL}${raw}`;
+    }
+    return raw;
   }
 
   async function onSubmit(e) {
@@ -68,11 +78,18 @@ export default function PartyBuilderPage() {
       <Head>
         <title>Party Builder - Party Shop</title>
       </Head>
-      <main className="container">
-        <h1>Party Builder</h1>
-        <p>Configureaza rapid o petrecere si primesti un cos recomandat cu cantitati.</p>
+      <main className="container party-builder-page">
+        <section className="party-builder-hero">
+          <h1>Party Builder</h1>
+          <p>Configureaza rapid evenimentul si primesti o lista recomandata cu produse si cantitati.</p>
+          <div className="party-builder-badges">
+            <span>Recomandari inteligente</span>
+            <span>Calcul automat cantitati</span>
+            <span>Adaugare rapida in cos</span>
+          </div>
+        </section>
 
-        <form onSubmit={onSubmit} style={{ display: "grid", gap: 12, maxWidth: 560 }}>
+        <form onSubmit={onSubmit} className="party-builder-form">
           <label>
             Tip eveniment
             <select name="eventType" value={form.eventType} onChange={onChange}>
@@ -120,10 +137,10 @@ export default function PartyBuilderPage() {
         {error && <p style={{ color: "crimson", marginTop: 12 }}>{error}</p>}
 
         {plan && (
-          <section style={{ marginTop: 24 }}>
+          <section className="party-builder-result">
             <h2>Plan recomandat</h2>
             {!!plan?.notes?.length && (
-              <ul>
+              <ul className="party-builder-notes">
                 {plan.notes.map((n, idx) => (
                   <li key={idx}>{n}</li>
                 ))}
@@ -134,33 +151,31 @@ export default function PartyBuilderPage() {
               <p>Nu exista produse potrivite momentan.</p>
             ) : (
               <>
-                <div style={{ display: "grid", gap: 10 }}>
+                <div className="party-builder-items">
                   {plan.items.map((it) => (
-                    <div
-                      key={it.id}
-                      style={{
-                        display: "flex",
-                        justifyContent: "space-between",
-                        border: "1px solid #ddd",
-                        borderRadius: 8,
-                        padding: 10
-                      }}
-                    >
-                      <div>
+                    <article key={it.id} className="party-builder-item">
+                      <img
+                        src={resolveImage(it.image)}
+                        alt={it.name}
+                        className="party-builder-item-image"
+                      />
+                      <div className="party-builder-item-main">
                         <strong>{it.name}</strong>
-                        <div style={{ opacity: 0.8 }}>{it.category}</div>
-                        <div>Cantitate: {it.quantity}</div>
+                        <div className="party-builder-item-category">{it.category}</div>
+                        <div className="party-builder-item-qty">Cantitate: {it.quantity}</div>
                       </div>
-                      <div>{((Number(it.lineTotalCents) || 0) / 100).toFixed(2)} RON</div>
-                    </div>
+                      <div className="party-builder-item-price">
+                        {((Number(it.lineTotalCents) || 0) / 100).toFixed(2)} RON
+                      </div>
+                    </article>
                   ))}
                 </div>
 
-                <p style={{ marginTop: 12 }}>
+                <p className="party-builder-total">
                   <strong>Total estimat: {totalRON} RON</strong>
                 </p>
 
-                <div style={{ display: "flex", gap: 10 }}>
+                <div className="party-builder-actions">
                   <button className="btn" type="button" onClick={addPlanToCart}>
                     Adauga planul in cos
                   </button>

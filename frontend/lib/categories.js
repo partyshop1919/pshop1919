@@ -115,7 +115,7 @@ export const categories = [
     id: 3,
     name: "Articole aniversare",
     slug: "articole-aniversare",
-    image: "/images/products/hats.jpg",
+    image: "/images/products/set-pahare-si-farfurii-24-persoane.jpg",
 
     seoTitle: "Articole aniversare - Party Shop",
     seoDescription:

@@ -1,4 +1,5 @@
 import "../styles/globals.css";
+import Head from "next/head";
 
 import Navbar from "../components/navbar";
 import CookieBanner from "../components/CookieBanner";
@@ -13,6 +14,9 @@ export default function App({ Component, pageProps }) {
       <AdminProvider>
         <CartProvider>
           <FavoritesProvider>
+            <Head>
+              <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+            </Head>
             <Navbar />
             <Component {...pageProps} />
             <footer className="site-footer-wrap">
@@ -33,6 +37,17 @@ export default function App({ Component, pageProps }) {
                   <Link href="/politica-confidentialitate">Politica de Confidentialitate</Link>
                   <Link href="/politica-cookies">Politica Cookies</Link>
                   <Link href="/termeni-si-conditii">Termeni si Conditii</Link>
+                </div>
+
+                <div className="site-footer-cta">
+                  <a
+                    href="https://wa.me/40700000000?text=Salut%20Party%20Shop!%20As%20dori%20detalii%20despre%20produse."
+                    target="_blank"
+                    rel="noreferrer"
+                    className="btn whatsapp-btn"
+                  >
+                    Contact WhatsApp
+                  </a>
                 </div>
               </div>
             </footer>

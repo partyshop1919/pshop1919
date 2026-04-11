@@ -1,0 +1,49 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="420" height="420" viewBox="0 0 420 420">
+  <rect width="420" height="420" fill="#ffffff"/>
+  <g fill="none" stroke="#d9dce1" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+    <circle cx="46" cy="40" r="14"/>
+    <path d="M38 40h16M46 32v16"/>
+    <path d="M98 28l20 20M118 28L98 48"/>
+    <rect x="152" y="22" width="24" height="24" rx="5"/>
+    <path d="M212 24c12 0 18 9 18 18s-6 18-18 18-18-9-18-18 6-18 18-18z"/>
+    <path d="M260 28l22 0M271 17l0 22"/>
+    <path d="M316 22l8 20 8-20 8 20"/>
+    <circle cx="378" cy="36" r="10"/>
+
+    <path d="M22 102c20-16 34 14 14 24-20 10-30-20-14-24z"/>
+    <path d="M80 90l22 0M80 102l16 0M80 114l22 0"/>
+    <path d="M132 90c0 0 20 8 20 22s-20 22-20 22"/>
+    <rect x="178" y="92" width="30" height="18" rx="9"/>
+    <path d="M230 116c10-16 24-16 34 0"/>
+    <path d="M280 92l24 28M304 92l-24 28"/>
+    <path d="M334 104h28M348 90v28"/>
+    <circle cx="388" cy="108" r="12"/>
+
+    <path d="M28 174l16 24 16-24"/>
+    <rect x="74" y="172" width="32" height="22" rx="6"/>
+    <path d="M126 168c10 0 16 8 16 18s-6 18-16 18-16-8-16-18 6-18 16-18z"/>
+    <path d="M170 174c8 0 14 6 14 14s-6 14-14 14-14-6-14-14 6-14 14-14z"/>
+    <path d="M214 176l18 0M214 188l28 0M214 200l20 0"/>
+    <path d="M258 172l26 26M284 172l-26 26"/>
+    <rect x="304" y="174" width="28" height="28" rx="6"/>
+    <path d="M356 170c12 0 20 8 20 18s-8 18-20 18-20-8-20-18 8-18 20-18z"/>
+
+    <circle cx="42" cy="266" r="10"/>
+    <path d="M78 250l24 24M102 250L78 274"/>
+    <path d="M132 252h24M144 240v24"/>
+    <rect x="172" y="248" width="34" height="20" rx="10"/>
+    <path d="M228 246c14 0 24 10 24 24s-10 24-24 24-24-10-24-24 10-24 24-24z"/>
+    <path d="M270 248l30 0M270 260l20 0M270 272l30 0"/>
+    <circle cx="336" cy="266" r="14"/>
+    <path d="M384 250l10 24 10-24"/>
+
+    <path d="M22 330c12-10 24 10 12 18-12 8-22-10-12-18z"/>
+    <path d="M72 320h24M84 308v24"/>
+    <rect x="118" y="316" width="30" height="22" rx="6"/>
+    <path d="M170 320l26 0M170 332l16 0M170 344l24 0"/>
+    <circle cx="226" cy="332" r="14"/>
+    <path d="M258 318l26 26M284 318l-26 26"/>
+    <rect x="308" y="316" width="24" height="24" rx="5"/>
+    <path d="M360 320c0 0 18 6 18 16s-18 16-18 16"/>
+  </g>
+</svg>

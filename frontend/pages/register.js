@@ -1,8 +1,9 @@
-import { useState } from "react";
+import { useId, useState } from "react";
 import Link from "next/link";
 import { API_URL, BACKEND_URL } from "../lib/api";
 
 export default function RegisterPage() {
+  const emailPopupId = useId();
   const [form, setForm] = useState({
     email: "",
     password: ""
@@ -12,16 +13,31 @@ export default function RegisterPage() {
   const [message, setMessage] = useState(null);
   const [error, setError] = useState(null);
   const [acceptedLegal, setAcceptedLegal] = useState(false);
+  const [showEmailPopup, setShowEmailPopup] = useState(false);
 
   function onChange(e) {
+    if (e.target.name === "email" && showEmailPopup) {
+      setShowEmailPopup(false);
+    }
+
     setForm({
       ...form,
       [e.target.name]: e.target.value
     });
   }
 
+  function handleEmailInvalid(e) {
+    e.preventDefault();
+    setShowEmailPopup(true);
+  }
+
   async function submit(e) {
     e.preventDefault();
+    if (!e.currentTarget.checkValidity()) {
+      e.currentTarget.reportValidity();
+      return;
+    }
+
     if (!acceptedLegal) {
       setError("Trebuie sa accepti Termenii si Politica de Confidentialitate.");
       return;
@@ -63,17 +79,57 @@ export default function RegisterPage() {
 
       {message && <p style={{ color: "green" }}>{message}</p>}
       {error && <p style={{ color: "red" }}>{error}</p>}
+      {showEmailPopup && (
+        <div className="auth-popup-overlay" onClick={() => setShowEmailPopup(false)}>
+          <div
+            className="auth-popup"
+            role="alertdialog"
+            aria-modal="true"
+            aria-labelledby={`${emailPopupId}-title`}
+            aria-describedby={`${emailPopupId}-desc`}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <button
+              type="button"
+              className="auth-popup-close"
+              aria-label="Inchide alerta"
+              onClick={() => setShowEmailPopup(false)}
+            >
+              X
+            </button>
+            <div className="auth-popup-icon" aria-hidden="true">
+              !
+            </div>
+            <h2 id={`${emailPopupId}-title`}>Email nevalid</h2>
+            <p id={`${emailPopupId}-desc`}>
+              Te rog introdu o adresa de email valida, de exemplu <strong>nume@domeniu.ro</strong>.
+            </p>
+            <button type="button" className="btn" onClick={() => setShowEmailPopup(false)}>
+              Am inteles
+            </button>
+          </div>
+        </div>
+      )}
 
       <p className="auth-muted">Poti crea cont instant cu social login.</p>
       <div className="auth-social">
         <a className="auth-social-btn google" href={`${BACKEND_URL}/api/auth/oauth/google/start`}>
-          Inregistrare rapida cu Google
+          <span className="auth-social-logo" aria-hidden="true">
+            <img src="/icons/google.svg" alt="" />
+          </span>
+          <span>Continue with Google</span>
+        </a>
+        <a className="auth-social-btn apple" href={`${BACKEND_URL}/api/auth/oauth/apple/start`}>
+          <span className="auth-social-logo" aria-hidden="true">
+            <img src="/icons/apple.svg" alt="" />
+          </span>
+          <span>Continue with Apple</span>
         </a>
         <a className="auth-social-btn github" href={`${BACKEND_URL}/api/auth/oauth/github/start`}>
-          Inregistrare rapida cu GitHub
-        </a>
-        <a className="auth-social-btn facebook" href={`${BACKEND_URL}/api/auth/oauth/facebook/start`}>
-          Inregistrare rapida cu Facebook
+          <span className="auth-social-logo" aria-hidden="true">
+            <img src="/icons/github.svg" alt="" />
+          </span>
+          <span>Continue with GitHub</span>
         </a>
       </div>
 
@@ -81,7 +137,7 @@ export default function RegisterPage() {
         <span>sau</span>
       </div>
 
-      <form onSubmit={submit} className="auth-form">
+      <form onSubmit={submit} className="auth-form" noValidate>
         <label>
           Email
           <input
@@ -89,6 +145,8 @@ export default function RegisterPage() {
             name="email"
             value={form.email}
             onChange={onChange}
+            onInvalid={handleEmailInvalid}
+            aria-describedby={showEmailPopup ? `${emailPopupId}-desc` : undefined}
             required
           />
         </label>

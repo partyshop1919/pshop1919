@@ -10,10 +10,10 @@ import { sendConfirmationEmail } from "../src/utils/mailer.js";
 const router = express.Router();
 const JWT_SECRET = process.env.JWT_SECRET || "dev-secret";
 const FRONTEND_URL =
-  process.env.APP_BASE_URL || process.env.FRONTEND_URL || "http://localhost:3000";
+  process.env.FRONTEND_URL || process.env.APP_BASE_URL || "http://localhost:3000";
 const BACKEND_URL = process.env.BACKEND_URL || "http://localhost:4000";
 
-const OAUTH_PROVIDERS = new Set(["google", "github", "facebook"]);
+const OAUTH_PROVIDERS = new Set(["google", "github", "apple"]);
 
 function cleanEnv(value) {
   return String(value || "").trim().replace(/^['"]|['"]$/g, "");
@@ -51,11 +51,16 @@ async function fetchJson(url, options = {}) {
 }
 
 async function getGoogleProfile(code) {
-  const clientId = readEnv("GOOGLE_CLIENT_ID", "GOOGLE_OAUTH_CLIENT_ID");
+  const clientId = readEnv(
+    "GOOGLE_CLIENT_ID",
+    "GOOGLE_OAUTH_CLIENT_ID",
+    "GOOGLE_CLIENTID"
+  );
   const clientSecret = readEnv(
     "GOOGLE_CLIENT_SECRET",
     "GOOGLE_OAUTH_CLIENT_SECRET",
-    "GOOGLE_CLIENTSECRET"
+    "GOOGLE_CLIENTSECRET",
+    "GOOGLE_SECRET"
   );
   if (!clientId || !clientSecret) throw new Error("Google OAuth is not configured");
 
@@ -84,11 +89,16 @@ async function getGoogleProfile(code) {
 }
 
 async function getGithubProfile(code) {
-  const clientId = readEnv("GITHUB_CLIENT_ID", "GITHUB_OAUTH_CLIENT_ID");
+  const clientId = readEnv(
+    "GITHUB_CLIENT_ID",
+    "GITHUB_OAUTH_CLIENT_ID",
+    "GITHUB_CLIENTID"
+  );
   const clientSecret = readEnv(
     "GITHUB_CLIENT_SECRET",
     "GITHUB_OAUTH_CLIENT_SECRET",
-    "GITHUB_CLIENTSECRET"
+    "GITHUB_CLIENTSECRET",
+    "GITHUB_SECRET"
   );
   if (!clientId || !clientSecret) throw new Error("GitHub OAuth is not configured");
 
@@ -128,44 +138,75 @@ async function getGithubProfile(code) {
   };
 }
 
-async function getFacebookProfile(code) {
-  const clientId = readEnv("FACEBOOK_CLIENT_ID", "FACEBOOK_OAUTH_CLIENT_ID", "FB_CLIENT_ID");
-  const clientSecret = readEnv(
-    "FACEBOOK_CLIENT_SECRET",
-    "FACEBOOK_OAUTH_CLIENT_SECRET",
-    "FB_CLIENT_SECRET",
-    "FACEBOOK_CLIENTSECRET"
+function parseJwtPayload(token) {
+  try {
+    const parts = String(token || "").split(".");
+    if (parts.length < 2) return {};
+    const b64 = parts[1].replace(/-/g, "+").replace(/_/g, "/");
+    const pad = b64.length % 4 === 0 ? "" : "=".repeat(4 - (b64.length % 4));
+    const json = Buffer.from(b64 + pad, "base64").toString("utf8");
+    return JSON.parse(json);
+  } catch {
+    return {};
+  }
+}
+
+function buildAppleClientSecret() {
+  const teamId = readEnv("APPLE_TEAM_ID");
+  const keyId = readEnv("APPLE_KEY_ID");
+  const clientId = readEnv("APPLE_CLIENT_ID");
+  const privateKeyRaw = readEnv("APPLE_PRIVATE_KEY");
+
+  if (!teamId || !keyId || !clientId || !privateKeyRaw) {
+    throw new Error("Apple OAuth is not configured");
+  }
+
+  const privateKey = privateKeyRaw.replace(/\\n/g, "\n");
+  return jwt.sign(
+    {},
+    privateKey,
+    {
+      algorithm: "ES256",
+      expiresIn: "180d",
+      issuer: teamId,
+      audience: "https://appleid.apple.com",
+      subject: clientId,
+      keyid: keyId
+    }
   );
-  if (!clientId || !clientSecret) throw new Error("Facebook OAuth is not configured");
+}
 
-  const redirectUri = buildRedirectUri("facebook");
+async function getAppleProfile(code) {
+  const clientId = readEnv("APPLE_CLIENT_ID");
+  if (!clientId) throw new Error("Apple OAuth is not configured");
 
-  const tokenData = await fetchJson(
-    `https://graph.facebook.com/v19.0/oauth/access_token?${new URLSearchParams({
-      client_id: clientId,
-      client_secret: clientSecret,
+  const redirectUri = buildRedirectUri("apple");
+  const clientSecret = buildAppleClientSecret();
+
+  const tokenData = await fetchJson("https://appleid.apple.com/auth/token", {
+    method: "POST",
+    headers: { "Content-Type": "application/x-www-form-urlencoded" },
+    body: new URLSearchParams({
+      grant_type: "authorization_code",
+      code: String(code),
       redirect_uri: redirectUri,
-      code: String(code)
-    }).toString()}`
-  );
+      client_id: clientId,
+      client_secret: clientSecret
+    })
+  });
 
-  const profile = await fetchJson(
-    `https://graph.facebook.com/me?${new URLSearchParams({
-      fields: "id,email,name",
-      access_token: String(tokenData.access_token || "")
-    }).toString()}`
-  );
+  const claims = parseJwtPayload(tokenData?.id_token || "");
+  const email = String(claims?.email || "").trim().toLowerCase();
+  const emailVerifiedRaw = claims?.email_verified;
+  const emailVerified = emailVerifiedRaw === true || emailVerifiedRaw === "true";
 
-  return {
-    email: String(profile?.email || "").trim().toLowerCase(),
-    emailVerified: Boolean(profile?.email)
-  };
+  return { email, emailVerified };
 }
 
 async function getOAuthProfile(provider, code) {
   if (provider === "google") return getGoogleProfile(code);
   if (provider === "github") return getGithubProfile(code);
-  if (provider === "facebook") return getFacebookProfile(code);
+  if (provider === "apple") return getAppleProfile(code);
   throw new Error("Unsupported provider");
 }
 
@@ -246,7 +287,11 @@ router.get("/oauth/:provider/start", async (req, res) => {
     const redirectUri = buildRedirectUri(provider);
 
     if (provider === "google") {
-      const clientId = readEnv("GOOGLE_CLIENT_ID", "GOOGLE_OAUTH_CLIENT_ID");
+      const clientId = readEnv(
+        "GOOGLE_CLIENT_ID",
+        "GOOGLE_OAUTH_CLIENT_ID",
+        "GOOGLE_CLIENTID"
+      );
       if (!clientId) return res.status(500).json({ message: "Google OAuth missing config" });
 
       const authUrl = `https://accounts.google.com/o/oauth2/v2/auth?${new URLSearchParams({
@@ -263,7 +308,11 @@ router.get("/oauth/:provider/start", async (req, res) => {
     }
 
     if (provider === "github") {
-      const clientId = readEnv("GITHUB_CLIENT_ID", "GITHUB_OAUTH_CLIENT_ID");
+      const clientId = readEnv(
+        "GITHUB_CLIENT_ID",
+        "GITHUB_OAUTH_CLIENT_ID",
+        "GITHUB_CLIENTID"
+      );
       if (!clientId) return res.status(500).json({ message: "GitHub OAuth missing config" });
 
       const authUrl = `https://github.com/login/oauth/authorize?${new URLSearchParams({
@@ -276,14 +325,15 @@ router.get("/oauth/:provider/start", async (req, res) => {
       return res.redirect(authUrl);
     }
 
-    const clientId = readEnv("FACEBOOK_CLIENT_ID", "FACEBOOK_OAUTH_CLIENT_ID", "FB_CLIENT_ID");
-    if (!clientId) return res.status(500).json({ message: "Facebook OAuth missing config" });
+    const clientId = readEnv("APPLE_CLIENT_ID");
+    if (!clientId) return res.status(500).json({ message: "Apple OAuth missing config" });
 
-    const authUrl = `https://www.facebook.com/v19.0/dialog/oauth?${new URLSearchParams({
+    const authUrl = `https://appleid.apple.com/auth/authorize?${new URLSearchParams({
       client_id: clientId,
       redirect_uri: redirectUri,
-      scope: "email,public_profile",
+      scope: "name email",
       response_type: "code",
+      response_mode: "query",
       state
     }).toString()}`;
 
@@ -376,7 +426,7 @@ router.get("/confirm-email", async (req, res) => {
 
   await updateUser(user.id, { emailVerified: true, emailTokenHash: null });
 
-  return res.redirect(`${process.env.APP_BASE_URL}/login?confirmed=1`);
+  return res.redirect(`${FRONTEND_URL.replace(/\/+$/, "")}/login?confirmed=1`);
 });
 
 router.post("/login", async (req, res) => {

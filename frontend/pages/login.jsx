@@ -65,13 +65,22 @@ export default function LoginPage() {
 
         <div className="auth-social">
           <a className="auth-social-btn google" href={`${BACKEND_URL}/api/auth/oauth/google/start`}>
-            Continua cu Google
+            <span className="auth-social-logo" aria-hidden="true">
+              <img src="/icons/google.svg" alt="" />
+            </span>
+            <span>Continue with Google</span>
+          </a>
+          <a className="auth-social-btn apple" href={`${BACKEND_URL}/api/auth/oauth/apple/start`}>
+            <span className="auth-social-logo" aria-hidden="true">
+              <img src="/icons/apple.svg" alt="" />
+            </span>
+            <span>Continue with Apple</span>
           </a>
           <a className="auth-social-btn github" href={`${BACKEND_URL}/api/auth/oauth/github/start`}>
-            Continua cu GitHub
-          </a>
-          <a className="auth-social-btn facebook" href={`${BACKEND_URL}/api/auth/oauth/facebook/start`}>
-            Continua cu Facebook
+            <span className="auth-social-logo" aria-hidden="true">
+              <img src="/icons/github.svg" alt="" />
+            </span>
+            <span>Continue with GitHub</span>
           </a>
         </div>
 

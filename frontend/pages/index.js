@@ -56,10 +56,44 @@ export default function HomePage() {
   if (!Array.isArray(items) || items.length === 0) return [];
 
   const featured = items.filter((p) => Boolean(p.featured));
-  if (featured.length > 0) return featured.slice(0, 8);
+  if (featured.length > 0) return featured.slice(0, 9);
 
-  return items.slice(0, 8);
+  return items.slice(0, 9);
 }, [items]);
+
+  const [featuredSlideIndex, setFeaturedSlideIndex] = useState(0);
+  const featuredSlides = useMemo(() => {
+    const pageSize = 3;
+    const chunks = [];
+    for (let i = 0; i < featuredProducts.length; i += pageSize) {
+      chunks.push(featuredProducts.slice(i, i + pageSize));
+    }
+    return chunks;
+  }, [featuredProducts]);
+
+  useEffect(() => {
+    if (featuredSlides.length > 0 && featuredSlideIndex >= featuredSlides.length) {
+      setFeaturedSlideIndex(0);
+    }
+  }, [featuredSlideIndex, featuredSlides.length]);
+
+  useEffect(() => {
+    if (featuredSlides.length === 0) return;
+    const interval = setInterval(() => {
+      setFeaturedSlideIndex((prev) => (prev + 1) % featuredSlides.length);
+    }, 4200);
+    return () => clearInterval(interval);
+  }, [featuredSlides.length]);
+
+  const goPrevFeatured = () => {
+    if (featuredSlides.length === 0) return;
+    setFeaturedSlideIndex((prev) => (prev - 1 + featuredSlides.length) % featuredSlides.length);
+  };
+
+  const goNextFeatured = () => {
+    if (featuredSlides.length === 0) return;
+    setFeaturedSlideIndex((prev) => (prev + 1) % featuredSlides.length);
+  };
 
   return (
     <>
@@ -100,21 +134,56 @@ export default function HomePage() {
         <section className="home-featured">
           <h2>Produse recomandate</h2>
 
-          {!loading && featuredProducts.length > 0 && (
-  <div className="products-grid">
-    {featuredProducts.map((product) => (
-      <ProductCard key={product.id} product={product} />
-    ))}
-  </div>
-)}
+          {!loading && featuredSlides.length > 0 && (
+            <div className="featured-slider">
+              <div className="slider-controls">
+                <button type="button" className="slider-arrow" onClick={goPrevFeatured} aria-label="Anterior">
+                  ←
+                </button>
 
-{!loading && featuredProducts.length === 0 && (
-  <div className="empty-state">
-    <div className="empty-icon">🎉</div>
-    <h3>Produse în curând</h3>
-    <p>Adăugăm produse noi foarte curând. Revino în scurt timp.</p>
-  </div>
-)}
+                <button type="button" className="slider-arrow" onClick={goNextFeatured} aria-label="Următor">
+                  →
+                </button>
+              </div>
+
+              <div className="slider-viewport">
+                <div
+                  className="slider-track"
+                  style={{ transform: `translateX(-${featuredSlideIndex * 100}%)` }}
+                >
+                  {featuredSlides.map((slide, slideIndex) => (
+                    <div className="slider-panel" key={slideIndex}>
+                      <div className="products-grid">
+                        {slide.map((product) => (
+                          <ProductCard key={product.id} product={product} />
+                        ))}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              <div className="slider-pagination slider-pagination-below">
+                {featuredSlides.map((_, index) => (
+                  <button
+                    key={index}
+                    type="button"
+                    className={`slider-dot ${index === featuredSlideIndex ? "active" : ""}`}
+                    onClick={() => setFeaturedSlideIndex(index)}
+                    aria-label={`Slide ${index + 1}`}
+                  />
+                ))}
+              </div>
+            </div>
+          )}
+
+          {!loading && featuredSlides.length === 0 && (
+            <div className="empty-state">
+              <div className="empty-icon">🎉</div>
+              <h3>Produse în curând</h3>
+              <p>Adăugăm produse noi foarte curând. Revino în scurt timp.</p>
+            </div>
+          )}
         </section>
 
         <section id="categorii" className="home-categories">

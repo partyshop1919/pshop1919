@@ -42,6 +42,29 @@ export default function ContactPage() {
               <p>Luni - Vineri, 09:00 - 18:00</p>
             </div>
           </div>
+
+          <div className="info-grid company-details">
+            <div>
+              <h3>Nume firmă</h3>
+              <p>JUNIOR PARTY S.R.L.</p>
+            </div>
+            <div>
+              <h3>Cod Unic de Înregistrare</h3>
+              <p>36316790</p>
+            </div>
+            <div>
+              <h3>Nr. Înmtrîculare</h3>
+              <p>J21/309/2016</p>
+            </div>
+            <div>
+              <h3>EUID</h3>
+              <p>ROONRC.J21/309/2016</p>
+            </div>
+            <div>
+              <h3>Data înființării</h3>
+              <p>14-07-2016</p>
+            </div>
+          </div>
         </section>
       </main>
     </>

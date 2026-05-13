@@ -165,5 +165,74 @@ export const categories = [
           "Seturi practice si festive pentru servirea bauturilor si deserturilor."
       }
     ]
+  },
+
+  {
+    id: 4,
+    name: "Mese festive",
+    slug: "mese-festive",
+    image: "/images/products/set-pahare-si-farfurii-24-persoane.jpg",
+
+    seoTitle: "Mese festive – Partyware pentru evenimente | Party Shop",
+    seoDescription:
+      "Articole pentru mese festive: pahare, farfurii, tacâmuri, fețe de masă și accesorii pentru petreceri reușite.",
+    h1: "Articole pentru mese festive",
+    intro:
+      "Completează decorul petrecerii cu articole pentru mese festive, ideale pentru aniversări și evenimente speciale.",
+
+    children: [
+      {
+        id: 41,
+        name: "Pahare și farfurii",
+        slug: "pahare-si-farfurii",
+        image: "/images/products/set-pahare-petrecere.jpg",
+
+        seoTitle: "Pahare și farfurii pentru petreceri | Party Shop",
+        seoDescription:
+          "Seturi de pahare și farfurii pentru aniversări și evenimente. Modele festive, prețuri avantajoase.",
+        h1: "Pahare și farfurii pentru mese festive",
+        intro:
+          "Pahare și farfurii festive pentru servirea mâncărurilor și băuturilor la petreceri și aniversări."
+      },
+      {
+        id: 42,
+        name: "Tacâmuri și accesorii",
+        slug: "tacamuri-si-accesorii",
+        image: "/images/products/tacamuri.jpg",
+
+        seoTitle: "Tacâmuri pentru petreceri – Seturi complete | Party Shop",
+        seoDescription:
+          "Tacâmuri pentru mese festive: furculițe, cuțite, linguri și alte accesorii pentru evenimente.",
+        h1: "Tacâmuri pentru mese festive",
+        intro:
+          "Tacâmuri practice și festive pentru servirea mâncărurilor la aniversări și evenimente speciale."
+      },
+      {
+        id: 43,
+        name: "Fețe de masă și șervețele",
+        slug: "fete-de-masa-si-servetele",
+        image: "/images/products/fete-de-masa.jpg",
+
+        seoTitle: "Fețe de masă și șervețele pentru petreceri | Party Shop",
+        seoDescription:
+          "Fețe de masă și șervețele colorate pentru decorarea meselor festive. Modele variate.",
+        h1: "Fețe de masă și șervețele festive",
+        intro:
+          "Fețe de masă și șervețele adaugă culoare și stil decorului meselor pentru petreceri."
+      },
+      {
+        id: 44,
+        name: "Paie și accesorii băuturi",
+        slug: "paie-si-accesorii-bauturi",
+        image: "/images/products/paie.jpg",
+
+        seoTitle: "Paie și accesorii pentru băuturi festive | Party Shop",
+        seoDescription:
+          "Paie colorate și accesorii pentru băuturi la petreceri. Modele distractive pentru copii.",
+        h1: "Paie și accesorii pentru băuturi",
+        intro:
+          "Paie colorate și accesorii distractive pentru băuturi, ideale pentru petreceri și aniversări."
+      }
+    ]
   }
 ];

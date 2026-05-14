@@ -10,6 +10,7 @@ import { getUserToken } from "../lib/auth";
 // MVP shipping rules (trebuie să fie aceleași ca în backend)
 const FREE_SHIPPING_THRESHOLD_CENTS = 19900; // 199 RON
 const SHIPPING_FLAT_CENTS = 1999; // 19.99 RON
+const CARD_PAYMENT_TIMEOUT_MS = 45000;
 
 const COUNTIES_RO = [
   "Alba","Arad","Argeș","Bacău","Bihor","Bistrița-Năsăud","Botoșani","Brăila","Brașov","București",
@@ -42,18 +43,6 @@ export default function CheckoutPage() {
   const [acceptedLegal, setAcceptedLegal] = useState(false);
 
   const hasItems = items.length > 0;
-
-  <label>
-  Metodă de plată
-  <select
-    value={paymentMethod}
-    onChange={(e) => setPaymentMethod(e.target.value)}
-    style={{ padding: 12, borderRadius: 10, border: "1px solid var(--border)" }}
-  >
-    <option value="cod">Ramburs (cash la livrare)</option>
-    <option value="card">Card online (Stripe)</option>
-  </select>
-</label>
 
   // --- validate form
   const isFormInvalid = useMemo(() => {
@@ -89,6 +78,32 @@ export default function CheckoutPage() {
     hasBlockingErrors ||
     !acceptedLegal ||
     !hasItems;
+
+  const submitBlocker = useMemo(() => {
+    if (!hasItems) return "Cosul este gol.";
+    if (stockErrorProductId || hasBlockingErrors) return "Cosul are produse indisponibile sau cu stoc insuficient.";
+    if (isFormInvalid) return "Completeaza datele de livrare: nume, telefon valid, judet, oras si adresa.";
+    if (!acceptedLegal) return "Bifeaza acordul cu termenii si politica de confidentialitate.";
+    return "";
+  }, [acceptedLegal, hasBlockingErrors, hasItems, isFormInvalid, stockErrorProductId]);
+
+  async function fetchJsonWithTimeout(url, options, timeoutMs = CARD_PAYMENT_TIMEOUT_MS) {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
+
+    try {
+      const res = await fetch(url, { ...options, signal: controller.signal });
+      const data = await res.json().catch(() => ({}));
+      return { res, data };
+    } catch (e) {
+      if (e?.name === "AbortError") {
+        throw new Error("Serverul a raspuns prea greu. Reincearca in cateva secunde sau verifica Render logs.");
+      }
+      throw e;
+    } finally {
+      clearTimeout(timeoutId);
+    }
+  }
 
   useEffect(() => {
     let active = true;
@@ -137,7 +152,10 @@ export default function CheckoutPage() {
 
   async function submitOrder(e) {
   e.preventDefault();
-  if (disableSubmit) return;
+  if (disableSubmit) {
+    setError(submitBlocker || "Nu putem plasa comanda inca. Verifica datele completate.");
+    return;
+  }
 
   setSubmitting(true);
   setError(null);
@@ -165,7 +183,7 @@ export default function CheckoutPage() {
 
     // ✅ CARD → create Stripe session + redirect
         if (paymentMethod === "card") {
-      const res = await fetch(`${API_URL}/payments/stripe/create-session`, {
+      const { res, data } = await fetchJsonWithTimeout(`${API_URL}/payments/stripe/create-session`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -173,8 +191,6 @@ export default function CheckoutPage() {
         },
         body: JSON.stringify(payload)
       });
-
-      const data = await res.json().catch(() => ({}));
 
       if (res.status === 409) {
         setStockErrorProductId(data?.productId ? String(data.productId) : null);
@@ -184,7 +200,7 @@ export default function CheckoutPage() {
       if (res.status === 401) throw new Error("Sesiune expirată. Te rog loghează-te din nou.");
       if (!res.ok) throw new Error(data?.details || data?.error || "Nu pot iniția plata cu card.");
       if (!data?.url) throw new Error("Stripe URL lipsește.");
-      window.location.href = data.url; // redirect Stripe Checkout
+      window.location.assign(data.url); // redirect Stripe Checkout
       return;
 
     }
@@ -414,6 +430,9 @@ export default function CheckoutPage() {
             ? "Actualizează coșul"
             : "Confirmă comanda"}
         </button>
+        {disableSubmit && !submitting && submitBlocker ? (
+          <p style={{ marginTop: 8, color: "#8a5a4f" }}>{submitBlocker}</p>
+        ) : null}
       </form>
     </div>
   );

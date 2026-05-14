@@ -11,20 +11,38 @@ import { sendOrderConfirmationEmail } from "./utils/mailer.js";
 import Stripe from "stripe";
 import express from "express";
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || "", {
-  apiVersion: "2024-06-20"
-});
-const FRONTEND_URL = process.env.FRONTEND_URL || "http://localhost:3000";
 const router = Router();
 const prisma = new PrismaClient();
 
 const JWT_SECRET = process.env.JWT_SECRET || "dev-secret";
+
+function getStripeClient() {
+  const stripeKey = String(process.env.STRIPE_SECRET_KEY || "").trim();
+  if (!stripeKey) {
+    const err = new Error("STRIPE_SECRET_KEY missing");
+    err.statusCode = 500;
+    throw err;
+  }
+  if (!stripeKey.startsWith("sk_")) {
+    const err = new Error("Invalid STRIPE_SECRET_KEY format");
+    err.statusCode = 500;
+    throw err;
+  }
+  return new Stripe(stripeKey, { apiVersion: "2024-06-20" });
+}
+
+function getFrontendUrl() {
+  return String(process.env.FRONTEND_URL || process.env.CLIENT_URL || "http://localhost:3000")
+    .trim()
+    .replace(/\/+$/, "");
+}
 
 /* =====================
    ZOD
 ===================== */
 const productCreateSchema = z.object({
   name: z.string().min(2).max(120),
+  description: z.string().max(2000).optional().default(""),
   slug: z.string().min(2).max(160).optional(),
   priceCents: z.coerce.number().int().min(0),
   stock: z.coerce.number().int().min(0).default(0),
@@ -35,6 +53,7 @@ const productCreateSchema = z.object({
 
 const productUpdateSchema = z.object({
   name: z.string().min(2).max(120).optional(),
+  description: z.string().max(2000).optional(),
   slug: z.string().min(2).max(160).optional(),
   priceCents: z.coerce.number().int().min(0).optional(),
   stock: z.coerce.number().int().min(0).optional(),
@@ -237,6 +256,7 @@ router.post("/party-builder", async (req, res) => {
     select: {
       id: true,
       name: true,
+      description: true,
       slug: true,
       image: true,
       priceCents: true,
@@ -308,6 +328,7 @@ router.post("/party-builder", async (req, res) => {
       return {
         id: product.id,
         name: product.name,
+        description: product.description,
         slug: product.slug,
         image: product.image,
         category: product.category,
@@ -362,6 +383,7 @@ router.get("/products", async (req, res) => {
     select: {
       id: true,
       name: true,
+      description: true,
       slug: true,
       priceCents: true,
       stock: true,
@@ -396,6 +418,7 @@ router.get("/products/slug/:slug", async (req, res) => {
     select: {
       id: true,
       name: true,
+      description: true,
       slug: true,
       priceCents: true,
       stock: true,
@@ -484,7 +507,7 @@ router.get("/products/:id/recommendations", async (req, res) => {
    PRODUCTS (ADMIN CREATE)
 ===================== */
 router.post("/products", adminAuth, async (req, res) => {
-  const { name, priceCents, stock, image, images, category, featured, slug } = req.body || {};
+  const { name, description, priceCents, stock, image, images, category, featured, slug } = req.body || {};
 
   if (!name || priceCents === undefined) {
     return res.status(400).json({ error: "Missing product data" });
@@ -501,6 +524,7 @@ router.post("/products", adminAuth, async (req, res) => {
 
   const data = {
     name: String(name),
+    description: String(description || "").trim(),
     priceCents: Number(priceCents),
     stock: Number(stock) || 0,
     image: image ? String(image) : "",
@@ -538,7 +562,7 @@ router.post("/products", adminAuth, async (req, res) => {
 ===================== */
 router.put("/products/:id", adminAuth, async (req, res) => {
   const id = String(req.params.id);
-  const { name, priceCents, stock, image, images, category, featured, slug } = req.body || {};
+  const { name, description, priceCents, stock, image, images, category, featured, slug } = req.body || {};
 
   const existing = await prisma.product.findUnique({
     where: { id },
@@ -561,6 +585,7 @@ router.put("/products/:id", adminAuth, async (req, res) => {
       where: { id },
       data: {
         ...(name !== undefined ? { name: String(name) } : {}),
+        ...(description !== undefined ? { description: String(description || "").trim() } : {}),
         ...(priceCents !== undefined ? { priceCents: Number(priceCents) } : {}),
         ...(stock !== undefined ? { stock: Number(stock) } : {}),
         ...(image !== undefined ? { image: image ? String(image) : "" } : {}),
@@ -629,6 +654,7 @@ router.get("/favorites", userAuth, async (req, res) => {
     .map((p) => ({
       id: p.id,
       name: p.name,
+      description: p.description,
       slug: p.slug,
       priceCents: p.priceCents,
       stock: p.stock,
@@ -803,15 +829,7 @@ router.post("/cart/validate", async (req, res) => {
 ============================================================ */
 router.post("/payments/stripe/create-session", userAuth, async (req, res) => {
   try {
-    const stripeKey = String(process.env.STRIPE_SECRET_KEY || "").trim();
-    if (!stripeKey) {
-      return jsonError(res, 500, "STRIPE_SECRET_KEY missing");
-    }
-    if (!stripeKey.startsWith("sk_")) {
-      return jsonError(res, 500, "Invalid STRIPE_SECRET_KEY format");
-    }
-
-    const stripeClient = new Stripe(stripeKey);
+    const stripeClient = getStripeClient();
     const body = req.body || {};
     const customer = body.customer || {};
     const rawItems = Array.isArray(body.items) ? body.items : [];
@@ -946,8 +964,8 @@ router.post("/payments/stripe/create-session", userAuth, async (req, res) => {
 
       metadata: { orderId: order.id, userId: user.id },
 
-      success_url: `${FRONTEND_URL}/order-success?orderId=${encodeURIComponent(order.id)}`,
-      cancel_url: `${FRONTEND_URL}/checkout?canceled=1&orderId=${encodeURIComponent(order.id)}`
+      success_url: `${getFrontendUrl()}/order-success?orderId=${encodeURIComponent(order.id)}`,
+      cancel_url: `${getFrontendUrl()}/checkout?canceled=1&orderId=${encodeURIComponent(order.id)}`
     });
 
     // 4) Save session id on order
@@ -959,6 +977,9 @@ router.post("/payments/stripe/create-session", userAuth, async (req, res) => {
     return res.json({ ok: true, url: session.url, orderId: order.id });
   } catch (e) {
     console.error("STRIPE CREATE SESSION ERROR:", e);
+    if (e?.statusCode) {
+      return jsonError(res, e.statusCode, e.message);
+    }
     const details =
       process.env.NODE_ENV !== "production"
         ? String(e?.raw?.message || e?.message || e)
@@ -983,7 +1004,8 @@ router.post(
       const sig = req.headers["stripe-signature"];
       if (!sig) return res.status(400).send("Missing signature");
 
-      const event = stripe.webhooks.constructEvent(
+      const stripeClient = getStripeClient();
+      const event = stripeClient.webhooks.constructEvent(
         req.body, // RAW Buffer
         sig,
         process.env.STRIPE_WEBHOOK_SECRET

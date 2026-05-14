@@ -123,10 +123,38 @@ export default function HomePage() {
               Vezi categoriile
             </Link>
 
-            <div style={{ display: "flex", gap: 12, justifyContent: "center", flexWrap: "wrap", marginTop: 14 }}>
-              <span style={{ border: "1px solid #ddd", borderRadius: 999, padding: "6px 10px" }}>Plata securizata</span>
-              <span style={{ border: "1px solid #ddd", borderRadius: 999, padding: "6px 10px" }}>Retur 14 zile</span>
-              <span style={{ border: "1px solid #ddd", borderRadius: 999, padding: "6px 10px" }}>Livrare 24-48h</span>
+            <div className="hero-trust-strip" aria-label="Beneficii Party Shop">
+              <div className="hero-trust-card">
+                <span className="hero-trust-icon" aria-hidden="true">🎁</span>
+                <span>
+                  <strong>Produse in stoc</strong>
+                  <small>articole festive pregatite rapid</small>
+                </span>
+              </div>
+
+              <div className="hero-trust-card">
+                <span className="hero-trust-icon" aria-hidden="true">🔒</span>
+                <span>
+                  <strong>Plata securizata</strong>
+                  <small>card online prin Stripe</small>
+                </span>
+              </div>
+
+              <div className="hero-trust-card">
+                <span className="hero-trust-icon" aria-hidden="true">🚚</span>
+                <span>
+                  <strong>Livrare 24-48h</strong>
+                  <small>dupa confirmarea comenzii</small>
+                </span>
+              </div>
+
+              <div className="hero-trust-card">
+                <span className="hero-trust-icon" aria-hidden="true">↩️</span>
+                <span>
+                  <strong>Retur 14 zile</strong>
+                  <small>simplu si fara batai de cap</small>
+                </span>
+              </div>
             </div>
           </div>
         </section>

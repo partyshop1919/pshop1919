@@ -1014,6 +1014,73 @@ html {
   color: var(--accent);
   font-weight: 600;
 }
+.hero-trust-strip {
+  width: min(980px, calc(100vw - 44px));
+  margin: 28px auto 0;
+  padding: 20px 24px;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 14px;
+  justify-content: center;
+  align-items: stretch;
+  background:
+    linear-gradient(135deg, rgba(255, 255, 255, 0.94), rgba(250, 243, 237, 0.88)),
+    radial-gradient(circle at 12% 20%, rgba(196, 122, 109, 0.12), transparent 30%);
+  border: 1px solid rgba(230, 217, 208, 0.92);
+  border-radius: 28px;
+  box-shadow: 0 22px 48px rgba(95, 67, 55, 0.08);
+  backdrop-filter: blur(8px);
+}
+
+.hero-trust-card {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  min-height: 86px;
+  padding: 14px 12px;
+  text-align: left;
+  border-radius: 20px;
+  transition: transform 0.2s ease, background 0.2s ease, box-shadow 0.2s ease;
+}
+
+.hero-trust-card:hover {
+  transform: translateY(-3px);
+  background: rgba(255, 255, 255, 0.72);
+  box-shadow: 0 12px 28px rgba(95, 67, 55, 0.08);
+}
+
+.hero-trust-icon {
+  width: 52px;
+  height: 52px;
+  flex: 0 0 52px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 18px;
+  font-size: 28px;
+  background: linear-gradient(145deg, #fff2d8, #f4d1c8);
+  box-shadow: inset 0 -6px 12px rgba(196, 122, 109, 0.12), 0 10px 18px rgba(196, 122, 109, 0.12);
+}
+
+.hero-trust-card strong {
+  display: block;
+  color: var(--primary);
+  font-size: 13px;
+  line-height: 1.2;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+}
+
+.hero-trust-card small {
+  display: block;
+  margin-top: 6px;
+  color: var(--secondary);
+  max-width: 150px;
+  font-size: 12px;
+  line-height: 1.35;
+}
+
 .home-events {
   margin-top: 64px;
   text-align: center;
@@ -1049,12 +1116,34 @@ html {
 }
 
 @media (max-width: 1024px) {
+  .hero-trust-strip {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    max-width: 760px;
+  }
+
   .events-grid {
     grid-template-columns: repeat(2, 1fr);
   }
 }
 
 @media (max-width: 480px) {
+  .hero-trust-strip {
+    grid-template-columns: 1fr;
+    padding: 14px;
+    border-radius: 22px;
+  }
+
+  .hero-trust-card {
+    min-height: 74px;
+    justify-content: flex-start;
+  }
+
+  .hero-trust-icon {
+    width: 48px;
+    height: 48px;
+    font-size: 24px;
+  }
+
   .events-grid {
     grid-template-columns: 1fr;
   }

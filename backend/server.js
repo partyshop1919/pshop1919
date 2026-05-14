@@ -14,6 +14,10 @@ const app = express();
 const PORT = process.env.PORT || 4000;
 app.set("trust proxy", 1);
 
+function normalizeOrigin(value = "") {
+  return String(value || "").trim().replace(/\/+$/, "");
+}
+
 /* =====================
    CORS
 ===================== */
@@ -22,11 +26,12 @@ const allowedOrigins = Array.from(
     [
       process.env.FRONTEND_URL,
       process.env.CLIENT_URL,
+      process.env.APP_BASE_URL,
       "http://localhost:3000",
       "http://127.0.0.1:3000",
       "http://172.31.112.1:3000"
     ]
-      .map((x) => String(x || "").trim())
+      .map((x) => normalizeOrigin(x))
       .filter(Boolean)
   )
 );
@@ -34,7 +39,9 @@ const allowedOrigins = Array.from(
 const corsOptions = {
   origin: (origin, cb) => {
     if (!origin) return cb(null, true); // Postman / curl
-    if (allowedOrigins.includes(origin)) return cb(null, true);
+    const normalized = normalizeOrigin(origin);
+    if (allowedOrigins.includes(normalized)) return cb(null, true);
+    console.warn("CORS blocked origin:", origin, "| allowed:", allowedOrigins);
     return cb(new Error("CORS blocked: " + origin));
   },
   credentials: true,

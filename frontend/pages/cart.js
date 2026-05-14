@@ -17,7 +17,7 @@ function resolveImage(image) {
 
 export default function CartPage() {
   const router = useRouter();
-  const { items, updateQty, removeFromCart, validate } = useCart();
+  const { items, updateQty, removeFromCart, clearCart, validate } = useCart();
 
   const [summary, setSummary] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -234,6 +234,16 @@ export default function CartPage() {
           >
             Finalizează comanda
           </button>
+          <button
+            className="btn secondary full"
+            type="button"
+            onClick={() => {
+              if (window.confirm("Vrei sa golesti tot cosul?")) clearCart();
+            }}
+            style={{ marginTop: 10 }}
+          >
+            Goleste cosul
+          </button>
         </div>
         <div className="summary-row">
           <span>Subtotal</span>
@@ -257,3 +267,5 @@ export default function CartPage() {
     </div>
   );
 }
+
+

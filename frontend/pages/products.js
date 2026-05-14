@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import Head from "next/head";
+import { useRouter } from "next/router";
 
 import { fetchProducts } from "../lib/api";
 import { useCart } from "../lib/cart";
@@ -9,11 +10,13 @@ import Breadcrumb from "../components/Breadcrumb";
 import EmptyState from "../components/EmptyState";
 
 export default function ProductsPage() {
+  const router = useRouter();
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
   const { addToCart } = useCart();
+  const query = String(router.query?.q || "").trim();
 
   useEffect(() => {
     let active = true;
@@ -21,19 +24,12 @@ export default function ProductsPage() {
     async function loadProducts() {
       try {
         const products = await fetchProducts();
-
-        if (active) {
-          setItems(Array.isArray(products) ? products : []);
-        }
+        if (active) setItems(Array.isArray(products) ? products : []);
       } catch (err) {
         console.error("Failed to load products:", err);
-        if (active) {
-          setError("Nu s-au putut încărca produsele.");
-        }
+        if (active) setError("Nu s-au putut incarca produsele.");
       } finally {
-        if (active) {
-          setLoading(false);
-        }
+        if (active) setLoading(false);
       }
     }
 
@@ -45,57 +41,58 @@ export default function ProductsPage() {
   }, []);
 
   const breadcrumbs = [
-    { label: "Acasă", href: "/" },
+    { label: "Acasa", href: "/" },
     { label: "Produse" }
   ];
 
+  const visibleItems = items.filter((product) => {
+    if (!query) return true;
+    const haystack = [product?.name, product?.description, product?.category, product?.slug]
+      .filter(Boolean)
+      .join(" ")
+      .toLowerCase();
+    return haystack.includes(query.toLowerCase());
+  });
+
   return (
     <>
-      {/* =====================
-          SEO
-      ===================== */}
       <Head>
-        <title>Toate produsele – Party Shop</title>
+        <title>{query ? `Cautare: ${query} - Party Shop` : "Toate produsele - Party Shop"}</title>
         <meta
           name="description"
-          content="Descoperă toate produsele disponibile în magazinul nostru: baloane, decoruri și articole festive."
+          content="Descopera toate produsele disponibile in magazinul nostru: baloane, decoruri si articole festive."
         />
       </Head>
 
       <main className="container">
-        {/* =====================
-            HEADER
-        ===================== */}
         <section style={{ marginBottom: 32 }}>
           <Breadcrumb items={breadcrumbs} />
-          <h1>Toate produsele</h1>
+          <h1>{query ? `Rezultate pentru "${query}"` : "Toate produsele"}</h1>
           <p style={{ maxWidth: 640 }}>
-            Catalog complet de produse disponibile pentru
-            petreceri și evenimente speciale.
+            Catalog complet de produse disponibile pentru petreceri si evenimente speciale.
           </p>
         </section>
 
-        {/* =====================
-            CONTENT
-        ===================== */}
-        {loading && <p>Se încarcă produsele...</p>}
+        {loading && <p>Se incarca produsele...</p>}
 
-        {!loading && error && (
-          <p style={{ color: "red" }}>{error}</p>
-        )}
+        {!loading && error && <p style={{ color: "red" }}>{error}</p>}
 
-        {!loading && !error && items.length === 0 && (
+        {!loading && !error && visibleItems.length === 0 && (
           <EmptyState
-            title="Nu există produse"
-            message="Momentan nu sunt produse disponibile."
-            actionLabel="Vezi categoriile"
-            actionHref="/"
+            title={query ? "Nu am gasit produse" : "Nu exista produse"}
+            message={
+              query
+                ? "Incearca un termen mai simplu sau vezi catalogul complet."
+                : "Momentan nu sunt produse disponibile."
+            }
+            actionLabel={query ? "Vezi toate produsele" : "Vezi categoriile"}
+            actionHref={query ? "/products" : "/"}
           />
         )}
 
-        {!loading && !error && items.length > 0 && (
+        {!loading && !error && visibleItems.length > 0 && (
           <div className="products-grid">
-            {items.map((product) => (
+            {visibleItems.map((product) => (
               <ProductCard
                 key={product.id}
                 product={product}

@@ -171,6 +171,11 @@ export default function ProductPage() {
             <p style={{ fontSize: 18 }}>
               <strong>{(product.priceCents / 100).toFixed(2)} RON</strong>
             </p>
+            {product.description ? (
+              <p style={{ opacity: 0.9, lineHeight: 1.6, marginTop: 8 }}>
+                {product.description}
+              </p>
+            ) : null}
 
             <p style={{ opacity: 0.8 }}>
               Stoc: <strong>{product.stock}</strong>

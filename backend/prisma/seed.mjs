@@ -235,14 +235,22 @@ const PRODUCTS = [
   },
 ];
 
+function buildDescription(product) {
+  const name = String(product?.name || "Produs");
+  const category = String(product?.category || "petreceri");
+  return `${name} este un produs din categoria ${category}, potrivit pentru aniversari, petreceri tematice si evenimente speciale.`;
+}
+
 async function main() {
   for (const product of PRODUCTS) {
     const { images, ...base } = product;
+    const description = String(base.description || "").trim() || buildDescription(base);
     const saved = await prisma.product.upsert({
       where: { slug: base.slug },
-      create: base,
+      create: { ...base, description },
       update: {
         name: base.name,
+        description,
         category: base.category,
         priceCents: base.priceCents,
         stock: base.stock,

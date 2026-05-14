@@ -55,6 +55,7 @@ export default function AdminProductsPage() {
 
   const [form, setForm] = useState({
     name: "",
+    description: "",
     priceCents: 0,
     stock: 0,
     image: "",
@@ -67,6 +68,7 @@ export default function AdminProductsPage() {
   const [editingId, setEditingId] = useState(null);
   const [edit, setEdit] = useState({
     name: "",
+    description: "",
     priceCents: 0,
     stock: 0,
     image: "",
@@ -157,6 +159,7 @@ export default function AdminProductsPage() {
     const payload = {
       ...form,
       name: String(form.name || "").trim(),
+      description: String(form.description || "").trim(),
       priceCents: Number(form.priceCents) || 0,
       stock: Number(form.stock) || 0,
       image: String(form.image || "").trim(),
@@ -178,6 +181,7 @@ export default function AdminProductsPage() {
 
     setForm({
       name: "",
+      description: "",
       priceCents: 0,
       stock: 0,
       image: "",
@@ -193,6 +197,7 @@ export default function AdminProductsPage() {
     setEditingId(p.id);
     setEdit({
       name: p.name || "",
+      description: p.description || "",
       priceCents: Number(p.priceCents) || 0,
       stock: Number(p.stock) || 0,
       image: p.image || "",
@@ -239,6 +244,7 @@ export default function AdminProductsPage() {
 
     const payload = {
       name: String(edit.name || "").trim(),
+      description: String(edit.description || "").trim(),
       priceCents: Number(edit.priceCents) || 0,
       stock: Number(edit.stock) || 0,
       image: String(edit.image || "").trim(),
@@ -308,6 +314,13 @@ export default function AdminProductsPage() {
       <h2>Adaugă produs</h2>
       <form onSubmit={create} style={{ display: "grid", gap: 10, maxWidth: 520 }}>
         <input name="name" value={form.name} onChange={updateField} placeholder="Name" required />
+        <textarea
+          name="description"
+          value={form.description}
+          onChange={updateField}
+          placeholder="Descriere produs"
+          rows={3}
+        />
 
         <input
           name="priceCents"
@@ -408,11 +421,21 @@ export default function AdminProductsPage() {
                         <div>Stock: {p.stock}</div>
                         <div>Category: {p.category}</div>
                         <div>Featured: {String(p.featured)}</div>
+                        <div style={{ maxWidth: 560, color: "var(--secondary)" }}>
+                          Descriere: {p.description || "-"}
+                        </div>
                         <div style={{ opacity: 0.8, wordBreak: "break-all" }}>Image: {p.image || "-"}</div>
                       </div>
                     ) : (
                       <div style={{ display: "grid", gap: 8, minWidth: 340 }}>
                         <input name="name" value={edit.name} onChange={updateEditField} />
+                        <textarea
+                          name="description"
+                          rows={3}
+                          value={edit.description}
+                          onChange={updateEditField}
+                          placeholder="Descriere produs"
+                        />
                         <input name="priceCents" type="number" min="0" value={edit.priceCents} onChange={updateEditField} />
                         <input name="stock" type="number" min="0" value={edit.stock} onChange={updateEditField} />
 

@@ -88,6 +88,9 @@ export default function ProductCard({ product }) {
       <Link href={href} style={{ textDecoration: "none", color: "inherit" }}>
         <h3>{product?.name}</h3>
       </Link>
+      {product?.description ? (
+        <p className="product-desc">{String(product.description).slice(0, 110)}{String(product.description).length > 110 ? "..." : ""}</p>
+      ) : null}
 
       <p>{((Number(product?.priceCents) || 0) / 100).toFixed(2)} RON</p>
 

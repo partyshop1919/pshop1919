@@ -15,7 +15,7 @@ export const BACKEND_URL =
 
 const api = axios.create({
   baseURL: API_URL,
-  timeout: 10000
+  timeout: 65000
 });
 
 /* =====================
@@ -35,7 +35,9 @@ function handleError(label, err, fallback) {
    GET /products?featured=1&category=Baloane&search=abc&ids=a,b,c
 ===================== */
 export async function fetchProducts(params = {}) {
-  try {
+  const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+
+  async function requestOnce() {
     const q = new URLSearchParams();
 
     if (params.category) q.set("category", String(params.category));
@@ -50,12 +52,26 @@ export async function fetchProducts(params = {}) {
     }
 
     const url = q.toString() ? `/products?${q.toString()}` : "/products";
-
     const res = await api.get(url);
     return Array.isArray(res.data?.items) ? res.data.items : [];
-  } catch (err) {
-    return handleError("fetchProducts", err, []);
   }
+
+  let lastErr = null;
+  const retryDelays = [0, 3000, 8000, 15000]; // tolerate Render cold start on free plan
+
+  for (let i = 0; i < retryDelays.length; i++) {
+    try {
+      if (retryDelays[i] > 0) await sleep(retryDelays[i]);
+      return await requestOnce();
+    } catch (err) {
+      lastErr = err;
+      const status = Number(err?.response?.status || 0);
+      const retriable = !status || status >= 500;
+      if (!retriable) break;
+    }
+  }
+
+  return handleError("fetchProducts(retry)", lastErr, []);
 }
 
 export async function fetchProductsByCategory(category) {

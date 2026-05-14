@@ -13,6 +13,7 @@ export default function PartyBuilderPage() {
   const [catalogLoading, setCatalogLoading] = useState(false);
   const [catalogOpen, setCatalogOpen] = useState(false);
   const [customItems, setCustomItems] = useState([]);
+  const [quantityOverrides, setQuantityOverrides] = useState({});
   const [plan, setPlan] = useState(null);
   const [form, setForm] = useState({
     eventType: "adult-birthday",
@@ -21,19 +22,8 @@ export default function PartyBuilderPage() {
     location: "indoor"
   });
 
-  const totalRON = useMemo(() => {
-    const base = Number(plan?.totalCents || 0);
-    const extra = customItems.reduce(
-      (sum, x) => sum + (Number(x.priceCents) || 0) * (Number(x.quantity) || 1),
-      0
-    );
-    const cents = base + extra;
-    return (cents / 100).toFixed(2);
-  }, [plan?.totalCents, customItems]);
-
   const mergedItems = useMemo(() => {
     const baseItems = Array.isArray(plan?.items) ? plan.items : [];
-    if (!customItems.length) return baseItems;
 
     const map = new Map();
     for (const it of baseItems) {
@@ -64,8 +54,27 @@ export default function PartyBuilderPage() {
       }
     }
 
-    return Array.from(map.values());
-  }, [plan?.items, customItems]);
+    const out = Array.from(map.values()).map((it) => {
+      const id = String(it.id);
+      const overrideQty = Number(quantityOverrides[id]);
+      const qty = Number.isFinite(overrideQty) && overrideQty > 0
+        ? Math.floor(overrideQty)
+        : Math.max(1, Number(it.quantity) || 1);
+
+      return {
+        ...it,
+        quantity: qty,
+        lineTotalCents: qty * (Number(it.priceCents) || 0)
+      };
+    });
+
+    return out;
+  }, [plan?.items, customItems, quantityOverrides]);
+
+  const totalRON = useMemo(() => {
+    const cents = mergedItems.reduce((sum, it) => sum + (Number(it.lineTotalCents) || 0), 0);
+    return (cents / 100).toFixed(2);
+  }, [mergedItems]);
 
   function onChange(e) {
     const { name, value } = e.target;
@@ -94,6 +103,7 @@ export default function PartyBuilderPage() {
     }
     setPlan(data);
     setCustomItems([]);
+    setQuantityOverrides({});
   }
 
   function addPlanToCart() {
@@ -154,20 +164,12 @@ export default function PartyBuilderPage() {
     });
   }
 
-  function addSingleProductToCart(item) {
+  function changeItemQuantity(item, delta) {
     const id = String(item?.id || "");
     if (!id) return;
-
-    const current = (cartItems || []).find((x) => String(x.id) === id);
-    const currentQty = Number(current?.quantity) || 0;
-
-    if (currentQty > 0) {
-      updateQty(id, currentQty + 1);
-      return;
-    }
-
-    addToCart({ id });
-    updateQty(id, 1);
+    const currentQty = Math.max(1, Number(item?.quantity) || 1);
+    const nextQty = Math.max(1, currentQty + Number(delta || 0));
+    setQuantityOverrides((prev) => ({ ...prev, [id]: nextQty }));
   }
 
   return (
@@ -259,15 +261,26 @@ export default function PartyBuilderPage() {
                       <div className="party-builder-item-main">
                         <strong>{it.name}</strong>
                         <div className="party-builder-item-category">{it.category}</div>
-                        <div className="party-builder-item-qty">Cantitate: {it.quantity}</div>
-                        <button
-                          type="button"
-                          className="btn secondary"
-                          onClick={() => addSingleProductToCart(it)}
-                          style={{ marginTop: 8 }}
-                        >
-                          + Adauga produs
-                        </button>
+                        <div className="party-builder-item-qty">
+                          Cantitate:
+                          <button
+                            type="button"
+                            className="pb-qty-btn"
+                            onClick={() => changeItemQuantity(it, -1)}
+                            aria-label={`Scade cantitatea pentru ${it.name}`}
+                          >
+                            -
+                          </button>
+                          <strong>{it.quantity}</strong>
+                          <button
+                            type="button"
+                            className="pb-qty-btn"
+                            onClick={() => changeItemQuantity(it, 1)}
+                            aria-label={`Creste cantitatea pentru ${it.name}`}
+                          >
+                            +
+                          </button>
+                        </div>
                       </div>
                       <div className="party-builder-item-price">
                         {((Number(it.lineTotalCents) || 0) / 100).toFixed(2)} RON
@@ -299,9 +312,6 @@ export default function PartyBuilderPage() {
           </button>
                   <Link className="btn" href="/cart">
                     Vezi cosul
-                  </Link>
-                  <Link className="btn secondary" href="/products">
-                    Vezi toate produsele
                   </Link>
                 </div>
               </>

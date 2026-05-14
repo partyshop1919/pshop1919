@@ -274,17 +274,20 @@ export default function HomePage() {
 
         <section className="home-benefits">
           <div className="benefits-grid">
-            <div>
+            <div className="benefit-card">
+              <span className="benefit-icon" aria-hidden="true">🎯</span>
               <h3>Produse atent selectate</h3>
               <p>Găsești articole festive potrivite pentru orice tip de eveniment.</p>
             </div>
 
-            <div>
+            <div className="benefit-card">
+              <span className="benefit-icon" aria-hidden="true">🚚</span>
               <h3>Livrare rapidă</h3>
               <p>Comenzile sunt procesate rapid, direct din stoc.</p>
             </div>
 
-            <div>
+            <div className="benefit-card">
+              <span className="benefit-icon" aria-hidden="true">💬</span>
               <h3>Suport dedicat</h3>
               <p>Suntem aici să te ajutăm să alegi produsele potrivite.</p>
             </div>

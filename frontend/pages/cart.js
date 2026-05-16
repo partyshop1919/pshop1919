@@ -226,6 +226,27 @@ export default function CartPage() {
             <span>{(Number(summary.grandTotalCents || 0) / 100).toFixed(2)} RON</span>
           </div>
 
+          <div className="summary-breakdown">
+            <div className="summary-row">
+              <span>Subtotal</span>
+              <span>{(Number(summary.subtotalCents || 0) / 100).toFixed(2)} RON</span>
+            </div>
+
+            <div className="summary-row">
+              <span>Transport</span>
+              <span>
+                {Number(summary.shippingCents || 0) === 0
+                  ? "Gratuit"
+                  : `${(Number(summary.shippingCents || 0) / 100).toFixed(2)} RON`}
+              </span>
+            </div>
+
+            <div className="summary-row summary-total-row">
+              <span>Total</span>
+              <span>{(Number(summary.grandTotalCents || 0) / 100).toFixed(2)} RON</span>
+            </div>
+          </div>
+
           <button
             className="btn full"
             onClick={() => router.push("/checkout")}
@@ -244,24 +265,6 @@ export default function CartPage() {
           >
             Goleste cosul
           </button>
-        </div>
-        <div className="summary-row">
-          <span>Subtotal</span>
-          <span>{(Number(summary.subtotalCents || 0) / 100).toFixed(2)} RON</span>
-        </div>
-
-        <div className="summary-row">
-          <span>Transport</span>
-          <span>
-            {Number(summary.shippingCents || 0) === 0
-              ? "Gratuit"
-              : `${(Number(summary.shippingCents || 0) / 100).toFixed(2)} RON`}
-          </span>
-        </div>
-
-        <div className="summary-row">
-          <span>Total</span>
-          <span>{(Number(summary.grandTotalCents || 0) / 100).toFixed(2)} RON</span>
         </div>
       </div>
     </div>

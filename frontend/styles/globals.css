@@ -952,13 +952,36 @@ body.dark textarea {
    CART IMAGES FIX
 ===================== */
 
+.cart-page {
+  max-width: 1160px;
+}
+
+.cart-page h1 {
+  margin-bottom: 28px;
+}
+
+.cart-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 360px;
+  gap: 44px;
+  align-items: start;
+}
+
+.cart-items {
+  display: grid;
+  gap: 18px;
+}
+
 .cart-item {
   display: grid;
   grid-template-columns: 120px 1fr auto;
-  gap: 20px;
+  gap: 24px;
   align-items: center;
-  padding: 16px 0;
-  border-bottom: 1px solid var(--border);
+  padding: 20px;
+  border: 1px solid rgba(230, 212, 203, 0.88);
+  border-radius: 22px;
+  background: rgba(255, 255, 255, 0.78);
+  box-shadow: 0 16px 40px rgba(95, 67, 55, 0.06);
 }
 
 .cart-image {
@@ -978,6 +1001,129 @@ body.dark textarea {
   max-height: 100%;
   object-fit: contain;
 }
+
+.cart-info h3 {
+  margin: 0 0 12px;
+}
+
+.qty-controls {
+  margin-top: 14px;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 6px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: #fff;
+}
+
+.qty-controls button {
+  width: 30px;
+  height: 30px;
+  border: 0;
+  border-radius: 999px;
+  background: #f3e5df;
+  cursor: pointer;
+  font-weight: 800;
+}
+
+.qty-controls span {
+  min-width: 22px;
+  text-align: center;
+  font-weight: 700;
+}
+
+.cart-actions {
+  display: grid;
+  gap: 16px;
+  justify-items: end;
+  align-self: stretch;
+  align-content: center;
+}
+
+.link-btn {
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  padding: 8px 13px;
+  background: #fff;
+  cursor: pointer;
+  color: var(--primary);
+  font-weight: 600;
+}
+
+.link-btn:hover {
+  background: #fff1ec;
+  color: var(--accent);
+}
+
+.cart-summary {
+  position: sticky;
+  top: 96px;
+  padding: 26px;
+  border: 1px solid rgba(230, 212, 203, 0.95);
+  border-radius: 26px;
+  background:
+    radial-gradient(circle at top left, rgba(255, 226, 205, 0.62), transparent 42%),
+    rgba(255, 255, 255, 0.92);
+  box-shadow: 0 24px 58px rgba(95, 67, 55, 0.1);
+}
+
+.cart-summary h2 {
+  margin: 0 0 18px;
+}
+
+.summary-breakdown {
+  margin: 18px 0 22px;
+  padding: 18px;
+  display: grid;
+  gap: 12px;
+  border: 1px solid rgba(230, 212, 203, 0.78);
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.72);
+}
+
+.summary-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 18px;
+  color: var(--secondary);
+}
+
+.summary-row span:last-child {
+  color: var(--primary);
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.summary-total-row {
+  margin-top: 4px;
+  padding-top: 14px;
+  border-top: 1px solid var(--border);
+  color: var(--primary);
+  font-size: 17px;
+  font-weight: 800;
+}
+
+.cart-summary .btn.full {
+  margin-top: 14px;
+}
+
+.cart-summary .btn.secondary.full {
+  margin-top: 12px !important;
+  background: #fff;
+  border: 1px solid var(--border);
+}
+
+@media (max-width: 900px) {
+  .cart-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .cart-summary {
+    position: static;
+  }
+}
+
 /* =====================================================
    CATEGORY CARD
 ===================================================== */

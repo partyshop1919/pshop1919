@@ -13,6 +13,7 @@ export default function PartyBuilderPage() {
   const [catalogLoading, setCatalogLoading] = useState(false);
   const [catalogOpen, setCatalogOpen] = useState(false);
   const [customItems, setCustomItems] = useState([]);
+  const [removedItemIds, setRemovedItemIds] = useState([]);
   const [quantityOverrides, setQuantityOverrides] = useState({});
   const [plan, setPlan] = useState(null);
   const [form, setForm] = useState({
@@ -24,14 +25,17 @@ export default function PartyBuilderPage() {
 
   const mergedItems = useMemo(() => {
     const baseItems = Array.isArray(plan?.items) ? plan.items : [];
+    const removed = new Set(removedItemIds.map(String));
 
     const map = new Map();
     for (const it of baseItems) {
-      map.set(String(it.id), { ...it });
+      const id = String(it.id);
+      if (!removed.has(id)) map.set(id, { ...it });
     }
 
     for (const extra of customItems) {
       const id = String(extra.id);
+      if (removed.has(id)) continue;
       const existing = map.get(id);
       if (existing) {
         const qty = (Number(existing.quantity) || 0) + (Number(extra.quantity) || 1);
@@ -69,7 +73,7 @@ export default function PartyBuilderPage() {
     });
 
     return out;
-  }, [plan?.items, customItems, quantityOverrides]);
+  }, [plan?.items, customItems, quantityOverrides, removedItemIds]);
 
   const totalRON = useMemo(() => {
     const cents = mergedItems.reduce((sum, it) => sum + (Number(it.lineTotalCents) || 0), 0);
@@ -103,6 +107,7 @@ export default function PartyBuilderPage() {
     }
     setPlan(data);
     setCustomItems([]);
+    setRemovedItemIds([]);
     setQuantityOverrides({});
   }
 
@@ -142,6 +147,7 @@ export default function PartyBuilderPage() {
     const id = String(product?.id || "");
     if (!id) return;
 
+    setRemovedItemIds((prev) => prev.filter((x) => String(x) !== id));
     setCustomItems((prev) => {
       const next = [...prev];
       const i = next.findIndex((x) => String(x.id) === id);
@@ -168,6 +174,16 @@ export default function PartyBuilderPage() {
     const id = String(item?.id || "");
     if (!id) return;
     const currentQty = Math.max(1, Number(item?.quantity) || 1);
+    if (Number(delta || 0) < 0 && currentQty <= 1) {
+      setRemovedItemIds((prev) => (prev.map(String).includes(id) ? prev : [...prev, id]));
+      setCustomItems((prev) => prev.filter((x) => String(x.id) !== id));
+      setQuantityOverrides((prev) => {
+        const next = { ...prev };
+        delete next[id];
+        return next;
+      });
+      return;
+    }
     const nextQty = Math.max(1, currentQty + Number(delta || 0));
     setQuantityOverrides((prev) => ({ ...prev, [id]: nextQty }));
   }

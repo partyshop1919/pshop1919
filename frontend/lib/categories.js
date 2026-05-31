@@ -171,7 +171,7 @@ export const categories = [
     id: 4,
     name: "Mese festive",
     slug: "mese-festive",
-    image: "/images/products/set-pahare-si-farfurii-24-persoane.jpg",
+    image: "/images/mese_festive.jpg",
 
     seoTitle: "Mese festive – Partyware pentru evenimente | Party Shop",
     seoDescription:

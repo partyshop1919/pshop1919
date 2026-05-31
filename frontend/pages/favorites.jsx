@@ -7,12 +7,11 @@ export default function FavoritesPage() {
 
   return (
     <div className="container">
-      <h1>Favorite</h1>
-
+      <h1>Favorites</h1>
       {loading ? (
-        <p>Se încarcă favoritele…</p>
+        <p>Loading favorites...</p>
       ) : !favorites || favorites.length === 0 ? (
-        <p>Nu ai produse favorite încă.</p>
+        <p>You do not have any favorite products yet.</p>
       ) : (
         <div className="products-grid">
           {favorites.map((p) => (

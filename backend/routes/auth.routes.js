@@ -9,10 +9,8 @@ import { sendConfirmationEmail } from "../src/utils/mailer.js";
 
 const router = express.Router();
 const JWT_SECRET = process.env.JWT_SECRET || "dev-secret";
-const FRONTEND_URL =
-  process.env.FRONTEND_URL || process.env.APP_BASE_URL || "http://localhost:3000";
+const FRONTEND_URL = process.env.FRONTEND_URL || process.env.APP_BASE_URL || "http://localhost:3000";
 const BACKEND_URL = process.env.BACKEND_URL || "http://localhost:4000";
-
 const OAUTH_PROVIDERS = new Set(["google", "github", "apple"]);
 
 function cleanEnv(value) {
@@ -43,28 +41,14 @@ function verifyOAuthState(state, provider) {
 async function fetchJson(url, options = {}) {
   const res = await fetch(url, options);
   const data = await res.json().catch(() => ({}));
-  if (!res.ok) {
-    const msg = data?.error_description || data?.error || data?.message || "OAuth request failed";
-    throw new Error(msg);
-  }
+  if (!res.ok) throw new Error(data?.error_description || data?.error || data?.message || "OAuth request failed");
   return data;
 }
 
 async function getGoogleProfile(code) {
-  const clientId = readEnv(
-    "GOOGLE_CLIENT_ID",
-    "GOOGLE_OAUTH_CLIENT_ID",
-    "GOOGLE_CLIENTID"
-  );
-  const clientSecret = readEnv(
-    "GOOGLE_CLIENT_SECRET",
-    "GOOGLE_OAUTH_CLIENT_SECRET",
-    "GOOGLE_CLIENTSECRET",
-    "GOOGLE_SECRET"
-  );
+  const clientId = readEnv("GOOGLE_CLIENT_ID", "GOOGLE_OAUTH_CLIENT_ID", "GOOGLE_CLIENTID");
+  const clientSecret = readEnv("GOOGLE_CLIENT_SECRET", "GOOGLE_OAUTH_CLIENT_SECRET", "GOOGLE_CLIENTSECRET", "GOOGLE_SECRET");
   if (!clientId || !clientSecret) throw new Error("Google OAuth is not configured");
-
-  const redirectUri = buildRedirectUri("google");
 
   const tokenData = await fetchJson("https://oauth2.googleapis.com/token", {
     method: "POST",
@@ -73,7 +57,7 @@ async function getGoogleProfile(code) {
       code: String(code),
       client_id: clientId,
       client_secret: clientSecret,
-      redirect_uri: redirectUri,
+      redirect_uri: buildRedirectUri("google"),
       grant_type: "authorization_code"
     })
   });
@@ -82,39 +66,22 @@ async function getGoogleProfile(code) {
     headers: { Authorization: `Bearer ${tokenData.access_token}` }
   });
 
-  return {
-    email: String(profile?.email || "").trim().toLowerCase(),
-    emailVerified: Boolean(profile?.email_verified)
-  };
+  return { email: String(profile?.email || "").trim().toLowerCase(), emailVerified: Boolean(profile?.email_verified) };
 }
 
 async function getGithubProfile(code) {
-  const clientId = readEnv(
-    "GITHUB_CLIENT_ID",
-    "GITHUB_OAUTH_CLIENT_ID",
-    "GITHUB_CLIENTID"
-  );
-  const clientSecret = readEnv(
-    "GITHUB_CLIENT_SECRET",
-    "GITHUB_OAUTH_CLIENT_SECRET",
-    "GITHUB_CLIENTSECRET",
-    "GITHUB_SECRET"
-  );
+  const clientId = readEnv("GITHUB_CLIENT_ID", "GITHUB_OAUTH_CLIENT_ID", "GITHUB_CLIENTID");
+  const clientSecret = readEnv("GITHUB_CLIENT_SECRET", "GITHUB_OAUTH_CLIENT_SECRET", "GITHUB_CLIENTSECRET", "GITHUB_SECRET");
   if (!clientId || !clientSecret) throw new Error("GitHub OAuth is not configured");
-
-  const redirectUri = buildRedirectUri("github");
 
   const tokenData = await fetchJson("https://github.com/login/oauth/access_token", {
     method: "POST",
-    headers: {
-      "Content-Type": "application/x-www-form-urlencoded",
-      Accept: "application/json"
-    },
+    headers: { "Content-Type": "application/x-www-form-urlencoded", Accept: "application/json" },
     body: new URLSearchParams({
       client_id: clientId,
       client_secret: clientSecret,
       code: String(code),
-      redirect_uri: redirectUri
+      redirect_uri: buildRedirectUri("github")
     })
   });
 
@@ -127,15 +94,11 @@ async function getGithubProfile(code) {
   });
 
   const best =
-    (Array.isArray(emails) &&
-      emails.find((e) => e?.primary && e?.verified && e?.email)) ||
+    (Array.isArray(emails) && emails.find((e) => e?.primary && e?.verified && e?.email)) ||
     (Array.isArray(emails) && emails.find((e) => e?.verified && e?.email)) ||
     (Array.isArray(emails) && emails.find((e) => e?.email));
 
-  return {
-    email: String(best?.email || "").trim().toLowerCase(),
-    emailVerified: Boolean(best?.verified)
-  };
+  return { email: String(best?.email || "").trim().toLowerCase(), emailVerified: Boolean(best?.verified) };
 }
 
 function parseJwtPayload(token) {
@@ -144,8 +107,7 @@ function parseJwtPayload(token) {
     if (parts.length < 2) return {};
     const b64 = parts[1].replace(/-/g, "+").replace(/_/g, "/");
     const pad = b64.length % 4 === 0 ? "" : "=".repeat(4 - (b64.length % 4));
-    const json = Buffer.from(b64 + pad, "base64").toString("utf8");
-    return JSON.parse(json);
+    return JSON.parse(Buffer.from(b64 + pad, "base64").toString("utf8"));
   } catch {
     return {};
   }
@@ -156,42 +118,30 @@ function buildAppleClientSecret() {
   const keyId = readEnv("APPLE_KEY_ID");
   const clientId = readEnv("APPLE_CLIENT_ID");
   const privateKeyRaw = readEnv("APPLE_PRIVATE_KEY");
+  if (!teamId || !keyId || !clientId || !privateKeyRaw) throw new Error("Apple OAuth is not configured");
 
-  if (!teamId || !keyId || !clientId || !privateKeyRaw) {
-    throw new Error("Apple OAuth is not configured");
-  }
-
-  const privateKey = privateKeyRaw.replace(/\\n/g, "\n");
-  return jwt.sign(
-    {},
-    privateKey,
-    {
-      algorithm: "ES256",
-      expiresIn: "180d",
-      issuer: teamId,
-      audience: "https://appleid.apple.com",
-      subject: clientId,
-      keyid: keyId
-    }
-  );
+  return jwt.sign({}, privateKeyRaw.replace(/\\n/g, "\n"), {
+    algorithm: "ES256",
+    expiresIn: "180d",
+    issuer: teamId,
+    audience: "https://appleid.apple.com",
+    subject: clientId,
+    keyid: keyId
+  });
 }
 
 async function getAppleProfile(code) {
   const clientId = readEnv("APPLE_CLIENT_ID");
   if (!clientId) throw new Error("Apple OAuth is not configured");
-
-  const redirectUri = buildRedirectUri("apple");
-  const clientSecret = buildAppleClientSecret();
-
   const tokenData = await fetchJson("https://appleid.apple.com/auth/token", {
     method: "POST",
     headers: { "Content-Type": "application/x-www-form-urlencoded" },
     body: new URLSearchParams({
       grant_type: "authorization_code",
       code: String(code),
-      redirect_uri: redirectUri,
+      redirect_uri: buildRedirectUri("apple"),
       client_id: clientId,
-      client_secret: clientSecret
+      client_secret: buildAppleClientSecret()
     })
   });
 
@@ -199,7 +149,6 @@ async function getAppleProfile(code) {
   const email = String(claims?.email || "").trim().toLowerCase();
   const emailVerifiedRaw = claims?.email_verified;
   const emailVerified = emailVerifiedRaw === true || emailVerifiedRaw === "true";
-
   return { email, emailVerified };
 }
 
@@ -217,10 +166,7 @@ function buildFrontendOAuthRedirect(params) {
 router.post("/register", async (req, res) => {
   try {
     const { email, password } = req.body || {};
-
-    if (!email || !password) {
-      return res.status(400).json({ message: "Email și parolă obligatorii" });
-    }
+    if (!email || !password) return res.status(400).json({ message: "Email and password are required." });
 
     const existing = await findUserByEmail(email);
     if (existing) {
@@ -228,38 +174,21 @@ router.post("/register", async (req, res) => {
         const passwordHash = await hashPassword(password);
         const emailToken = generateToken();
         const emailTokenHash = hashToken(emailToken);
-
-        await updateUser(existing.id, {
-          passwordHash,
-          emailVerified: false,
-          emailTokenHash
-        });
-
+        await updateUser(existing.id, { passwordHash, emailVerified: false, emailTokenHash });
         try {
           await sendConfirmationEmail({ to: email, token: emailToken });
         } catch (e) {
           console.error("CONFIRM EMAIL RESEND FAILED:", e.message);
         }
-
-        return res.status(200).json({
-          message: "Cont existent, dar neconfirmat. Am retrimis emailul de confirmare."
-        });
+        return res.status(200).json({ message: "Account exists but is not confirmed. We resent the confirmation email." });
       }
-
-      return res.status(409).json({ message: "Email deja folosit" });
+      return res.status(409).json({ message: "Email is already in use." });
     }
 
     const passwordHash = await hashPassword(password);
     const emailToken = generateToken();
     const emailTokenHash = hashToken(emailToken);
-
-    await createUser({
-      id: crypto.randomUUID(),
-      email,
-      passwordHash,
-      emailVerified: false,
-      emailTokenHash
-    });
+    await createUser({ id: crypto.randomUUID(), email, passwordHash, emailVerified: false, emailTokenHash });
 
     try {
       await sendConfirmationEmail({ to: email, token: emailToken });
@@ -267,77 +196,32 @@ router.post("/register", async (req, res) => {
       console.error("CONFIRM EMAIL SEND FAILED:", e.message);
     }
 
-    return res.status(201).json({
-      message: "Cont creat. Verifică emailul pentru confirmare."
-    });
+    return res.status(201).json({ message: "Account created. Please check your email for confirmation." });
   } catch (err) {
     console.error("REGISTER ERROR:", err);
-    return res.status(500).json({ message: "Eroare internă la crearea contului" });
+    return res.status(500).json({ message: "Internal error while creating the account." });
   }
 });
 
 router.get("/oauth/:provider/start", async (req, res) => {
   const provider = String(req.params.provider || "").trim().toLowerCase();
-  if (!OAUTH_PROVIDERS.has(provider)) {
-    return res.status(404).json({ message: "Provider invalid" });
-  }
-
+  if (!OAUTH_PROVIDERS.has(provider)) return res.status(404).json({ message: "Invalid provider" });
   try {
     const state = signOAuthState(provider);
     const redirectUri = buildRedirectUri(provider);
-
     if (provider === "google") {
-      const clientId = readEnv(
-        "GOOGLE_CLIENT_ID",
-        "GOOGLE_OAUTH_CLIENT_ID",
-        "GOOGLE_CLIENTID"
-      );
+      const clientId = readEnv("GOOGLE_CLIENT_ID", "GOOGLE_OAUTH_CLIENT_ID", "GOOGLE_CLIENTID");
       if (!clientId) return res.status(500).json({ message: "Google OAuth missing config" });
-
-      const authUrl = `https://accounts.google.com/o/oauth2/v2/auth?${new URLSearchParams({
-        client_id: clientId,
-        redirect_uri: redirectUri,
-        response_type: "code",
-        scope: "openid email profile",
-        state,
-        access_type: "offline",
-        prompt: "select_account"
-      }).toString()}`;
-
-      return res.redirect(authUrl);
+      return res.redirect(`https://accounts.google.com/o/oauth2/v2/auth?${new URLSearchParams({ client_id: clientId, redirect_uri: redirectUri, response_type: "code", scope: "openid email profile", state, access_type: "offline", prompt: "select_account" }).toString()}`);
     }
-
     if (provider === "github") {
-      const clientId = readEnv(
-        "GITHUB_CLIENT_ID",
-        "GITHUB_OAUTH_CLIENT_ID",
-        "GITHUB_CLIENTID"
-      );
+      const clientId = readEnv("GITHUB_CLIENT_ID", "GITHUB_OAUTH_CLIENT_ID", "GITHUB_CLIENTID");
       if (!clientId) return res.status(500).json({ message: "GitHub OAuth missing config" });
-
-      const authUrl = `https://github.com/login/oauth/authorize?${new URLSearchParams({
-        client_id: clientId,
-        redirect_uri: redirectUri,
-        scope: "read:user user:email",
-        state
-      }).toString()}`;
-
-      return res.redirect(authUrl);
+      return res.redirect(`https://github.com/login/oauth/authorize?${new URLSearchParams({ client_id: clientId, redirect_uri: redirectUri, scope: "read:user user:email", state }).toString()}`);
     }
-
     const clientId = readEnv("APPLE_CLIENT_ID");
     if (!clientId) return res.status(500).json({ message: "Apple OAuth missing config" });
-
-    const authUrl = `https://appleid.apple.com/auth/authorize?${new URLSearchParams({
-      client_id: clientId,
-      redirect_uri: redirectUri,
-      scope: "name email",
-      response_type: "code",
-      response_mode: "query",
-      state
-    }).toString()}`;
-
-    return res.redirect(authUrl);
+    return res.redirect(`https://appleid.apple.com/auth/authorize?${new URLSearchParams({ client_id: clientId, redirect_uri: redirectUri, scope: "name email", response_type: "code", response_mode: "query", state }).toString()}`);
   } catch (err) {
     console.error("OAUTH START ERROR:", err);
     return res.status(500).json({ message: "Failed to start OAuth flow" });
@@ -348,118 +232,62 @@ router.get("/oauth/:provider/callback", async (req, res) => {
   const provider = String(req.params.provider || "").trim().toLowerCase();
   const code = String(req.query?.code || "");
   const state = String(req.query?.state || "");
-
-  if (!OAUTH_PROVIDERS.has(provider)) {
-    return res.redirect(buildFrontendOAuthRedirect({ error: "Provider invalid" }));
-  }
-
-  if (!code || !state) {
-    return res.redirect(buildFrontendOAuthRedirect({ error: "Lipseste code/state" }));
-  }
+  if (!OAUTH_PROVIDERS.has(provider)) return res.redirect(buildFrontendOAuthRedirect({ error: "Invalid provider" }));
+  if (!code || !state) return res.redirect(buildFrontendOAuthRedirect({ error: "Missing code/state" }));
 
   try {
-    if (!verifyOAuthState(state, provider)) {
-      return res.redirect(buildFrontendOAuthRedirect({ error: "State invalid sau expirat" }));
-    }
-
+    if (!verifyOAuthState(state, provider)) return res.redirect(buildFrontendOAuthRedirect({ error: "Invalid or expired state" }));
     const profile = await getOAuthProfile(provider, code);
     const email = String(profile?.email || "").trim().toLowerCase();
-
-    if (!email) {
-      return res.redirect(
-        buildFrontendOAuthRedirect({
-          error: "Providerul nu a returnat email. Verifica permisiunile contului."
-        })
-      );
-    }
+    if (!email) return res.redirect(buildFrontendOAuthRedirect({ error: "The provider did not return an email address. Please check your account permissions." }));
 
     let user = await findUserByEmail(email);
-
     if (!user) {
-      const randomPass = crypto.randomBytes(24).toString("hex");
-      const passwordHash = await hashPassword(randomPass);
-
       user = await createUser({
         id: crypto.randomUUID(),
         email,
-        passwordHash,
+        passwordHash: await hashPassword(crypto.randomBytes(24).toString("hex")),
         emailVerified: true,
         emailTokenHash: null
       });
     } else if (!user.emailVerified && profile.emailVerified) {
-      user = await updateUser(user.id, {
-        emailVerified: true,
-        emailTokenHash: null
-      });
+      user = await updateUser(user.id, { emailVerified: true, emailTokenHash: null });
     }
 
-    const token = jwt.sign(
-      { userId: user.id, role: user.role || "user" },
-      JWT_SECRET,
-      { expiresIn: "30d" }
-    );
-    return res.redirect(
-      buildFrontendOAuthRedirect({
-        token,
-        email: user.email,
-        role: user.role || "user"
-      })
-    );
+    const token = jwt.sign({ userId: user.id, role: user.role || "user" }, JWT_SECRET, { expiresIn: "30d" });
+    return res.redirect(buildFrontendOAuthRedirect({ token, email: user.email, role: user.role || "user" }));
   } catch (err) {
     console.error("OAUTH CALLBACK ERROR:", err);
-    return res.redirect(
-      buildFrontendOAuthRedirect({
-        error: err?.message || "OAuth failed"
-      })
-    );
+    return res.redirect(buildFrontendOAuthRedirect({ error: err?.message || "OAuth failed" }));
   }
 });
 
 router.get("/confirm-email", async (req, res) => {
   const { token } = req.query || {};
-  if (!token) return res.status(400).send("Token lipsă");
-
-  const tokenHash = hashToken(token);
-  const user = await findUserByEmailTokenHash(tokenHash);
-
-  if (!user) return res.status(400).send("Token invalid sau expirat");
-
+  if (!token) return res.status(400).send("Missing token");
+  const user = await findUserByEmailTokenHash(hashToken(token));
+  if (!user) return res.status(400).send("Invalid or expired token");
   await updateUser(user.id, { emailVerified: true, emailTokenHash: null });
-
   return res.redirect(`${FRONTEND_URL.replace(/\/+$/, "")}/login?confirmed=1`);
 });
 
 router.post("/login", async (req, res) => {
   try {
     const { email, password } = req.body || {};
-
-    if (!email || !password) {
-      return res.status(400).json({ message: "Date incomplete" });
-    }
-
+    if (!email || !password) return res.status(400).json({ message: "Missing credentials." });
     const user = await findUserByEmail(email);
-    if (!user) return res.status(401).json({ message: "Email sau parolă incorecte" });
-
-    if (!user.emailVerified) {
-      return res.status(403).json({ message: "Email neconfirmat" });
-    }
-
+    if (!user) return res.status(401).json({ message: "Incorrect email or password." });
+    if (!user.emailVerified) return res.status(403).json({ message: "Email address not confirmed." });
     const ok = await verifyPassword(password, user.passwordHash);
-    if (!ok) return res.status(401).json({ message: "Email sau parolă incorecte" });
-
-    const token = jwt.sign(
-      { userId: user.id, role: user.role || "user" },
-      JWT_SECRET,
-      { expiresIn: "30d" }
-    );
+    if (!ok) return res.status(401).json({ message: "Incorrect email or password." });
 
     return res.json({
-      token,
+      token: jwt.sign({ userId: user.id, role: user.role || "user" }, JWT_SECRET, { expiresIn: "30d" }),
       user: { id: user.id, email: user.email, role: user.role || "user" }
     });
   } catch (err) {
     console.error("LOGIN ERROR:", err);
-    return res.status(500).json({ message: "Eroare internă la autentificare" });
+    return res.status(500).json({ message: "Internal authentication error." });
   }
 });
 

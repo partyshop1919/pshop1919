@@ -27,7 +27,7 @@ export default function ProductsPage() {
         if (active) setItems(Array.isArray(products) ? products : []);
       } catch (err) {
         console.error("Failed to load products:", err);
-        if (active) setError("Nu s-au putut incarca produsele.");
+        if (active) setError("We could not load the products.");
       } finally {
         if (active) setLoading(false);
       }
@@ -40,10 +40,7 @@ export default function ProductsPage() {
     };
   }, []);
 
-  const breadcrumbs = [
-    { label: "Acasa", href: "/" },
-    { label: "Produse" }
-  ];
+  const breadcrumbs = [{ label: "Home", href: "/" }, { label: "Products" }];
 
   const visibleItems = items.filter((product) => {
     if (!query) return true;
@@ -57,35 +54,35 @@ export default function ProductsPage() {
   return (
     <>
       <Head>
-        <title>{query ? `Cautare: ${query} - Party Shop` : "Toate produsele - Party Shop"}</title>
+        <title>{query ? `Search: ${query} - Party Shop` : "All Products - Party Shop"}</title>
         <meta
           name="description"
-          content="Descopera toate produsele disponibile in magazinul nostru: baloane, decoruri si articole festive."
+          content="Discover all products available in our shop: balloons, decorations, and festive accessories."
         />
       </Head>
 
       <main className="container">
         <section style={{ marginBottom: 32 }}>
           <Breadcrumb items={breadcrumbs} />
-          <h1>{query ? `Rezultate pentru "${query}"` : "Toate produsele"}</h1>
+          <h1>{query ? `Results for "${query}"` : "All products"}</h1>
           <p style={{ maxWidth: 640 }}>
-            Catalog complet de produse disponibile pentru petreceri si evenimente speciale.
+            Browse our full catalog of products for parties and special events.
           </p>
         </section>
 
-        {loading && <p>Se incarca produsele...</p>}
+        {loading && <p>Loading products...</p>}
 
         {!loading && error && <p style={{ color: "red" }}>{error}</p>}
 
         {!loading && !error && visibleItems.length === 0 && (
           <EmptyState
-            title={query ? "Nu am gasit produse" : "Nu exista produse"}
+            title={query ? "No products found" : "No products available"}
             message={
               query
-                ? "Incearca un termen mai simplu sau vezi catalogul complet."
-                : "Momentan nu sunt produse disponibile."
+                ? "Try a simpler search term or browse the full catalog."
+                : "There are no products available right now."
             }
-            actionLabel={query ? "Vezi toate produsele" : "Vezi categoriile"}
+            actionLabel={query ? "View all products" : "Browse categories"}
             actionHref={query ? "/products" : "/"}
           />
         )}
@@ -93,11 +90,7 @@ export default function ProductsPage() {
         {!loading && !error && visibleItems.length > 0 && (
           <div className="products-grid">
             {visibleItems.map((product) => (
-              <ProductCard
-                key={product.id}
-                product={product}
-                onAdd={() => addToCart(product)}
-              />
+              <ProductCard key={product.id} product={product} onAdd={() => addToCart(product)} />
             ))}
           </div>
         )}

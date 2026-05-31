@@ -9,8 +9,8 @@ function resolveImage(image) {
 
   if (typeof image === "string") {
     if (image.startsWith("http")) return image;
-    if (image.startsWith("/images")) return image; // static frontend
-    return `${BACKEND_URL}${image}`; // /uploads/...
+    if (image.startsWith("/images")) return image;
+    return `${BACKEND_URL}${image}`;
   }
 
   if (typeof image === "object" && image.url) {
@@ -50,7 +50,6 @@ export default function ProductCard({ product }) {
       if (favorite) {
         removeFavorite(productId);
       } else {
-        // trimitem produsul complet ca să apară instant în /favorites
         addFavorite({ ...product, id: productId });
       }
     },
@@ -59,12 +58,11 @@ export default function ProductCard({ product }) {
 
   const onAddToCart = useCallback(() => {
     if (!productId) return;
-    addToCart({ ...product, id: productId }); // forțăm id string
+    addToCart({ ...product, id: productId });
   }, [addToCart, product, productId]);
 
   return (
     <div className="product-card">
-      {/* FAVORITE */}
       <button
         type="button"
         className={`fav-btn ${favorite ? "active" : ""}`}
@@ -72,30 +70,27 @@ export default function ProductCard({ product }) {
         aria-label={favorite ? "Remove from favorites" : "Add to favorites"}
         disabled={Boolean(loading)}
       >
-        🖤
+        Heart
       </button>
 
-      {/* IMAGE + LINK */}
       <Link href={href} className="product-image" style={{ display: "block" }}>
-        {imageUrl ? (
-          <img src={imageUrl} alt={product?.name || "Product"} loading="lazy" />
-        ) : (
-          <div className="image-placeholder" />
-        )}
+        {imageUrl ? <img src={imageUrl} alt={product?.name || "Product"} loading="lazy" /> : <div className="image-placeholder" />}
       </Link>
 
-      {/* TITLE + LINK */}
       <Link href={href} style={{ textDecoration: "none", color: "inherit" }}>
         <h3>{product?.name}</h3>
       </Link>
       {product?.description ? (
-        <p className="product-desc">{String(product.description).slice(0, 110)}{String(product.description).length > 110 ? "..." : ""}</p>
+        <p className="product-desc">
+          {String(product.description).slice(0, 110)}
+          {String(product.description).length > 110 ? "..." : ""}
+        </p>
       ) : null}
 
       <p>{((Number(product?.priceCents) || 0) / 100).toFixed(2)} RON</p>
 
       <button className="btn" type="button" onClick={onAddToCart} disabled={!productId}>
-        Adaugă în coș
+        Add to cart
       </button>
     </div>
   );

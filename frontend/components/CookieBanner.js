@@ -28,7 +28,7 @@ export default function CookieBanner() {
         statistics: Boolean(parsed.statistics),
         marketing: Boolean(parsed.marketing)
       });
-    } catch (error) {
+    } catch {
       // Ignore parse errors
     }
   }, []);
@@ -40,7 +40,8 @@ export default function CookieBanner() {
   }
 
   const acceptNecessary = () => saveConsent({ essential: true, statistics: false, marketing: false });
-  const acceptSelection = () => saveConsent({ essential: true, statistics: preferences.statistics, marketing: preferences.marketing });
+  const acceptSelection = () =>
+    saveConsent({ essential: true, statistics: preferences.statistics, marketing: preferences.marketing });
   const acceptAll = () => saveConsent({ essential: true, statistics: true, marketing: true });
 
   if (!visible) return null;
@@ -50,25 +51,25 @@ export default function CookieBanner() {
       <div className="cookie-modal">
         <div className="cookie-modal-content">
           <div className="cookie-modal-copy">
-            <span className="cookie-modal-badge">Acest website folosește cookies</span>
-            <h2>Folosim cookie-uri pentru o experiență mai bună</h2>
+            <span className="cookie-modal-badge">This website uses cookies</span>
+            <h2>We use cookies for a better experience</h2>
             <p>
-              Folosim cookie-uri pentru a personaliza conținutul și anunțurile, pentru a oferi funcții de rețele
-              sociale și pentru a analiza traficul. De asemenea, le oferim partenerilor de rețele sociale, de
-              publicitate și de analize informații despre modul în care folosiți site-ul nostru.
+              We use cookies to personalize content and ads, provide social media features, and analyze our
+              traffic. We also share information about your use of our site with our social media, advertising,
+              and analytics partners.
             </p>
             <Link href="/politica-cookies" className="cookie-modal-link">
-              Citește mai mult
+              Read more
             </Link>
           </div>
 
           <div className="cookie-modal-options">
             <div className="cookie-category">
               <div>
-                <h3>Necesare</h3>
+                <h3>Necessary</h3>
                 <p>
-                  Cookie-urile necesare ajută la a face un site utilizabil prin activarea funcțiilor de bază, precum
-                  navigarea în pagină și accesul la zonele securizate de pe site.
+                  Necessary cookies help make the website usable by enabling core functions such as page
+                  navigation and access to secure areas of the site.
                 </p>
               </div>
               <label className="cookie-toggle cookie-toggle-disabled">
@@ -79,10 +80,10 @@ export default function CookieBanner() {
 
             <div className="cookie-category">
               <div>
-                <h3>Statistici</h3>
+                <h3>Statistics</h3>
                 <p>
-                  Cookie-urile de statistică îți ajută pe proprietarii unui site să înțeleagă modul în care
-                  vizitatorii interacționează cu site-ul prin colectarea și raportarea informațiilor în mod anonim.
+                  Statistics cookies help website owners understand how visitors interact with websites by
+                  collecting and reporting information anonymously.
                 </p>
               </div>
               <label className="cookie-toggle">
@@ -99,8 +100,8 @@ export default function CookieBanner() {
               <div>
                 <h3>Marketing</h3>
                 <p>
-                  Cookie-urile de marketing sunt utilizate pentru a urmări utilizatorii de la un site la altul.
-                  Intenția este de a afișa anunțuri relevante și antrenante pentru utilizatorii individuali.
+                  Marketing cookies are used to track visitors across websites. The intention is to display ads
+                  that are relevant and engaging for individual users.
                 </p>
               </div>
               <label className="cookie-toggle">
@@ -117,13 +118,13 @@ export default function CookieBanner() {
 
         <div className="cookie-modal-actions">
           <button className="btn cookie-btn-secondary" type="button" onClick={acceptNecessary}>
-            Accepta cele necesare
+            Accept necessary only
           </button>
           <button className="btn cookie-btn-secondary" type="button" onClick={acceptSelection}>
-            Accepta selecția
+            Accept selection
           </button>
           <button className="btn cookie-btn-primary" type="button" onClick={acceptAll}>
-            Accepta toate
+            Accept all
           </button>
         </div>
       </div>

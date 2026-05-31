@@ -80,21 +80,19 @@ export default function Navbar() {
           >
             <span className="nav-category-label">{cat.name}</span>
 
-            {activeCategory?.id === cat.id &&
-              Array.isArray(cat.children) &&
-              cat.children.length > 0 && (
-                <div
-                  className="dropdown"
-                  onMouseEnter={() => openCategory(cat)}
-                  onMouseLeave={() => scheduleClose(cat)}
-                >
-                  {cat.children.map((sub) => (
-                    <Link key={sub.id} href={`/category/${sub.slug}`} className="dropdown-item">
-                      {sub.name}
-                    </Link>
-                  ))}
-                </div>
-              )}
+            {activeCategory?.id === cat.id && Array.isArray(cat.children) && cat.children.length > 0 && (
+              <div
+                className="dropdown"
+                onMouseEnter={() => openCategory(cat)}
+                onMouseLeave={() => scheduleClose(cat)}
+              >
+                {cat.children.map((sub) => (
+                  <Link key={sub.id} href={`/category/${sub.slug}`} className="dropdown-item">
+                    {sub.name}
+                  </Link>
+                ))}
+              </div>
+            )}
           </div>
         ))}
       </div>
@@ -114,10 +112,10 @@ export default function Navbar() {
           type="search"
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
-          placeholder="Ce cauti? De exemplu, heliu..."
-          aria-label="Cauta produse"
+          placeholder="What are you looking for? For example, helium..."
+          aria-label="Search products"
         />
-        <button type="submit">Cautare</button>
+        <button type="submit">Search</button>
       </form>
 
       <div className="nav-right">
@@ -127,7 +125,7 @@ export default function Navbar() {
               <path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.6l-1-1a5.5 5.5 0 0 0-7.8 7.8l1 1L12 21l7.8-7.6 1-1a5.5 5.5 0 0 0 0-7.8Z" />
             </svg>
           </span>
-          <span>Favorite</span>
+          <span>Favorites</span>
           {favoriteCount > 0 && <span className="cart-badge">{favoriteCount}</span>}
         </Link>
 
@@ -140,7 +138,7 @@ export default function Navbar() {
                   <circle cx="12" cy="7" r="4" />
                 </svg>
               </span>
-              <span>Cont</span>
+              <span>Account</span>
             </Link>
             <button type="button" className="nav-action-link nav-action-button" onClick={logoutUser}>
               <span className="nav-action-icon" aria-hidden="true">
@@ -150,7 +148,7 @@ export default function Navbar() {
                   <path d="M21 12H9" />
                 </svg>
               </span>
-              <span>Logout</span>
+              <span>Log out</span>
             </button>
           </>
         ) : (
@@ -161,7 +159,7 @@ export default function Navbar() {
                 <circle cx="12" cy="7" r="4" />
               </svg>
             </span>
-            <span>Autentificare</span>
+            <span>Sign in</span>
           </Link>
         )}
 
@@ -172,13 +170,13 @@ export default function Navbar() {
               <path d="M9 8.5V7a3 3 0 0 1 6 0v1.5" />
             </svg>
           </span>
-          <span>{cartCount > 0 ? `Cos (${cartCount})` : "Cos gol"}</span>
+          <span>{cartCount > 0 ? `Cart (${cartCount})` : "Empty cart"}</span>
         </Link>
 
         {isAdmin && (
           <>
             <Link href="/admin/products" className="admin-shortcut">
-              Panel Admin
+              Admin Panel
             </Link>
             <button type="button" className="nav-action-link nav-action-button" onClick={logoutAdmin}>
               <span className="nav-action-icon" aria-hidden="true">
@@ -188,7 +186,7 @@ export default function Navbar() {
                   <path d="M21 12H9" />
                 </svg>
               </span>
-              <span>Logout Admin</span>
+              <span>Admin logout</span>
             </button>
           </>
         )}

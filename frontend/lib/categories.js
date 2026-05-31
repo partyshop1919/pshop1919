@@ -1,237 +1,127 @@
 export const categories = [
   {
     id: 1,
-    name: "Baloane",
+    name: "Balloons",
     slug: "baloane",
     image: "/images/products/baloane.jpg",
-
-    seoTitle: "Baloane pentru petreceri – Party Shop",
-    seoDescription:
-      "Descoperă toate tipurile de baloane pentru petreceri: latex, cifre, folie și multe altele.",
-    h1: "Baloane pentru orice tip de petrecere",
-    intro:
-      "Descoperă gama completă de baloane pentru petreceri, potrivite pentru aniversări, evenimente tematice și momente speciale.",
-
+    seoTitle: "Party Balloons - Party Shop",
+    seoDescription: "Discover every kind of balloon for parties: latex, number, foil, and more.",
+    h1: "Balloons for every kind of party",
+    intro: "Explore our full range of party balloons for birthdays, themed events, and special moments.",
     children: [
       {
         id: 11,
-        name: "Baloane latex",
+        name: "Latex Balloons",
         slug: "baloane-latex",
         image: "/images/categories/baloane-latex.jpg",
-
-        seoTitle: "Baloane latex – Prețuri bune | Party Shop",
-        seoDescription:
-          "Cumpără baloane latex pentru petreceri. Culori variate, livrare rapidă și prețuri avantajoase.",
-        h1: "Baloane latex colorate pentru petreceri",
-        intro:
-          "Baloanele din latex sunt ideale pentru decorarea petrecerilor și evenimentelor festive. Disponibile în multiple culori și dimensiuni."
+        seoTitle: "Latex Balloons - Great Prices | Party Shop",
+        seoDescription: "Shop latex balloons for parties. Multiple colors, fast delivery, and great prices.",
+        h1: "Colorful latex balloons for parties",
+        intro: "Latex balloons are ideal for decorating parties and festive events in many colors and sizes."
       },
       {
         id: 12,
-        name: "Baloane cifre",
+        name: "Number Balloons",
         slug: "baloane-cifre",
         image: "/images/categories/baloane-cifre.jpg",
-
-        seoTitle: "Baloane cifre – Aniversări speciale | Party Shop",
-        seoDescription:
-          "Baloane cifre pentru aniversări și evenimente speciale. Modele variate, livrare rapidă.",
-        h1: "Baloane cifre pentru aniversări",
-        intro:
-          "Baloanele cifre sunt perfecte pentru marcarea vârstei sau a momentelor speciale la petreceri și aniversări."
+        seoTitle: "Number Balloons - Special Birthdays | Party Shop",
+        seoDescription: "Number balloons for birthdays and special occasions. Many styles and fast delivery.",
+        h1: "Number balloons for birthdays",
+        intro: "Number balloons are perfect for celebrating ages and special milestones at parties."
       },
       {
         id: 13,
-        name: "Baloane folie",
+        name: "Foil Balloons",
         slug: "baloane-folie",
         image: "/images/categories/baloane-folie.jpg",
-
-        seoTitle: "Baloane folie – Modele premium | Party Shop",
-        seoDescription:
-          "Alege baloane din folie pentru petreceri memorabile. Design modern și calitate premium.",
-        h1: "Baloane din folie pentru petreceri",
-        intro:
-          "Baloanele din folie adaugă un plus de stil decorului de petrecere, fiind rezistente și disponibile în forme variate."
+        seoTitle: "Foil Balloons - Premium Designs | Party Shop",
+        seoDescription: "Choose foil balloons for memorable parties with modern design and premium quality.",
+        h1: "Foil balloons for parties",
+        intro: "Foil balloons add extra style to your party decor and come in a wide variety of shapes."
       }
     ]
   },
-
   {
     id: 2,
-    name: "Decor petrecere",
+    name: "Party Decor",
     slug: "decor-petrecere",
     image: "/images/products/decor.png",
-
-    seoTitle: "Decor pentru petreceri – Party Shop",
-    seoDescription:
-      "Găsește decoruri pentru petreceri: ghirlande, bannere, confetti și alte accesorii festive.",
-    h1: "Decoruri pentru petreceri reușite",
-    intro:
-      "Alege decoruri pentru petreceri care transformă orice eveniment într-un moment memorabil.",
-
+    seoTitle: "Party Decorations - Party Shop",
+    seoDescription: "Find party decorations: garlands, banners, confetti, and other festive accessories.",
+    h1: "Decorations for unforgettable parties",
+    intro: "Choose party decorations that turn every event into a memorable moment.",
     children: [
       {
         id: 21,
-        name: "Ghirlande",
+        name: "Garlands",
         slug: "ghirlande",
         image: "/images/ghirlande.jpg",
-
-        seoTitle: "Ghirlande decorative – Petreceri festive | Party Shop",
-        seoDescription:
-          "Ghirlande decorative pentru petreceri și evenimente. Ușor de montat, efect vizual garantat.",
-        h1: "Ghirlande decorative pentru petreceri",
-        intro:
-          "Ghirlandele decorative sunt ideale pentru a crea o atmosferă festivă la orice tip de petrecere."
+        seoTitle: "Decorative Garlands - Festive Parties | Party Shop",
+        seoDescription: "Decorative garlands for parties and events. Easy to install with a strong visual impact.",
+        h1: "Decorative garlands for parties",
+        intro: "Decorative garlands are ideal for creating a festive atmosphere at any type of party."
       },
       {
         id: 22,
         name: "Confetti",
         slug: "confetti",
         image: "/images/confetti.jpg",
-
-        seoTitle: "Confetti pentru petreceri – Efect wow | Party Shop",
-        seoDescription:
-          "Confetti colorat pentru petreceri reușite. Ideal pentru aniversări și evenimente speciale.",
-        h1: "Confetti colorat pentru evenimente",
-        intro:
-          "Confetti-ul adaugă dinamism și culoare decorului de petrecere, fiind potrivit pentru orice ocazie."
+        seoTitle: "Party Confetti - Wow Effect | Party Shop",
+        seoDescription: "Colorful confetti for fun parties. Ideal for birthdays and special events.",
+        h1: "Colorful confetti for events",
+        intro: "Confetti adds color and energy to any celebration and works well for every occasion."
       },
       {
         id: 23,
-        name: "Bannere",
+        name: "Banners",
         slug: "bannere",
         image: "/images/bannere.jpg",
-
-        seoTitle: "Bannere aniversare – Mesaje festive | Party Shop",
-        seoDescription:
-          "Bannere aniversare și festive pentru decorarea petrecerilor. Modele diverse, livrare rapidă.",
-        h1: "Bannere festive și aniversare",
-        intro:
-          "Bannerele sunt elemente decorative esențiale pentru a transmite mesaje festive la petreceri."
+        seoTitle: "Birthday Banners - Festive Messages | Party Shop",
+        seoDescription: "Birthday and party banners for decorating celebrations. Various styles and fast delivery.",
+        h1: "Festive and birthday banners",
+        intro: "Banners are essential decorative pieces for sharing festive messages at parties."
       }
     ]
   },
-
   {
     id: 3,
-    name: "Articole aniversare",
+    name: "Birthday Essentials",
     slug: "articole-aniversare",
     image: "/images/products/set-pahare-si-farfurii-24-persoane.jpg",
-
-    seoTitle: "Articole aniversare - Party Shop",
-    seoDescription:
-      "Lumanari, coifuri, pahare si alte articole aniversare pentru petreceri reusite.",
-    h1: "Articole aniversare pentru petreceri",
-    intro:
-      "Alege articole aniversare esentiale pentru mesele festive si momente memorabile.",
-
+    seoTitle: "Birthday Essentials - Party Shop",
+    seoDescription: "Candles, hats, cups, and other birthday supplies for memorable parties.",
+    h1: "Birthday essentials for parties",
+    intro: "Choose the key birthday supplies you need for festive tables and memorable moments.",
     children: [
       {
         id: 31,
-        name: "Lumanari",
+        name: "Candles",
         slug: "lumanari",
         image: "/images/products/candles.jpeg",
-
-        seoTitle: "Lumanari aniversare - Party Shop",
-        seoDescription:
-          "Lumanari aniversare pentru tort, in culori si modele variate.",
-        h1: "Lumanari pentru tort",
-        intro:
-          "Completeaza tortul aniversar cu lumanari potrivite pentru orice varsta."
+        seoTitle: "Birthday Candles - Party Shop",
+        seoDescription: "Birthday cake candles in a variety of colors and styles.",
+        h1: "Candles for birthday cakes",
+        intro: "Complete your birthday cake with candles suitable for any age."
       },
       {
         id: 32,
-        name: "Coifuri si accesorii",
+        name: "Party Hats & Accessories",
         slug: "coifuri-si-accesorii",
         image: "/images/products/hats.jpg",
-
-        seoTitle: "Coifuri si accesorii petrecere - Party Shop",
-        seoDescription:
-          "Coifuri si accesorii festive pentru aniversari si petreceri tematice.",
-        h1: "Coifuri si accesorii de petrecere",
-        intro:
-          "Accesorii distractive care aduc energie si culoare la orice petrecere."
+        seoTitle: "Party Hats and Accessories - Party Shop",
+        seoDescription: "Festive hats and accessories for birthdays and themed parties.",
+        h1: "Party hats and accessories",
+        intro: "Fun accessories that bring color and energy to any celebration."
       },
       {
         id: 33,
-        name: "Pahare si farfurii",
+        name: "Cups & Plates",
         slug: "pahare-si-farfurii",
         image: "/images/products/set-pahare-petrecere.jpg",
-
-        seoTitle: "Pahare si farfurii petrecere - Party Shop",
-        seoDescription:
-          "Seturi de pahare si farfurii pentru aniversari, evenimente si petreceri.",
-        h1: "Pahare si farfurii pentru petreceri",
-        intro:
-          "Seturi practice si festive pentru servirea bauturilor si deserturilor."
-      }
-    ]
-  },
-
-  {
-    id: 4,
-    name: "Mese festive",
-    slug: "mese-festive",
-    image: "/images/mese_festive.jpg",
-
-    seoTitle: "Mese festive – Partyware pentru evenimente | Party Shop",
-    seoDescription:
-      "Articole pentru mese festive: pahare, farfurii, tacâmuri, fețe de masă și accesorii pentru petreceri reușite.",
-    h1: "Articole pentru mese festive",
-    intro:
-      "Completează decorul petrecerii cu articole pentru mese festive, ideale pentru aniversări și evenimente speciale.",
-
-    children: [
-      {
-        id: 41,
-        name: "Pahare și farfurii",
-        slug: "pahare-si-farfurii",
-        image: "/images/products/set-pahare-petrecere.jpg",
-
-        seoTitle: "Pahare și farfurii pentru petreceri | Party Shop",
-        seoDescription:
-          "Seturi de pahare și farfurii pentru aniversări și evenimente. Modele festive, prețuri avantajoase.",
-        h1: "Pahare și farfurii pentru mese festive",
-        intro:
-          "Pahare și farfurii festive pentru servirea mâncărurilor și băuturilor la petreceri și aniversări."
-      },
-      {
-        id: 42,
-        name: "Tacâmuri și accesorii",
-        slug: "tacamuri-si-accesorii",
-        image: "/images/products/tacamuri.jpg",
-
-        seoTitle: "Tacâmuri pentru petreceri – Seturi complete | Party Shop",
-        seoDescription:
-          "Tacâmuri pentru mese festive: furculițe, cuțite, linguri și alte accesorii pentru evenimente.",
-        h1: "Tacâmuri pentru mese festive",
-        intro:
-          "Tacâmuri practice și festive pentru servirea mâncărurilor la aniversări și evenimente speciale."
-      },
-      {
-        id: 43,
-        name: "Fețe de masă și șervețele",
-        slug: "fete-de-masa-si-servetele",
-        image: "/images/products/fete-de-masa.jpg",
-
-        seoTitle: "Fețe de masă și șervețele pentru petreceri | Party Shop",
-        seoDescription:
-          "Fețe de masă și șervețele colorate pentru decorarea meselor festive. Modele variate.",
-        h1: "Fețe de masă și șervețele festive",
-        intro:
-          "Fețe de masă și șervețele adaugă culoare și stil decorului meselor pentru petreceri."
-      },
-      {
-        id: 44,
-        name: "Paie și accesorii băuturi",
-        slug: "paie-si-accesorii-bauturi",
-        image: "/images/products/paie.jpg",
-
-        seoTitle: "Paie și accesorii pentru băuturi festive | Party Shop",
-        seoDescription:
-          "Paie colorate și accesorii pentru băuturi la petreceri. Modele distractive pentru copii.",
-        h1: "Paie și accesorii pentru băuturi",
-        intro:
-          "Paie colorate și accesorii distractive pentru băuturi, ideale pentru petreceri și aniversări."
+        seoTitle: "Party Cups and Plates - Party Shop",
+        seoDescription: "Sets of cups and plates for birthdays, events, and parties.",
+        h1: "Cups and plates for parties",
+        intro: "Practical and festive sets for serving drinks and desserts."
       }
     ]
   }

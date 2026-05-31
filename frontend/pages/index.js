@@ -12,173 +12,89 @@ export default function HomePage() {
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(true);
   const testimonials = [
-    {
-      id: 1,
-      name: "Andreea, Bucuresti",
-      text: "Comanda a ajuns rapid, iar decorul a iesit exact cum ne-am dorit pentru aniversare.",
-      rating: 5
-    },
-    {
-      id: 2,
-      name: "Mihai, Cluj-Napoca",
-      text: "Party Builder m-a ajutat mult sa aleg produsele potrivite pentru numarul de invitati.",
-      rating: 5
-    },
-    {
-      id: 3,
-      name: "Ioana, Iasi",
-      text: "Produse bune, preturi corecte si comunicare clara pe tot parcursul comenzii.",
-      rating: 4
-    }
+    { id: 1, name: "Andreea, Bucharest", text: "My order arrived quickly and the decor looked exactly how we wanted it for the birthday party.", rating: 5 },
+    { id: 2, name: "Mihai, Cluj-Napoca", text: "Party Builder helped me choose the right products for the number of guests.", rating: 5 },
+    { id: 3, name: "Ioana, Iasi", text: "Great products, fair prices, and clear communication throughout the order.", rating: 4 }
   ];
 
   useEffect(() => {
     let active = true;
-
     (async () => {
       try {
         const list = await fetchProducts();
         if (!active) return;
         setItems(Array.isArray(list) ? list : []);
-      } catch (e) {
+      } catch {
         if (active) setItems([]);
       } finally {
         if (active) setLoading(false);
       }
     })();
-
     return () => {
       active = false;
     };
   }, []);
 
   const featuredProducts = useMemo(() => {
-  if (!Array.isArray(items) || items.length === 0) return [];
-
-  const featured = items.filter((p) => Boolean(p.featured));
-  if (featured.length > 0) return featured.slice(0, 9);
-
-  return items.slice(0, 9);
-}, [items]);
+    if (!Array.isArray(items) || items.length === 0) return [];
+    const featured = items.filter((p) => Boolean(p.featured));
+    if (featured.length > 0) return featured.slice(0, 9);
+    return items.slice(0, 9);
+  }, [items]);
 
   const [featuredSlideIndex, setFeaturedSlideIndex] = useState(0);
   const featuredSlides = useMemo(() => {
     const pageSize = 3;
     const chunks = [];
-    for (let i = 0; i < featuredProducts.length; i += pageSize) {
-      chunks.push(featuredProducts.slice(i, i + pageSize));
-    }
+    for (let i = 0; i < featuredProducts.length; i += pageSize) chunks.push(featuredProducts.slice(i, i + pageSize));
     return chunks;
   }, [featuredProducts]);
 
   useEffect(() => {
-    if (featuredSlides.length > 0 && featuredSlideIndex >= featuredSlides.length) {
-      setFeaturedSlideIndex(0);
-    }
+    if (featuredSlides.length > 0 && featuredSlideIndex >= featuredSlides.length) setFeaturedSlideIndex(0);
   }, [featuredSlideIndex, featuredSlides.length]);
 
   useEffect(() => {
     if (featuredSlides.length === 0) return;
-    const interval = setInterval(() => {
-      setFeaturedSlideIndex((prev) => (prev + 1) % featuredSlides.length);
-    }, 4200);
+    const interval = setInterval(() => setFeaturedSlideIndex((prev) => (prev + 1) % featuredSlides.length), 4200);
     return () => clearInterval(interval);
   }, [featuredSlides.length]);
-
-  const goPrevFeatured = () => {
-    if (featuredSlides.length === 0) return;
-    setFeaturedSlideIndex((prev) => (prev - 1 + featuredSlides.length) % featuredSlides.length);
-  };
-
-  const goNextFeatured = () => {
-    if (featuredSlides.length === 0) return;
-    setFeaturedSlideIndex((prev) => (prev + 1) % featuredSlides.length);
-  };
 
   return (
     <>
       <Head>
-        <title>Party Shop – Articole pentru petreceri</title>
-        <meta
-          name="description"
-          content="Baloane, decoruri și articole festive pentru petreceri, aniversări și evenimente speciale."
-        />
+        <title>Party Shop - Party Supplies</title>
+        <meta name="description" content="Balloons, decorations, and festive accessories for birthdays, parties, and special events." />
       </Head>
 
       <main className="homepage">
         <section className="hero">
           <div className="hero-content">
-            <h1>Totul pentru petreceri reușite</h1>
-            <p>
-              Descoperă baloane, decoruri și articole festive potrivite pentru aniversări,
-              petreceri tematice și evenimente speciale.
-            </p>
+            <h1>Everything for unforgettable parties</h1>
+            <p>Discover balloons, decorations, and festive accessories for birthdays, themed parties, and special events.</p>
             <ul className="hero-benefits">
-              <li>Livrare rapidă din stoc</li>
-              <li>Produse pentru toate vârstele</li>
-              <li>Prețuri accesibile</li>
+              <li>Fast delivery from stock</li>
+              <li>Products for all ages</li>
+              <li>Affordable prices</li>
             </ul>
 
-            <Link href="#categorii" className="hero-btn">
-              Vezi categoriile
+            <Link href="#categories" className="hero-btn">
+              View categories
             </Link>
-
-            <div className="hero-trust-strip" aria-label="Beneficii Party Shop">
-              <div className="hero-trust-card">
-                <span className="hero-trust-icon" aria-hidden="true">🎁</span>
-                <span>
-                  <strong>Produse in stoc</strong>
-                  <small>articole festive pregatite rapid</small>
-                </span>
-              </div>
-
-              <div className="hero-trust-card">
-                <span className="hero-trust-icon" aria-hidden="true">🔒</span>
-                <span>
-                  <strong>Plata securizata</strong>
-                  <small>card online prin Stripe</small>
-                </span>
-              </div>
-
-              <div className="hero-trust-card">
-                <span className="hero-trust-icon" aria-hidden="true">🚚</span>
-                <span>
-                  <strong>Livrare 24-48h</strong>
-                  <small>dupa confirmarea comenzii</small>
-                </span>
-              </div>
-
-              <div className="hero-trust-card">
-                <span className="hero-trust-icon" aria-hidden="true">↩️</span>
-                <span>
-                  <strong>Retur 14 zile</strong>
-                  <small>simplu si fara batai de cap</small>
-                </span>
-              </div>
-            </div>
           </div>
         </section>
 
         <section className="home-featured">
-          <h2>Produse recomandate</h2>
-
+          <h2>Featured products</h2>
           {!loading && featuredSlides.length > 0 && (
             <div className="featured-slider">
               <div className="slider-controls">
-                <button type="button" className="slider-arrow" onClick={goPrevFeatured} aria-label="Anterior">
-                  ←
-                </button>
-
-                <button type="button" className="slider-arrow" onClick={goNextFeatured} aria-label="Următor">
-                  →
-                </button>
+                <button type="button" className="slider-arrow" onClick={() => setFeaturedSlideIndex((prev) => (prev - 1 + featuredSlides.length) % featuredSlides.length)} aria-label="Previous">{"<"}</button>
+                <button type="button" className="slider-arrow" onClick={() => setFeaturedSlideIndex((prev) => (prev + 1) % featuredSlides.length)} aria-label="Next">{">"}</button>
               </div>
 
               <div className="slider-viewport">
-                <div
-                  className="slider-track"
-                  style={{ transform: `translateX(-${featuredSlideIndex * 100}%)` }}
-                >
+                <div className="slider-track" style={{ transform: `translateX(-${featuredSlideIndex * 100}%)` }}>
                   {featuredSlides.map((slide, slideIndex) => (
                     <div className="slider-panel" key={slideIndex}>
                       <div className="products-grid">
@@ -190,33 +106,20 @@ export default function HomePage() {
                   ))}
                 </div>
               </div>
-
-              <div className="slider-pagination slider-pagination-below">
-                {featuredSlides.map((_, index) => (
-                  <button
-                    key={index}
-                    type="button"
-                    className={`slider-dot ${index === featuredSlideIndex ? "active" : ""}`}
-                    onClick={() => setFeaturedSlideIndex(index)}
-                    aria-label={`Slide ${index + 1}`}
-                  />
-                ))}
-              </div>
             </div>
           )}
 
           {!loading && featuredSlides.length === 0 && (
             <div className="empty-state">
-              <div className="empty-icon">🎉</div>
-              <h3>Produse în curând</h3>
-              <p>Adăugăm produse noi foarte curând. Revino în scurt timp.</p>
+              <div className="empty-icon">New</div>
+              <h3>More products coming soon</h3>
+              <p>We are adding new products soon. Please check back shortly.</p>
             </div>
           )}
         </section>
 
-        <section id="categorii" className="home-categories">
-          <h2>Categorii populare</h2>
-
+        <section id="categories" className="home-categories">
+          <h2>Popular categories</h2>
           <div className="categories-grid">
             {categories.map((category) => (
               <CategoryCard key={category.id} category={category} />
@@ -224,81 +127,18 @@ export default function HomePage() {
           </div>
         </section>
 
-        <section className="home-events">
-          <h2>Tipuri de petreceri</h2>
-
-          <div className="events-grid">
-            <Link href="/category/baloane" className="event-card">
-              <span className="event-image">
-                <img src="/images/events/copii.jpg" alt="Petreceri pentru copii" />
-              </span>
-              <span className="event-title">Petreceri pentru copii</span>
-            </Link>
-
-            <Link href="/category/articole-aniversare" className="event-card">
-              <span className="event-image">
-                <img src="/images/events/adulti.png" alt="Aniversări adulți" />
-              </span>
-              <span className="event-title">Aniversări adulți</span>
-            </Link>
-
-            <Link href="/category/decor-petrecere" className="event-card">
-              <span className="event-image">
-                <img src="/images/events/tematice.jpg" alt="Petreceri tematice" />
-              </span>
-              <span className="event-title">Petreceri tematice</span>
-            </Link>
-
-            <Link href="/category/decor-petrecere" className="event-card">
-              <span className="event-image">
-                <img src="/images/events/baby.jpg" alt="Baby shower & gender reveal" />
-              </span>
-              <span className="event-title">Baby shower & gender reveal</span>
-            </Link>
-          </div>
-        </section>
-
         <section className="home-promo">
-          <h2>Organizezi o petrecere?</h2>
-          <p>Alege din sute de produse festive și pregătește rapid un decor memorabil.</p>
-
+          <h2>Planning a party?</h2>
+          <p>Choose from hundreds of festive products and build a memorable setup in minutes.</p>
           <div className="promo-actions">
-            <Link href="/category/baloane" className="promo-btn">
-              Vezi produsele
-            </Link>
-            <Link href="/party-builder" className="promo-btn promo-btn-secondary">
-              Incearca Party Builder
-            </Link>
-          </div>
-        </section>
-
-        <section className="home-benefits">
-          <div className="benefits-grid">
-            <div className="benefit-card">
-              <span className="benefit-icon" aria-hidden="true">🎯</span>
-              <h3>Produse atent selectate</h3>
-              <p>Găsești articole festive potrivite pentru orice tip de eveniment.</p>
-            </div>
-
-            <div className="benefit-card">
-              <span className="benefit-icon" aria-hidden="true">🚚</span>
-              <h3>Livrare rapidă</h3>
-              <p>Comenzile sunt procesate rapid, direct din stoc.</p>
-            </div>
-
-            <div className="benefit-card">
-              <span className="benefit-icon" aria-hidden="true">💬</span>
-              <h3>Suport dedicat</h3>
-              <p>Suntem aici să te ajutăm să alegi produsele potrivite.</p>
-            </div>
+            <Link href="/products" className="promo-btn">View products</Link>
+            <Link href="/party-builder" className="promo-btn promo-btn-secondary">Try Party Builder</Link>
           </div>
         </section>
 
         <section className="home-testimonials">
-          <h2>Feedback clienti</h2>
-          <p className="testimonials-subtitle">
-            Testimoniale selectate manual din feedback primit de la clienti.
-          </p>
+          <h2>Customer feedback</h2>
+          <p className="testimonials-subtitle">A few highlights from recent customer feedback.</p>
           <div className="testimonials-grid">
             {testimonials.map((t) => (
               <article key={t.id} className="testimonial-card">
@@ -306,8 +146,8 @@ export default function HomePage() {
                   <div className="testimonial-avatar">{t.name.charAt(0)}</div>
                   <div>
                     <h3>{t.name}</h3>
-                    <div className="testimonial-stars" aria-label={`Rating ${t.rating} din 5 stele`}>
-                      {"★".repeat(t.rating)}{"☆".repeat(5 - t.rating)}
+                    <div className="testimonial-stars" aria-label={`Rating ${t.rating} out of 5 stars`}>
+                      {"*".repeat(t.rating)}
                     </div>
                   </div>
                 </div>

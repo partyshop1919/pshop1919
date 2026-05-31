@@ -22,19 +22,14 @@ if (useResend) {
   });
   console.log("Email provider enabled: Gmail", USER);
 } else {
-  console.warn(
-    "Email disabled - missing config (set RESEND_API_KEY + EMAIL_FROM, or GMAIL_USER + GMAIL_APP_PASSWORD)"
-  );
+  console.warn("Email disabled - missing config (set RESEND_API_KEY + EMAIL_FROM, or GMAIL_USER + GMAIL_APP_PASSWORD)");
 }
 
 export async function sendMail({ to, subject, html }) {
   const recipient = String(to || "").trim();
   const cleanSubject = String(subject || "").trim();
   const cleanHtml = String(html || "").trim();
-
-  if (!recipient || !cleanSubject || !cleanHtml) {
-    throw new Error("Invalid email payload");
-  }
+  if (!recipient || !cleanSubject || !cleanHtml) throw new Error("Invalid email payload");
 
   if (useResend) {
     const res = await fetch("https://api.resend.com/emails", {
@@ -50,18 +45,12 @@ export async function sendMail({ to, subject, html }) {
         html: cleanHtml
       })
     });
-
     const data = await res.json().catch(() => ({}));
-    if (!res.ok) {
-      throw new Error(data?.message || data?.error || "Resend API request failed");
-    }
-
+    if (!res.ok) throw new Error(data?.message || data?.error || "Resend API request failed");
     return data;
   }
 
-  if (!transporter) {
-    throw new Error("Email disabled (missing config)");
-  }
+  if (!transporter) throw new Error("Email disabled (missing config)");
 
   return transporter.sendMail({
     from: `"Party Shop" <${USER}>`,
@@ -72,17 +61,14 @@ export async function sendMail({ to, subject, html }) {
 }
 
 export async function sendConfirmationEmail({ to, token }) {
-  const confirmUrl = `${BACKEND_URL}/api/auth/confirm-email?token=${encodeURIComponent(
-    String(token || "")
-  )}`;
-
+  const confirmUrl = `${BACKEND_URL}/api/auth/confirm-email?token=${encodeURIComponent(String(token || ""))}`;
   return sendMail({
     to,
-    subject: "Confirma adresa de email",
+    subject: "Confirm your email address",
     html: `
-      <h2>Bine ai venit!</h2>
-      <p>Confirma adresa de email:</p>
-      <p><a href="${confirmUrl}">Confirma emailul</a></p>
+      <h2>Welcome to Party Shop!</h2>
+      <p>Please confirm your email address to activate your account.</p>
+      <p><a href="${confirmUrl}">Confirm email</a></p>
     `
   });
 }
@@ -99,9 +85,7 @@ export async function sendOrderConfirmationEmail({ to, order }) {
           (it) => `
             <tr>
               <td style="padding:6px 0;">${it.quantity} x ${escapeHtml(it.name)}</td>
-              <td style="padding:6px 0; text-align:right;">
-                ${((it.priceCents * it.quantity) / 100).toFixed(2)} RON
-              </td>
+              <td style="padding:6px 0; text-align:right;">${((it.priceCents * it.quantity) / 100).toFixed(2)} RON</td>
             </tr>
           `
         )
@@ -110,27 +94,23 @@ export async function sendOrderConfirmationEmail({ to, order }) {
 
   return sendMail({
     to,
-    subject: `Confirmare comanda #${orderId}`,
+    subject: `Order confirmation #${orderId}`,
     html: `
       <div style="font-family: Arial, sans-serif; max-width: 640px; margin: 0 auto;">
-        <h2>Comanda ta a fost inregistrata</h2>
-        <p>Numar comanda: <strong>#${orderId}</strong></p>
+        <h2>Your order has been received</h2>
+        <p>Order number: <strong>#${orderId}</strong></p>
         <p>Status: <strong>${orderStatus}</strong></p>
 
-        <h3>Produse</h3>
+        <h3>Products</h3>
         <table style="width:100%; border-collapse:collapse;">
           ${itemsHtml}
           <tr>
             <td style="padding-top:10px; border-top:1px solid #eee;"><strong>Total</strong></td>
-            <td style="padding-top:10px; border-top:1px solid #eee; text-align:right;">
-              <strong>${total} RON</strong>
-            </td>
+            <td style="padding-top:10px; border-top:1px solid #eee; text-align:right;"><strong>${total} RON</strong></td>
           </tr>
         </table>
 
-        <p style="margin-top:16px;">
-          Vezi comenzile tale: <a href="${ordersUrl}">${ordersUrl}</a>
-        </p>
+        <p style="margin-top:16px;">View your orders: <a href="${ordersUrl}">${ordersUrl}</a></p>
       </div>
     `
   });

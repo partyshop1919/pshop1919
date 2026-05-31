@@ -6,7 +6,7 @@ import { uploadProductImage, storeProductImage } from "../upload.js";
 import { z } from "zod";
 import { verifyPassword } from "./utils/crypto.js";
 
-// dacă nu ai fișierul, comentează linia următoare
+// If you do not have this file, comment out the following line.
 import { sendOrderConfirmationEmail } from "./utils/mailer.js";
 import Stripe from "stripe";
 import express from "express";
@@ -234,16 +234,16 @@ router.post("/party-builder", async (req, res) => {
   const location = String(req.body?.location || "indoor").trim().toLowerCase();
   const guests = clampInt(req.body?.guests, 5, 200);
 
-  const categories = new Set(["Baloane latex", "Baloane folie", "Ghirlande", "Confetti", "Bannere"]);
+  const categories = new Set(["Latex Balloons", "Foil Balloons", "Garlands", "Confetti", "Banners"]);
   if (eventType === "child-birthday") {
-    categories.add("Coifuri si accesorii");
-    categories.add("Pahare si farfurii");
+    categories.add("Party Hats & Accessories");
+    categories.add("Cups & Plates");
   }
   if (eventType === "baby-shower" || eventType === "gender-reveal") {
-    categories.add("Pahare si farfurii");
+    categories.add("Cups & Plates");
   }
   if (budgetTier === "low") {
-    categories.delete("Baloane folie");
+    categories.delete("Foil Balloons");
   }
 
   const products = await prisma.product.findMany({
@@ -271,7 +271,7 @@ router.post("/party-builder", async (req, res) => {
       guests,
       budgetTier,
       location,
-      notes: ["Nu am gasit produse suficiente pentru acest plan."],
+      notes: ["We could not find enough suitable products for this plan."],
       items: [],
       totalCents: 0
     });
@@ -296,28 +296,28 @@ router.post("/party-builder", async (req, res) => {
   const cupsQty = Math.max(1, Math.ceil(guests / 8));
   const hatsQty = Math.max(1, Math.ceil(guests / 10));
 
-  const latex = pickOne("Baloane latex");
+  const latex = pickOne("Latex Balloons");
   if (latex) basePlan.push({ product: latex, quantity: balloonQty });
 
-  const foil = pickOne("Baloane folie");
+  const foil = pickOne("Foil Balloons");
   if (foil && budgetTier !== "low") basePlan.push({ product: foil, quantity: Math.max(1, Math.ceil(guests / 12)) });
 
-  const garland = pickOne("Ghirlande");
+  const garland = pickOne("Garlands");
   if (garland) basePlan.push({ product: garland, quantity: guests > 30 ? 2 : 1 });
 
   const confetti = pickOne("Confetti");
   if (confetti) basePlan.push({ product: confetti, quantity: confettiQty });
 
-  const banner = pickOne("Bannere");
+  const banner = pickOne("Banners");
   if (banner) basePlan.push({ product: banner, quantity: bannerQty });
 
   if (eventType === "child-birthday") {
-    const hats = pickOne("Coifuri si accesorii");
+    const hats = pickOne("Party Hats & Accessories");
     if (hats) basePlan.push({ product: hats, quantity: hatsQty });
   }
 
   if (eventType === "child-birthday" || eventType === "baby-shower" || eventType === "gender-reveal") {
-    const table = pickOne("Pahare si farfurii");
+    const table = pickOne("Cups & Plates");
     if (table) basePlan.push({ product: table, quantity: cupsQty });
   }
 
@@ -342,9 +342,9 @@ router.post("/party-builder", async (req, res) => {
   const totalCents = items.reduce((sum, it) => sum + (Number(it.lineTotalCents) || 0), 0);
 
   const notes = [];
-  if (guests > 20) notes.push("Am inclus mai mult decor pentru grupuri mari.");
-  if (budgetTier === "low") notes.push("Am ales variante orientate spre buget.");
-  if (location === "outdoor") notes.push("Pentru exterior se recomanda cantitate mai mare de baloane.");
+  if (guests > 20) notes.push("Additional decor has been included for larger groups.");
+  if (budgetTier === "low") notes.push("This plan prioritizes budget-friendly options.");
+  if (location === "outdoor") notes.push("For outdoor events, a larger quantity of balloons is recommended.");
 
   return res.json({
     eventType,
@@ -456,16 +456,16 @@ router.get("/products/:id/recommendations", async (req, res) => {
   if (!current) return jsonError(res, 404, "Product not found");
 
   const rulesByCategory = {
-    "Baloane latex": ["Coifuri si accesorii", "Bannere", "Confetti"],
-    "Baloane folie": ["Coifuri si accesorii", "Bannere"],
-    Ghirlande: ["Baloane latex", "Confetti"],
-    Confetti: ["Bannere", "Pahare si farfurii"],
-    Bannere: ["Baloane latex", "Confetti"],
-    "Pahare si farfurii": ["Coifuri si accesorii", "Bannere"],
-    "Coifuri si accesorii": ["Baloane latex", "Pahare si farfurii"]
+    "Latex Balloons": ["Party Hats & Accessories", "Banners", "Confetti"],
+    "Foil Balloons": ["Party Hats & Accessories", "Banners"],
+    Garlands: ["Latex Balloons", "Confetti"],
+    Confetti: ["Banners", "Cups & Plates"],
+    Banners: ["Latex Balloons", "Confetti"],
+    "Cups & Plates": ["Party Hats & Accessories", "Banners"],
+    "Party Hats & Accessories": ["Latex Balloons", "Cups & Plates"]
   };
 
-  const targetCategories = rulesByCategory[current.category] || ["Baloane latex", "Bannere"];
+  const targetCategories = rulesByCategory[current.category] || ["Latex Balloons", "Banners"];
 
   const items = await prisma.product.findMany({
     where: {

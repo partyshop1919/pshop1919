@@ -27,14 +27,13 @@ export default function OauthSuccessPage() {
       return;
     }
 
-    const fallbackEmail = email || "oauth-user@partyshop.local";
-    loginUser(token, { email: fallbackEmail, role });
+    loginUser(token, { email: email || "oauth-user@partyshop.local", role });
     window.location.replace("/");
   }, [router, loginUser]);
 
   return (
     <div className="container">
-      <p>Autentificare in curs...</p>
+      <p>Signing you in...</p>
     </div>
   );
 }

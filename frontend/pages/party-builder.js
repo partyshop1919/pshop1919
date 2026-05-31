@@ -26,8 +26,8 @@ export default function PartyBuilderPage() {
   const mergedItems = useMemo(() => {
     const baseItems = Array.isArray(plan?.items) ? plan.items : [];
     const removed = new Set(removedItemIds.map(String));
-
     const map = new Map();
+
     for (const it of baseItems) {
       const id = String(it.id);
       if (!removed.has(id)) map.set(id, { ...it });
@@ -39,11 +39,7 @@ export default function PartyBuilderPage() {
       const existing = map.get(id);
       if (existing) {
         const qty = (Number(existing.quantity) || 0) + (Number(extra.quantity) || 1);
-        map.set(id, {
-          ...existing,
-          quantity: qty,
-          lineTotalCents: qty * (Number(existing.priceCents) || 0)
-        });
+        map.set(id, { ...existing, quantity: qty, lineTotalCents: qty * (Number(existing.priceCents) || 0) });
       } else {
         map.set(id, {
           id,
@@ -58,27 +54,15 @@ export default function PartyBuilderPage() {
       }
     }
 
-    const out = Array.from(map.values()).map((it) => {
+    return Array.from(map.values()).map((it) => {
       const id = String(it.id);
       const overrideQty = Number(quantityOverrides[id]);
-      const qty = Number.isFinite(overrideQty) && overrideQty > 0
-        ? Math.floor(overrideQty)
-        : Math.max(1, Number(it.quantity) || 1);
-
-      return {
-        ...it,
-        quantity: qty,
-        lineTotalCents: qty * (Number(it.priceCents) || 0)
-      };
+      const qty = Number.isFinite(overrideQty) && overrideQty > 0 ? Math.floor(overrideQty) : Math.max(1, Number(it.quantity) || 1);
+      return { ...it, quantity: qty, lineTotalCents: qty * (Number(it.priceCents) || 0) };
     });
-
-    return out;
   }, [plan?.items, customItems, quantityOverrides, removedItemIds]);
 
-  const totalRON = useMemo(() => {
-    const cents = mergedItems.reduce((sum, it) => sum + (Number(it.lineTotalCents) || 0), 0);
-    return (cents / 100).toFixed(2);
-  }, [mergedItems]);
+  const totalRON = useMemo(() => ((mergedItems.reduce((sum, it) => sum + (Number(it.lineTotalCents) || 0), 0)) / 100).toFixed(2), [mergedItems]);
 
   function onChange(e) {
     const { name, value } = e.target;
@@ -89,9 +73,7 @@ export default function PartyBuilderPage() {
     const raw = String(src || "").trim();
     if (!raw) return "/images/products/baloane.jpg";
     if (/^https?:\/\//i.test(raw)) return raw;
-    if (raw.startsWith("/uploads/")) {
-      return `${BACKEND_URL}${raw}`;
-    }
+    if (raw.startsWith("/uploads/")) return `${BACKEND_URL}${raw}`;
     return raw;
   }
 
@@ -102,7 +84,7 @@ export default function PartyBuilderPage() {
     const data = await buildPartyPlan(form);
     setLoading(false);
     if (!data) {
-      setError("Nu am putut genera planul. Incearca din nou.");
+      setError("We could not generate the party plan. Please try again.");
       return;
     }
     setPlan(data);
@@ -112,24 +94,17 @@ export default function PartyBuilderPage() {
   }
 
   function addPlanToCart() {
-    const entries = mergedItems;
-    if (!entries.length) return;
-
     const currentById = new Map((cartItems || []).map((x) => [String(x.id), Number(x.quantity) || 0]));
-
-    for (const it of entries) {
+    for (const it of mergedItems) {
       const id = String(it?.id || "");
       const qty = Math.max(1, Number(it?.quantity) || 1);
       if (!id) continue;
-
       const existing = currentById.get(id) || 0;
       if (existing > 0) {
         updateQty(id, existing + qty);
-        currentById.set(id, existing + qty);
       } else {
         addToCart({ id });
         updateQty(id, qty);
-        currentById.set(id, qty);
       }
     }
   }
@@ -146,7 +121,6 @@ export default function PartyBuilderPage() {
   function addProductToPlan(product) {
     const id = String(product?.id || "");
     if (!id) return;
-
     setRemovedItemIds((prev) => prev.filter((x) => String(x) !== id));
     setCustomItems((prev) => {
       const next = [...prev];
@@ -155,18 +129,7 @@ export default function PartyBuilderPage() {
         next[i] = { ...next[i], quantity: (Number(next[i].quantity) || 1) + 1 };
         return next;
       }
-      return [
-        ...next,
-        {
-          id,
-          name: String(product.name || "Produs"),
-          slug: String(product.slug || ""),
-          image: String(product.image || ""),
-          category: String(product.category || "uncategorized"),
-          priceCents: Number(product.priceCents) || 0,
-          quantity: 1
-        }
-      ];
+      return [...next, { id, name: String(product.name || "Product"), slug: String(product.slug || ""), image: String(product.image || ""), category: String(product.category || "uncategorized"), priceCents: Number(product.priceCents) || 0, quantity: 1 }];
     });
   }
 
@@ -184,8 +147,7 @@ export default function PartyBuilderPage() {
       });
       return;
     }
-    const nextQty = Math.max(1, currentQty + Number(delta || 0));
-    setQuantityOverrides((prev) => ({ ...prev, [id]: nextQty }));
+    setQuantityOverrides((prev) => ({ ...prev, [id]: Math.max(1, currentQty + Number(delta || 0)) }));
   }
 
   return (
@@ -196,56 +158,49 @@ export default function PartyBuilderPage() {
       <main className="container party-builder-page">
         <section className="party-builder-hero">
           <h1>Party Builder</h1>
-          <p>Configureaza rapid evenimentul si primesti o lista recomandata cu produse si cantitati.</p>
+          <p>Configure your event and receive a recommended list of products and quantities.</p>
           <div className="party-builder-badges">
-            <span>Recomandari inteligente</span>
-            <span>Calcul automat cantitati</span>
-            <span>Adaugare rapida in cos</span>
+            <span>Smart recommendations</span>
+            <span>Automatic quantity planning</span>
+            <span>Fast cart setup</span>
           </div>
         </section>
 
         <form onSubmit={onSubmit} className="party-builder-form">
           <label>
-            Tip eveniment
+            Event type
             <select name="eventType" value={form.eventType} onChange={onChange}>
-              <option value="adult-birthday">Zi de nastere adult</option>
-              <option value="child-birthday">Zi de nastere copil</option>
+              <option value="adult-birthday">Adult birthday</option>
+              <option value="child-birthday">Children&apos;s birthday</option>
               <option value="baby-shower">Baby shower</option>
               <option value="gender-reveal">Gender reveal</option>
             </select>
           </label>
 
           <label>
-            Numar invitati
-            <input
-              name="guests"
-              type="number"
-              min="5"
-              max="200"
-              value={form.guests}
-              onChange={onChange}
-            />
+            Number of guests
+            <input name="guests" type="number" min="5" max="200" value={form.guests} onChange={onChange} />
           </label>
 
           <label>
-            Buget
+            Budget
             <select name="budgetTier" value={form.budgetTier} onChange={onChange}>
-              <option value="low">Mic</option>
-              <option value="medium">Mediu</option>
-              <option value="high">Ridicat</option>
+              <option value="low">Low</option>
+              <option value="medium">Medium</option>
+              <option value="high">High</option>
             </select>
           </label>
 
           <label>
-            Locatie
+            Venue
             <select name="location" value={form.location} onChange={onChange}>
-              <option value="indoor">Interior</option>
-              <option value="outdoor">Exterior</option>
+              <option value="indoor">Indoor</option>
+              <option value="outdoor">Outdoor</option>
             </select>
           </label>
 
           <button className="btn" type="submit" disabled={loading}>
-            {loading ? "Generez..." : "Genereaza plan"}
+            {loading ? "Generating..." : "Generate plan"}
           </button>
         </form>
 
@@ -253,82 +208,41 @@ export default function PartyBuilderPage() {
 
         {plan && (
           <section className="party-builder-result">
-            <h2>Plan recomandat</h2>
-            {!!plan?.notes?.length && (
-              <ul className="party-builder-notes">
-                {plan.notes.map((n, idx) => (
-                  <li key={idx}>{n}</li>
-                ))}
-              </ul>
-            )}
+            <h2>Recommended plan</h2>
+            {!!plan?.notes?.length && <ul className="party-builder-notes">{plan.notes.map((n, idx) => <li key={idx}>{n}</li>)}</ul>}
 
             {!mergedItems.length ? (
-              <p>Nu exista produse potrivite momentan.</p>
+              <p>No suitable products are currently available.</p>
             ) : (
               <>
                 <div className="party-builder-items">
                   {mergedItems.map((it) => (
                     <article key={it.id} className="party-builder-item">
-                      <img
-                        src={resolveImage(it.image)}
-                        alt={it.name}
-                        className="party-builder-item-image"
-                      />
+                      <img src={resolveImage(it.image)} alt={it.name} className="party-builder-item-image" />
                       <div className="party-builder-item-main">
                         <strong>{it.name}</strong>
                         <div className="party-builder-item-category">{it.category}</div>
                         <div className="party-builder-item-qty">
-                          Cantitate:
-                          <button
-                            type="button"
-                            className="pb-qty-btn"
-                            onClick={() => changeItemQuantity(it, -1)}
-                            aria-label={`Scade cantitatea pentru ${it.name}`}
-                          >
-                            -
-                          </button>
+                          Quantity:
+                          <button type="button" className="pb-qty-btn" onClick={() => changeItemQuantity(it, -1)} aria-label={`Decrease quantity for ${it.name}`}>-</button>
                           <strong>{it.quantity}</strong>
-                          <button
-                            type="button"
-                            className="pb-qty-btn"
-                            onClick={() => changeItemQuantity(it, 1)}
-                            aria-label={`Creste cantitatea pentru ${it.name}`}
-                          >
-                            +
-                          </button>
+                          <button type="button" className="pb-qty-btn" onClick={() => changeItemQuantity(it, 1)} aria-label={`Increase quantity for ${it.name}`}>+</button>
                         </div>
                       </div>
-                      <div className="party-builder-item-price">
-                        {((Number(it.lineTotalCents) || 0) / 100).toFixed(2)} RON
-                      </div>
+                      <div className="party-builder-item-price">{((Number(it.lineTotalCents) || 0) / 100).toFixed(2)} RON</div>
                     </article>
                   ))}
                 </div>
 
-                <p className="party-builder-total">
-                  <strong>Total estimat: {totalRON} RON</strong>
-                </p>
+                <p className="party-builder-total"><strong>Estimated total: {totalRON} RON</strong></p>
 
                 <div className="party-builder-actions">
-                  <button className="btn" type="button" onClick={addPlanToCart}>
-                    Adauga planul in cos
+                  <button className="btn" type="button" onClick={addPlanToCart}>Add plan to cart</button>
+                  <button className="btn secondary" type="button" onClick={openCatalog}>Add more products</button>
+                  <button className="btn secondary full" type="button" onClick={() => { if (window.confirm("Would you like to clear the generated plan?")) setPlan(null); }} style={{ marginTop: 10 }}>
+                    Clear plan
                   </button>
-                  <button className="btn secondary" type="button" onClick={openCatalog}>
-                    + Adauga produse
-                  </button>
-                  <button
-            className="btn secondary full"
-            type="button"
-            onClick={() => {
-              if (window.confirm("Vrei sa golesti planul generat?")) setPlan(null);
-            }}
-            style={{ marginTop: 10 }}
-          >
-            Goleste planul
-          </button>
-                  <Link className="btn" href="/cart">
-                    Vezi cosul
-                  </Link>
+                  <Link className="btn" href="/cart">View cart</Link>
                 </div>
               </>
             )}
@@ -339,14 +253,12 @@ export default function PartyBuilderPage() {
           <div className="pb-modal-overlay" onClick={() => setCatalogOpen(false)}>
             <div className="pb-modal" onClick={(e) => e.stopPropagation()}>
               <div className="pb-modal-head">
-                <h3>Adauga produse in plan</h3>
-                <button type="button" className="btn secondary" onClick={() => setCatalogOpen(false)}>
-                  Inchide
-                </button>
+                <h3>Add products to the plan</h3>
+                <button type="button" className="btn secondary" onClick={() => setCatalogOpen(false)}>Close</button>
               </div>
 
               {catalogLoading ? (
-                <p>Se incarca produse...</p>
+                <p>Loading products...</p>
               ) : (
                 <div className="pb-modal-grid">
                   {catalog.map((p) => (
@@ -354,9 +266,7 @@ export default function PartyBuilderPage() {
                       <img src={resolveImage(p.image)} alt={p.name} />
                       <h4>{p.name}</h4>
                       <p>{(Number(p.priceCents || 0) / 100).toFixed(2)} RON</p>
-                      <button type="button" className="btn" onClick={() => addProductToPlan(p)}>
-                        + Adauga
-                      </button>
+                      <button type="button" className="btn" onClick={() => addProductToPlan(p)}>Add</button>
                     </article>
                   ))}
                 </div>

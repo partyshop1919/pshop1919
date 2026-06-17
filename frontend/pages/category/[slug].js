@@ -3,6 +3,7 @@ import Head from "next/head";
 import { useEffect, useMemo, useState } from "react";
 
 import ProductCard from "../../components/ProductCard";
+import CategoryCard from "../../components/CategoryCard";
 import { fetchProducts } from "../../lib/api";
 import { categories } from "../../lib/categories";
 
@@ -67,6 +68,7 @@ export default function CategoryPage() {
   }, [router.isReady, slug, category]);
 
   const title = `${category?.name || (slug ? String(slug) : "Category")} - Party Shop`;
+  const subcategories = Array.isArray(category?.children) ? category.children : [];
 
   if (!router.isReady || loading) return <div className="container"><p>Loading category...</p></div>;
   if (notFound) return <div className="container" style={{ paddingTop: 24 }}><h1>Category not found</h1><p>We could not find the requested category.</p></div>;
@@ -81,6 +83,22 @@ export default function CategoryPage() {
       <div className="container" style={{ paddingTop: 24 }}>
         <button className="back-link" onClick={() => router.back()}>Back</button>
         <h1 style={{ marginTop: 12 }}>{category?.name || String(slug)}</h1>
+
+        {category?.intro && <p className="category-page-intro">{category.intro}</p>}
+
+        {subcategories.length > 0 && (
+          <section className="category-subcategories">
+            <h2>Subcategories</h2>
+            <div className="categories-grid">
+              {subcategories.map((sub) => (
+                <CategoryCard key={sub.id} category={sub} />
+              ))}
+            </div>
+          </section>
+        )}
+
+        <section className="category-products-section">
+          <h2>{subcategories.length > 0 ? "Products in this category" : "Products"}</h2>
         {items.length === 0 ? (
           <p>No products are currently available in this category.</p>
         ) : (
@@ -88,6 +106,7 @@ export default function CategoryPage() {
             {items.map((p) => <ProductCard key={String(p.id)} product={{ ...p, id: String(p.id) }} />)}
           </div>
         )}
+        </section>
       </div>
     </>
   );

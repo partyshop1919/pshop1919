@@ -5,6 +5,7 @@ import { API_URL, BACKEND_URL } from "../lib/api";
 export default function RegisterPage() {
   const emailPopupId = useId();
   const [form, setForm] = useState({ email: "", password: "" });
+  const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState(null);
   const [error, setError] = useState(null);
@@ -114,7 +115,24 @@ export default function RegisterPage() {
 
           <label>
             Password
-            <input type="password" name="password" value={form.password} onChange={onChange} required />
+            <div className="password-field">
+              <input
+                type={showPassword ? "text" : "password"}
+                name="password"
+                value={form.password}
+                onChange={onChange}
+                required
+              />
+              <button
+                type="button"
+                className="password-toggle"
+                onClick={() => setShowPassword((prev) => !prev)}
+                aria-label={showPassword ? "Hide password" : "Show password"}
+                aria-pressed={showPassword}
+              >
+                {showPassword ? "Hide" : "Show"}
+              </button>
+            </div>
           </label>
 
           <label className="auth-inline-check">

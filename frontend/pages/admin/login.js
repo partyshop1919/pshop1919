@@ -6,6 +6,7 @@ import { useAdmin } from "../../lib/auth";
 export default function AdminLogin() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
 
@@ -48,14 +49,24 @@ export default function AdminLogin() {
         />
 
         <label style={{ marginTop: 12, display: "block" }}>Password</label>
-
-        <input
-          type="password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          required
-          style={{ width: "100%", padding: 8, marginTop: 6 }}
-        />
+        <div className="password-field" style={{ marginTop: 6 }}>
+          <input
+            type={showPassword ? "text" : "password"}
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            required
+            style={{ width: "100%", padding: "8px 44px 8px 8px" }}
+          />
+          <button
+            type="button"
+            className="password-toggle"
+            onClick={() => setShowPassword((prev) => !prev)}
+            aria-label={showPassword ? "Hide password" : "Show password"}
+            aria-pressed={showPassword}
+          >
+            {showPassword ? "Hide" : "Show"}
+          </button>
+        </div>
 
         {error && <div style={{ color: "red", marginTop: 10 }}>{error}</div>}
 

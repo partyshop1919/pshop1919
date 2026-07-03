@@ -7,7 +7,7 @@ export default function ContactPage() {
   return (
     <>
       <Head>
-        <title>Contact - Party Shop</title>
+        <title>Contact - Evamat</title>
       </Head>
       <main className="container info-page">
         <section className="info-card">
@@ -24,7 +24,7 @@ export default function ContactPage() {
           </div>
 
           <div className="info-grid">
-            <div><h3>Support email</h3><p>support@partyshop.ro</p></div>
+            <div><h3>Support email</h3><p>support@evamat.ro</p></div>
             <div><h3>Phone</h3><p>+40 700 000 000</p></div>
             <div><h3>Business hours</h3><p>Monday - Friday, 09:00 - 18:00</p></div>
           </div>

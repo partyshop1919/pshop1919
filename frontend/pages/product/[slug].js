@@ -74,8 +74,8 @@ export default function ProductPage() {
   return (
     <>
       <Head>
-        <title>{product.name} - Party Shop</title>
-        <meta name="description" content={`Discover ${product.name} at Party Shop.`} />
+        <title>{product.name} - Evamat</title>
+        <meta name="description" content={`Discover ${product.name} at Evamat.`} />
       </Head>
 
       <div className="container" style={{ paddingTop: 24 }}>

@@ -27,7 +27,7 @@ export default function OauthSuccessPage() {
       return;
     }
 
-    loginUser(token, { email: email || "oauth-user@partyshop.local", role });
+    loginUser(token, { email: email || "oauth-user@evamat.local", role });
     window.location.replace("/");
   }, [router, loginUser]);
 

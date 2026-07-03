@@ -63,7 +63,7 @@ export default function HomePage() {
   return (
     <>
       <Head>
-        <title>Party Shop - Party Supplies</title>
+        <title>Evamat - Party Supplies</title>
         <meta name="description" content="Balloons, decorations, and festive accessories for birthdays, parties, and special events." />
       </Head>
 

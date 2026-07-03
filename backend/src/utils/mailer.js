@@ -53,7 +53,7 @@ export async function sendMail({ to, subject, html }) {
   if (!transporter) throw new Error("Email disabled (missing config)");
 
   return transporter.sendMail({
-    from: `"Party Shop" <${USER}>`,
+    from: `"Evamat" <${USER}>`,
     to: recipient,
     subject: cleanSubject,
     html: cleanHtml
@@ -66,7 +66,7 @@ export async function sendConfirmationEmail({ to, token }) {
     to,
     subject: "Confirm your email address",
     html: `
-      <h2>Welcome to Party Shop!</h2>
+      <h2>Welcome to Evamat!</h2>
       <p>Please confirm your email address to activate your account.</p>
       <p><a href="${confirmUrl}">Confirm email</a></p>
     `

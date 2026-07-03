@@ -67,7 +67,7 @@ export default function CategoryPage() {
     };
   }, [router.isReady, slug, category]);
 
-  const title = `${category?.name || (slug ? String(slug) : "Category")} - Party Shop`;
+  const title = `${category?.name || (slug ? String(slug) : "Category")} - Evamat`;
   const subcategories = Array.isArray(category?.children) ? category.children : [];
 
   if (!router.isReady || loading) return <div className="container"><p>Loading category...</p></div>;

@@ -54,7 +54,7 @@ export default function ProductsPage() {
   return (
     <>
       <Head>
-        <title>{query ? `Search: ${query} - Party Shop` : "All Products - Party Shop"}</title>
+        <title>{query ? `Search: ${query} - Evamat` : "All Products - Evamat"}</title>
         <meta
           name="description"
           content="Discover all products available in our shop: balloons, decorations, and festive accessories."

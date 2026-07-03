@@ -4,7 +4,7 @@ export default function CookiesPage() {
   return (
     <>
       <Head>
-        <title>Cookie Policy - Party Shop</title>
+        <title>Cookie Policy - Evamat</title>
       </Head>
       <main className="container">
         <h1>Cookie Policy</h1>

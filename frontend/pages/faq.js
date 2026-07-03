@@ -4,7 +4,7 @@ export default function FaqPage() {
   return (
     <>
       <Head>
-        <title>FAQ - Party Shop</title>
+        <title>FAQ - Evamat</title>
       </Head>
       <main className="container info-page">
         <section className="info-card">

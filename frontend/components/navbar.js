@@ -67,7 +67,7 @@ export default function Navbar() {
   return (
     <nav className={`navbar ${isShrunk ? "shrink" : ""}`}>
       <Link href="/" className="logo">
-        Party Shop
+        EVAMAT
       </Link>
 
       <div className="nav-categories">

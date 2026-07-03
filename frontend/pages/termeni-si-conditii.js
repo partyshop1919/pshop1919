@@ -4,7 +4,7 @@ export default function TermsPage() {
   return (
     <>
       <Head>
-        <title>Terms and Conditions - Party Shop</title>
+        <title>Terms and Conditions - Evamat</title>
       </Head>
       <main className="container">
         <h1>Terms and Conditions</h1>

@@ -153,7 +153,7 @@ export default function PartyBuilderPage() {
   return (
     <>
       <Head>
-        <title>Party Builder - Party Shop</title>
+        <title>Party Builder - Evamat</title>
       </Head>
       <main className="container party-builder-page">
         <section className="party-builder-hero">

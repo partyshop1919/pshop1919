@@ -4,7 +4,7 @@ export default function PrivacyPage() {
   return (
     <>
       <Head>
-        <title>Privacy Policy - Party Shop</title>
+        <title>Privacy Policy - Evamat</title>
       </Head>
       <main className="container">
         <h1>Privacy Policy</h1>

@@ -4,7 +4,7 @@ export const categories = [
     name: "Balloons",
     slug: "baloane",
     image: "/images/products/baloane.jpg",
-    seoTitle: "Party Balloons - Party Shop",
+    seoTitle: "Party Balloons - Evamat",
     seoDescription: "Discover every kind of balloon for parties: latex, number, foil, and more.",
     h1: "Balloons for every kind of party",
     intro: "Explore our full range of party balloons for birthdays, themed events, and special moments.",
@@ -14,7 +14,7 @@ export const categories = [
         name: "Latex Balloons",
         slug: "baloane-latex",
         image: "/images/categories/baloane-latex.jpg",
-        seoTitle: "Latex Balloons - Great Prices | Party Shop",
+        seoTitle: "Latex Balloons - Great Prices | Evamat",
         seoDescription: "Shop latex balloons for parties. Multiple colors, fast delivery, and great prices.",
         h1: "Colorful latex balloons for parties",
         intro: "Latex balloons are ideal for decorating parties and festive events in many colors and sizes."
@@ -24,7 +24,7 @@ export const categories = [
         name: "Number Balloons",
         slug: "baloane-cifre",
         image: "/images/categories/baloane-cifre.jpg",
-        seoTitle: "Number Balloons - Special Birthdays | Party Shop",
+        seoTitle: "Number Balloons - Special Birthdays | Evamat",
         seoDescription: "Number balloons for birthdays and special occasions. Many styles and fast delivery.",
         h1: "Number balloons for birthdays",
         intro: "Number balloons are perfect for celebrating ages and special milestones at parties."
@@ -34,7 +34,7 @@ export const categories = [
         name: "Foil Balloons",
         slug: "baloane-folie",
         image: "/images/categories/baloane-folie.jpg",
-        seoTitle: "Foil Balloons - Premium Designs | Party Shop",
+        seoTitle: "Foil Balloons - Premium Designs | Evamat",
         seoDescription: "Choose foil balloons for memorable parties with modern design and premium quality.",
         h1: "Foil balloons for parties",
         intro: "Foil balloons add extra style to your party decor and come in a wide variety of shapes."
@@ -46,7 +46,7 @@ export const categories = [
     name: "Party Decor",
     slug: "decor-petrecere",
     image: "/images/products/decor.png",
-    seoTitle: "Party Decorations - Party Shop",
+    seoTitle: "Party Decorations - Evamat",
     seoDescription: "Find party decorations: garlands, banners, confetti, and other festive accessories.",
     h1: "Decorations for unforgettable parties",
     intro: "Choose party decorations that turn every event into a memorable moment.",
@@ -56,7 +56,7 @@ export const categories = [
         name: "Garlands",
         slug: "ghirlande",
         image: "/images/ghirlande.jpg",
-        seoTitle: "Decorative Garlands - Festive Parties | Party Shop",
+        seoTitle: "Decorative Garlands - Festive Parties | Evamat",
         seoDescription: "Decorative garlands for parties and events. Easy to install with a strong visual impact.",
         h1: "Decorative garlands for parties",
         intro: "Decorative garlands are ideal for creating a festive atmosphere at any type of party."
@@ -66,7 +66,7 @@ export const categories = [
         name: "Confetti",
         slug: "confetti",
         image: "/images/confetti.jpg",
-        seoTitle: "Party Confetti - Wow Effect | Party Shop",
+        seoTitle: "Party Confetti - Wow Effect | Evamat",
         seoDescription: "Colorful confetti for fun parties. Ideal for birthdays and special events.",
         h1: "Colorful confetti for events",
         intro: "Confetti adds color and energy to any celebration and works well for every occasion."
@@ -76,7 +76,7 @@ export const categories = [
         name: "Banners",
         slug: "bannere",
         image: "/images/bannere.jpg",
-        seoTitle: "Birthday Banners - Festive Messages | Party Shop",
+        seoTitle: "Birthday Banners - Festive Messages | Evamat",
         seoDescription: "Birthday and party banners for decorating celebrations. Various styles and fast delivery.",
         h1: "Festive and birthday banners",
         intro: "Banners are essential decorative pieces for sharing festive messages at parties."
@@ -88,7 +88,7 @@ export const categories = [
     name: "Birthday Essentials",
     slug: "articole-aniversare",
     image: "/images/products/set-pahare-si-farfurii-24-persoane.jpg",
-    seoTitle: "Birthday Essentials - Party Shop",
+    seoTitle: "Birthday Essentials - Evamat",
     seoDescription: "Candles, hats, cups, and other birthday supplies for memorable parties.",
     h1: "Birthday essentials for parties",
     intro: "Choose the key birthday supplies you need for festive tables and memorable moments.",
@@ -98,7 +98,7 @@ export const categories = [
         name: "Candles",
         slug: "lumanari",
         image: "/images/products/candles.jpeg",
-        seoTitle: "Birthday Candles - Party Shop",
+        seoTitle: "Birthday Candles - Evamat",
         seoDescription: "Birthday cake candles in a variety of colors and styles.",
         h1: "Candles for birthday cakes",
         intro: "Complete your birthday cake with candles suitable for any age."
@@ -108,7 +108,7 @@ export const categories = [
         name: "Party Hats & Accessories",
         slug: "coifuri-si-accesorii",
         image: "/images/products/hats.jpg",
-        seoTitle: "Party Hats and Accessories - Party Shop",
+        seoTitle: "Party Hats and Accessories - Evamat",
         seoDescription: "Festive hats and accessories for birthdays and themed parties.",
         h1: "Party hats and accessories",
         intro: "Fun accessories that bring color and energy to any celebration."
@@ -118,7 +118,7 @@ export const categories = [
         name: "Cups & Plates",
         slug: "pahare-si-farfurii",
         image: "/images/products/set-pahare-petrecere.jpg",
-        seoTitle: "Party Cups and Plates - Party Shop",
+        seoTitle: "Party Cups and Plates - Evamat",
         seoDescription: "Sets of cups and plates for birthdays, events, and parties.",
         h1: "Cups and plates for parties",
         intro: "Practical and festive sets for serving drinks and desserts."

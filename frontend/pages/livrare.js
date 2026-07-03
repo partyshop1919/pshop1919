@@ -4,7 +4,7 @@ export default function DeliveryPage() {
   return (
     <>
       <Head>
-        <title>Shipping - Party Shop</title>
+        <title>Shipping - Evamat</title>
       </Head>
       <main className="container info-page">
         <section className="info-card">

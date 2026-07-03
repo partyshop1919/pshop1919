@@ -1,4 +1,4 @@
-# Party Shop - E-commerce Platform for Party Supplies
+# Evamat - E-commerce Platform for Party Supplies
 
 Un proiect full-stack pentru un magazin online de accesorii pentru petreceri, construit cu Next.js (frontend), Express.js (backend) și Prisma (bază de date).
 
@@ -188,7 +188,7 @@ Acest proiect este pentru uz educațional.
 ---
 // English Verrsion//
 
-# Party Shop - E-commerce Platform for Party Supplies (English Version)
+# Evamat - E-commerce Platform for Party Supplies (English Version)
 
 A full-stack project for an online party supplies store, built with Next.js (frontend), Express.js (backend), and Prisma (database).
 

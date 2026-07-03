@@ -37,7 +37,7 @@ export default function CheckoutPage() {
   const subtotalCents = Number(summary?.subtotalCents || 0);
   const shippingCents = Number(summary?.shippingCents || 0);
   const grandTotalCents = Number(summary?.grandTotalCents || 0);
-  const disableSubmit = submitting || Boolean(stockErrorProductId) || isFormInvalid || hasBlockingErrors || !acceptedLegal || !hasItems;
+  const disableSubmit = submitting || Boolean(stockErrorProductId) || isFormInvalid || hasBlockingErrors || !hasItems;
 
   const submitBlocker = useMemo(() => {
     if (!hasItems) return "Your cart is empty.";
@@ -100,6 +100,12 @@ export default function CheckoutPage() {
 
   async function submitOrder(e) {
     e.preventDefault();
+    if (!acceptedLegal) {
+      const msg = "Please accept the Terms and Conditions and Privacy Policy before confirming the order.";
+      setError(msg);
+      if (typeof window !== "undefined") window.alert(msg);
+      return;
+    }
     if (disableSubmit) {
       setError(submitBlocker || "We cannot place the order yet. Please review your details.");
       return;
@@ -135,7 +141,9 @@ export default function CheckoutPage() {
           setStockErrorProductId(data?.productId ? String(data.productId) : null);
           throw new Error("A product is no longer in stock. Please go back to your cart.");
         }
-        if (res.status === 401) throw new Error("Your session has expired. Please sign in again.");
+        if (res.status === 401) {
+          throw new Error(data?.error || data?.message || "Authentication failed. Please sign in again.");
+        }
         if (!res.ok) throw new Error(data?.details || data?.error || "We could not start the card payment.");
         if (!data?.url) throw new Error("Missing Stripe checkout URL.");
         window.location.assign(data.url);
@@ -152,7 +160,10 @@ export default function CheckoutPage() {
         setStockErrorProductId(data?.productId ? String(data.productId) : null);
         throw new Error("A product is no longer in stock. Please go back to your cart.");
       }
-      if (res.status === 401) throw new Error("Your session has expired. Please sign in again.");
+      if (res.status === 401) {
+        const data = await res.json().catch(() => ({}));
+        throw new Error(data?.error || data?.message || "Authentication failed. Please sign in again.");
+      }
       if (!res.ok) {
         const data = await res.json().catch(() => ({}));
         throw new Error(data?.error || data?.message || "The order could not be placed.");

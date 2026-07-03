@@ -511,6 +511,10 @@ img {
   transition: opacity 0.2s ease;
   padding: 0;
   line-height: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  appearance: none;
 }
 
 .product-card:hover .fav-btn {
@@ -531,10 +535,15 @@ img {
 
 /* Favorite icon override to avoid mojibake hearts */
 .fav-icon {
-  display: inline-block;
-  font-size: 20px;
-  color: rgba(0, 0, 0, 0.6);
-  transition: transform 0.1s ease, color 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.fav-icon::before,
+.fav-btn .fav-icon::before,
+.fav-btn.active .fav-icon::before {
+  content: none !important;
 }
 
 .fav-icon::before {
@@ -554,6 +563,7 @@ img {
   display: block;
   width: 20px;
   height: 20px;
+  overflow: visible;
 }
 
 .fav-icon-shape {

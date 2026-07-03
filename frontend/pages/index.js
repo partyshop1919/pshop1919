@@ -3,37 +3,24 @@ import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 
 import { categories } from "../lib/categories";
-import { fetchProducts } from "../lib/api";
 
 import CategoryCard from "../components/CategoryCard";
 import ProductCard from "../components/ProductCard";
 
-export default function HomePage() {
-  const [items, setItems] = useState([]);
-  const [loading, setLoading] = useState(true);
+const SSR_API_URL =
+  process.env.NEXT_PUBLIC_API_URL ||
+  (process.env.NODE_ENV === "production"
+    ? "https://api.evamat.ro/api"
+    : "http://localhost:4000/api");
+
+export default function HomePage({ initialItems = [] }) {
+  const [items] = useState(Array.isArray(initialItems) ? initialItems : []);
+  const [loading] = useState(false);
   const testimonials = [
     { id: 1, name: "Andreea, Bucharest", text: "My order arrived quickly and the decor looked exactly how we wanted it for the birthday party.", rating: 5 },
     { id: 2, name: "Mihai, Cluj-Napoca", text: "Party Builder helped me choose the right products for the number of guests.", rating: 5 },
     { id: 3, name: "Ioana, Iasi", text: "Great products, fair prices, and clear communication throughout the order.", rating: 4 }
   ];
-
-  useEffect(() => {
-    let active = true;
-    (async () => {
-      try {
-        const list = await fetchProducts();
-        if (!active) return;
-        setItems(Array.isArray(list) ? list : []);
-      } catch {
-        if (active) setItems([]);
-      } finally {
-        if (active) setLoading(false);
-      }
-    })();
-    return () => {
-      active = false;
-    };
-  }, []);
 
   const featuredProducts = useMemo(() => {
     if (!Array.isArray(items) || items.length === 0) return [];
@@ -159,4 +146,27 @@ export default function HomePage() {
       </main>
     </>
   );
+}
+
+export async function getServerSideProps() {
+  try {
+    const res = await fetch(`${SSR_API_URL}/products`, {
+      headers: { Accept: "application/json" }
+    });
+
+    if (!res.ok) {
+      return { props: { initialItems: [] } };
+    }
+
+    const data = await res.json().catch(() => ({}));
+    const initialItems = Array.isArray(data?.items) ? data.items : [];
+
+    return {
+      props: { initialItems }
+    };
+  } catch {
+    return {
+      props: { initialItems: [] }
+    };
+  }
 }

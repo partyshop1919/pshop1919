@@ -57,7 +57,7 @@ export async function fetchProducts(params = {}) {
   }
 
   let lastErr = null;
-  const retryDelays = [0, 3000, 8000, 15000]; // tolerate Render cold start on free plan
+  const retryDelays = [0, 1200, 2500]; // shorter retries to avoid 30s+ waits on category/product pages
 
   for (let i = 0; i < retryDelays.length; i++) {
     try {

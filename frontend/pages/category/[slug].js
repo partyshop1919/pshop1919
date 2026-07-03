@@ -1,18 +1,20 @@
 import { useRouter } from "next/router";
 import Head from "next/head";
-import { useEffect, useMemo, useState } from "react";
+import { useMemo } from "react";
 
 import ProductCard from "../../components/ProductCard";
 import CategoryCard from "../../components/CategoryCard";
-import { fetchProducts } from "../../lib/api";
 import { categories } from "../../lib/categories";
 
-export default function CategoryPage() {
+const SSR_API_URL =
+  process.env.NEXT_PUBLIC_API_URL ||
+  (process.env.NODE_ENV === "production"
+    ? "https://api.evamat.ro/api"
+    : "http://localhost:4000/api");
+
+export default function CategoryPage({ initialItems = [], initialNotFound = false, initialSlug = "" }) {
   const router = useRouter();
-  const { slug } = router.query;
-  const [items, setItems] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [notFound, setNotFound] = useState(false);
+  const slug = String(router.query?.slug || initialSlug || "");
 
   const category = useMemo(() => {
     if (!slug) return null;
@@ -25,52 +27,12 @@ export default function CategoryPage() {
     }
     return null;
   }, [slug]);
-
-  useEffect(() => {
-    if (!router.isReady) return;
-    let active = true;
-    (async () => {
-      setLoading(true);
-      setNotFound(false);
-      try {
-        if (!category) {
-          const list = await fetchProducts({ category: String(slug) });
-          if (!active) return;
-          setItems(Array.isArray(list) ? list : []);
-          if (!list || list.length === 0) setNotFound(true);
-          return;
-        }
-
-        const categoryNames = [category.name, ...(Array.isArray(category.children) ? category.children.map((c) => c.name) : [])].filter(Boolean);
-        const results = await Promise.all(categoryNames.map((name) => fetchProducts({ category: name })));
-        if (!active) return;
-
-        const map = new Map();
-        for (const arr of results) {
-          if (!Array.isArray(arr)) continue;
-          for (const p of arr) {
-            const id = p?.id != null ? String(p.id) : null;
-            if (id && !map.has(id)) map.set(id, p);
-          }
-        }
-        setItems(Array.from(map.values()));
-      } catch {
-        if (!active) return;
-        setNotFound(true);
-        setItems([]);
-      } finally {
-        if (active) setLoading(false);
-      }
-    })();
-    return () => {
-      active = false;
-    };
-  }, [router.isReady, slug, category]);
+  const items = Array.isArray(initialItems) ? initialItems : [];
+  const notFound = Boolean(initialNotFound);
 
   const title = `${category?.name || (slug ? String(slug) : "Category")} - Evamat`;
   const subcategories = Array.isArray(category?.children) ? category.children : [];
 
-  if (!router.isReady || loading) return <div className="container"><p>Loading category...</p></div>;
   if (notFound) return <div className="container" style={{ paddingTop: 24 }}><h1>Category not found</h1><p>We could not find the requested category.</p></div>;
 
   return (
@@ -110,4 +72,70 @@ export default function CategoryPage() {
       </div>
     </>
   );
+}
+
+export async function getServerSideProps(context) {
+  const slug = String(context.params?.slug || "").trim();
+
+  function findCategoryBySlug(value) {
+    for (const cat of categories) {
+      if (cat.slug === value) return cat;
+      if (Array.isArray(cat.children)) {
+        const sub = cat.children.find((c) => c.slug === value);
+        if (sub) return sub;
+      }
+    }
+    return null;
+  }
+
+  async function fetchCategoryProducts(categoryName) {
+    const url = `${SSR_API_URL}/products?category=${encodeURIComponent(String(categoryName || "").trim())}`;
+    const res = await fetch(url, { headers: { Accept: "application/json" } });
+    if (!res.ok) return [];
+    const data = await res.json().catch(() => ({}));
+    return Array.isArray(data?.items) ? data.items : [];
+  }
+
+  try {
+    const category = findCategoryBySlug(slug);
+
+    if (!category) {
+      const list = await fetchCategoryProducts(slug);
+      return {
+        props: {
+          initialItems: list,
+          initialNotFound: list.length === 0,
+          initialSlug: slug
+        }
+      };
+    }
+
+    const categoryNames = [category.name, ...(Array.isArray(category.children) ? category.children.map((c) => c.name) : [])].filter(Boolean);
+    const results = await Promise.all(categoryNames.map((name) => fetchCategoryProducts(name)));
+
+    const map = new Map();
+    for (const arr of results) {
+      if (!Array.isArray(arr)) continue;
+      for (const p of arr) {
+        const id = p?.id != null ? String(p.id) : null;
+        if (id && !map.has(id)) map.set(id, p);
+      }
+    }
+
+    return {
+      props: {
+        initialItems: Array.from(map.values()),
+        initialNotFound: false,
+        initialSlug: slug
+      }
+    };
+  } catch {
+    return {
+      props: {
+        initialItems: [],
+        initialNotFound: true,
+        initialSlug: slug
+      }
+    };
+  }
 }

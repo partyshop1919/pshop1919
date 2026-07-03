@@ -18,6 +18,28 @@ function normalizeOrigin(value = "") {
   return String(value || "").trim().replace(/\/+$/, "");
 }
 
+function expandAllowedOrigin(value = "") {
+  const normalized = normalizeOrigin(value);
+  if (!normalized) return [];
+
+  const out = new Set([normalized]);
+  try {
+    const url = new URL(normalized);
+    const host = url.hostname.toLowerCase();
+    if (!host || host === "localhost" || host === "127.0.0.1") return Array.from(out);
+
+    if (host.startsWith("www.")) {
+      out.add(`${url.protocol}//${host.slice(4)}`);
+    } else {
+      out.add(`${url.protocol}//www.${host}`);
+    }
+  } catch {
+    return Array.from(out);
+  }
+
+  return Array.from(out);
+}
+
 /* =====================
    CORS
 ===================== */
@@ -31,7 +53,7 @@ const allowedOrigins = Array.from(
       "http://127.0.0.1:3000",
       "http://172.31.112.1:3000"
     ]
-      .map((x) => normalizeOrigin(x))
+      .flatMap((x) => expandAllowedOrigin(x))
       .filter(Boolean)
   )
 );

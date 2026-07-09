@@ -41,7 +41,7 @@ export default function App({ Component, pageProps }) {
 
                 <div className="site-footer-cta">
                   <a
-                    href="https://wa.me/40700000000?text=Hello%20Evamat!%20I%20would%20like%20more%20details%20about%20your%20products."
+                    href="https://wa.me/40761189399?text=Hello%20Evamat!%20I%20would%20like%20more%20details%20about%20your%20products."
                     target="_blank"
                     rel="noreferrer"
                     className="btn whatsapp-btn"

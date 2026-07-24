@@ -17,9 +17,9 @@ export default function HomePage({ initialItems = [] }) {
   const [items] = useState(Array.isArray(initialItems) ? initialItems : []);
   const [loading] = useState(false);
   const testimonials = [
-    { id: 1, name: "Andreea, Bucharest", text: "My order arrived quickly and the decor looked exactly how we wanted it for the birthday party.", rating: 5 },
-    { id: 2, name: "Mihai, Cluj-Napoca", text: "Party Builder helped me choose the right products for the number of guests.", rating: 5 },
-    { id: 3, name: "Ioana, Iasi", text: "Great products, fair prices, and clear communication throughout the order.", rating: 4 }
+    { id: 1, name: "Andreea, București", text: "Comanda a ajuns repede, iar decorul a arătat exact cum ne-am dorit pentru aniversare.", rating: 5 },
+    { id: 2, name: "Mihai, Cluj-Napoca", text: "Constructorul de petrecere m-a ajutat să aleg produsele potrivite pentru numărul de invitați.", rating: 5 },
+    { id: 3, name: "Ioana, Iași", text: "Produse foarte bune, prețuri corecte și comunicare clară pe tot parcursul comenzii.", rating: 4 }
   ];
 
   const featuredProducts = useMemo(() => {
@@ -50,34 +50,34 @@ export default function HomePage({ initialItems = [] }) {
   return (
     <>
       <Head>
-        <title>Evamat - Party Supplies</title>
-        <meta name="description" content="Balloons, decorations, and festive accessories for birthdays, parties, and special events." />
+        <title>Evamat - Articole pentru petreceri</title>
+        <meta name="description" content="Baloane, decorațiuni și accesorii festive pentru aniversări, petreceri și evenimente speciale." />
       </Head>
 
       <main className="homepage">
         <section className="hero">
           <div className="hero-content">
-            <h1>Everything for unforgettable parties</h1>
-            <p>Discover balloons, decorations, and festive accessories for birthdays, themed parties, and special events.</p>
+            <h1>Totul pentru petreceri memorabile</h1>
+            <p>Descoperă baloane, decorațiuni și accesorii festive pentru aniversări, petreceri tematice și evenimente speciale.</p>
             <ul className="hero-benefits">
-              <li>Fast delivery from stock</li>
-              <li>Products for all ages</li>
-              <li>Affordable prices</li>
+              <li>Livrare rapidă din stoc</li>
+              <li>Produse pentru toate vârstele</li>
+              <li>Prețuri accesibile</li>
             </ul>
 
             <Link href="#categories" className="hero-btn">
-              View categories
+              Vezi categoriile
             </Link>
           </div>
         </section>
 
         <section className="home-featured">
-          <h2>Featured products</h2>
+          <h2>Produse recomandate</h2>
           {!loading && featuredSlides.length > 0 && (
             <div className="featured-slider">
               <div className="slider-controls">
-                <button type="button" className="slider-arrow" onClick={() => setFeaturedSlideIndex((prev) => (prev - 1 + featuredSlides.length) % featuredSlides.length)} aria-label="Previous">{"<"}</button>
-                <button type="button" className="slider-arrow" onClick={() => setFeaturedSlideIndex((prev) => (prev + 1) % featuredSlides.length)} aria-label="Next">{">"}</button>
+                <button type="button" className="slider-arrow" onClick={() => setFeaturedSlideIndex((prev) => (prev - 1 + featuredSlides.length) % featuredSlides.length)} aria-label="Anterior">{"<"}</button>
+                <button type="button" className="slider-arrow" onClick={() => setFeaturedSlideIndex((prev) => (prev + 1) % featuredSlides.length)} aria-label="Următor">{">"}</button>
               </div>
 
               <div className="slider-viewport">
@@ -98,15 +98,15 @@ export default function HomePage({ initialItems = [] }) {
 
           {!loading && featuredSlides.length === 0 && (
             <div className="empty-state">
-              <div className="empty-icon">New</div>
-              <h3>More products coming soon</h3>
-              <p>We are adding new products soon. Please check back shortly.</p>
+              <div className="empty-icon">Nou</div>
+              <h3>Urmează și alte produse</h3>
+              <p>Adăugăm produse noi în curând. Revino în scurt timp.</p>
             </div>
           )}
         </section>
 
         <section id="categories" className="home-categories">
-          <h2>Popular categories</h2>
+          <h2>Categorii populare</h2>
           <div className="categories-grid">
             {categories.map((category) => (
               <CategoryCard key={category.id} category={category} />
@@ -115,17 +115,17 @@ export default function HomePage({ initialItems = [] }) {
         </section>
 
         <section className="home-promo">
-          <h2>Planning a party?</h2>
-          <p>Choose from hundreds of festive products and build a memorable setup in minutes.</p>
+          <h2>Plănuiești o petrecere?</h2>
+          <p>Alege din sute de produse festive și creează rapid un decor memorabil.</p>
           <div className="promo-actions">
-            <Link href="/products" className="promo-btn">View products</Link>
-            <Link href="/party-builder" className="promo-btn promo-btn-secondary">Try Party Builder</Link>
+            <Link href="/products" className="promo-btn">Vezi produsele</Link>
+            <Link href="/party-builder" className="promo-btn promo-btn-secondary">Încearcă constructorul</Link>
           </div>
         </section>
 
         <section className="home-testimonials">
-          <h2>Customer feedback</h2>
-          <p className="testimonials-subtitle">A few highlights from recent customer feedback.</p>
+          <h2>Păreri de la clienți</h2>
+          <p className="testimonials-subtitle">Câteva impresii din feedback-ul recent primit de la clienți.</p>
           <div className="testimonials-grid">
             {testimonials.map((t) => (
               <article key={t.id} className="testimonial-card">
@@ -133,7 +133,7 @@ export default function HomePage({ initialItems = [] }) {
                   <div className="testimonial-avatar">{t.name.charAt(0)}</div>
                   <div>
                     <h3>{t.name}</h3>
-                    <div className="testimonial-stars" aria-label={`Rating ${t.rating} out of 5 stars`}>
+                    <div className="testimonial-stars" aria-label={`Evaluare ${t.rating} din 5 stele`}>
                       {"*".repeat(t.rating)}
                     </div>
                   </div>

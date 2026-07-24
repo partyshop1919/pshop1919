@@ -30,27 +30,27 @@ export default function CategoryPage({ initialItems = [], initialNotFound = fals
   const items = Array.isArray(initialItems) ? initialItems : [];
   const notFound = Boolean(initialNotFound);
 
-  const title = `${category?.name || (slug ? String(slug) : "Category")} - Evamat`;
+  const title = `${category?.name || (slug ? String(slug) : "Categorie")} - Evamat`;
   const subcategories = Array.isArray(category?.children) ? category.children : [];
 
-  if (notFound) return <div className="container" style={{ paddingTop: 24 }}><h1>Category not found</h1><p>We could not find the requested category.</p></div>;
+  if (notFound) return <div className="container" style={{ paddingTop: 24 }}><h1>Categorie inexistentă</h1><p>Nu am găsit categoria cerută.</p></div>;
 
   return (
     <>
       <Head>
         <title>{title}</title>
-        <meta name="description" content={`Products from the ${category?.name || String(slug)} category.`} />
+        <meta name="description" content={`Produse din categoria ${category?.name || String(slug)}.`} />
       </Head>
 
       <div className="container" style={{ paddingTop: 24 }}>
-        <button className="back-link" onClick={() => router.back()}>Back</button>
+        <button className="back-link" onClick={() => router.back()}>Înapoi</button>
         <h1 style={{ marginTop: 12 }}>{category?.name || String(slug)}</h1>
 
         {category?.intro && <p className="category-page-intro">{category.intro}</p>}
 
         {subcategories.length > 0 && (
           <section className="category-subcategories">
-            <h2>Subcategories</h2>
+            <h2>Subcategorii</h2>
             <div className="categories-grid">
               {subcategories.map((sub) => (
                 <CategoryCard key={sub.id} category={sub} />
@@ -60,9 +60,9 @@ export default function CategoryPage({ initialItems = [], initialNotFound = fals
         )}
 
         <section className="category-products-section">
-          <h2>{subcategories.length > 0 ? "Products in this category" : "Products"}</h2>
+          <h2>{subcategories.length > 0 ? "Produse din această categorie" : "Produse"}</h2>
         {items.length === 0 ? (
-          <p>No products are currently available in this category.</p>
+          <p>Momentan nu există produse disponibile în această categorie.</p>
         ) : (
           <div className="products-grid">
             {items.map((p) => <ProductCard key={String(p.id)} product={{ ...p, id: String(p.id) }} />)}

@@ -22,31 +22,31 @@ export default function App({ Component, pageProps }) {
             <footer className="site-footer-wrap">
               <div className="container site-footer">
                 <div className="site-footer-top">
-                  <h3>Useful information</h3>
-                  <p>Contact details, shipping, returns, and quick answers all in one place.</p>
+                  <h3>Informații utile</h3>
+                  <p>Date de contact, livrare, retururi și răspunsuri rapide, toate într-un singur loc.</p>
                 </div>
 
                 <div className="site-footer-links">
                   <Link href="/contact">Contact</Link>
-                  <Link href="/livrare">Shipping</Link>
-                  <Link href="/retur">Returns</Link>
+                  <Link href="/livrare">Livrare</Link>
+                  <Link href="/retur">Retur</Link>
                   <Link href="/faq">FAQ</Link>
                 </div>
 
                 <div className="site-footer-links legal">
-                  <Link href="/politica-confidentialitate">Privacy Policy</Link>
-                  <Link href="/politica-cookies">Cookie Policy</Link>
-                  <Link href="/termeni-si-conditii">Terms and Conditions</Link>
+                  <Link href="/politica-confidentialitate">Politica de confidențialitate</Link>
+                  <Link href="/politica-cookies">Politica de cookies</Link>
+                  <Link href="/termeni-si-conditii">Termeni și condiții</Link>
                 </div>
 
                 <div className="site-footer-cta">
                   <a
-                    href="https://wa.me/40761189399?text=Hello%20Evamat!%20I%20would%20like%20more%20details%20about%20your%20products."
+                    href="https://wa.me/40761189399?text=Bună%20Evamat!%20Aș%20dori%20mai%20multe%20detalii%20despre%20produsele%20voastre."
                     target="_blank"
                     rel="noreferrer"
                     className="btn whatsapp-btn"
                   >
-                    WhatsApp Contact
+                    Contact WhatsApp
                   </a>
                 </div>
               </div>

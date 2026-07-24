@@ -22,13 +22,13 @@ export default function AdminLogin() {
       const res = await adminLogin(email, password);
 
       if (!res?.token) {
-        throw new Error(res?.error || "Login failed");
+        throw new Error(res?.error || "Autentificarea a eșuat");
       }
 
       loginAdmin(res.token);
       router.push("/admin/products");
     } catch (err) {
-      setError(err?.message || "Login failed");
+      setError(err?.message || "Autentificarea a eșuat");
     } finally {
       setLoading(false);
     }
@@ -36,7 +36,7 @@ export default function AdminLogin() {
 
   return (
     <div style={{ maxWidth: 380, margin: "60px auto" }}>
-      <h2>Admin Login</h2>
+      <h2>Autentificare admin</h2>
 
       <form onSubmit={handleLogin}>
         <label>Email</label>
@@ -48,7 +48,7 @@ export default function AdminLogin() {
           style={{ width: "100%", padding: 8, marginTop: 6 }}
         />
 
-        <label style={{ marginTop: 12, display: "block" }}>Password</label>
+        <label style={{ marginTop: 12, display: "block" }}>Parolă</label>
         <div className="password-field" style={{ marginTop: 6 }}>
           <input
             type={showPassword ? "text" : "password"}
@@ -61,17 +61,17 @@ export default function AdminLogin() {
             type="button"
             className="password-toggle"
             onClick={() => setShowPassword((prev) => !prev)}
-            aria-label={showPassword ? "Hide password" : "Show password"}
+            aria-label={showPassword ? "Ascunde parola" : "Arată parola"}
             aria-pressed={showPassword}
           >
-            {showPassword ? "Hide" : "Show"}
+            {showPassword ? "Ascunde" : "Arată"}
           </button>
         </div>
 
         {error && <div style={{ color: "red", marginTop: 10 }}>{error}</div>}
 
         <button type="submit" disabled={loading} style={{ marginTop: 16, padding: "8px 16px" }}>
-          {loading ? "Logging in..." : "Login"}
+          {loading ? "Se autentifică..." : "Autentificare"}
         </button>
       </form>
     </div>

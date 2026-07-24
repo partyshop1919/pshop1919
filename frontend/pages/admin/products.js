@@ -11,15 +11,15 @@ import {
 import { useAdmin } from "../../lib/auth";
 
 const CATEGORIES = [
-  "Latex Balloons",
-  "Number Balloons",
-  "Foil Balloons",
-  "Garlands",
+  "Baloane latex",
+  "Baloane cifre",
+  "Baloane folie",
+  "Ghirlande",
   "Confetti",
-  "Banners",
-  "Cups & Plates",
-  "Party Hats & Accessories",
-  "uncategorized"
+  "Bannere",
+  "Pahare și farfurii",
+  "Coifuri și accesorii",
+  "fără categorie"
 ];
 
 function resolveImage(image) {
@@ -47,7 +47,7 @@ export default function AdminProductsPage() {
     stock: 0,
     image: "",
     images: "",
-    category: "uncategorized",
+    category: "fără categorie",
     featured: false
   });
   const [editingId, setEditingId] = useState(null);
@@ -58,7 +58,7 @@ export default function AdminProductsPage() {
     stock: 0,
     image: "",
     images: "",
-    category: "uncategorized",
+    category: "fără categorie",
     featured: false
   });
 
@@ -77,7 +77,7 @@ export default function AdminProductsPage() {
       } catch {
         if (active) {
           setItems([]);
-          setError("Unable to load products.");
+          setError("Nu am putut încărca produsele.");
         }
       } finally {
         if (active) setLoading(false);
@@ -101,7 +101,7 @@ export default function AdminProductsPage() {
       const data = await adminGetProducts();
       setItems(Array.isArray(data) ? data : []);
     } catch {
-      setError("Unable to reload products.");
+      setError("Nu am putut reîncărca produsele.");
     } finally {
       setLoading(false);
     }
@@ -125,7 +125,7 @@ export default function AdminProductsPage() {
     const out = await adminUploadProductImage(file);
     setUploading(false);
     if (!out?.image) {
-      setError(out?.error || "Upload failed.");
+      setError(out?.error || "Încărcarea imaginii a eșuat.");
       return;
     }
     setForm((prev) => ({ ...prev, image: out.image }));
@@ -139,7 +139,7 @@ export default function AdminProductsPage() {
     const out = await adminUploadProductImage(file);
     setUploading(false);
     if (!out?.image) {
-      setError(out?.error || "Upload failed.");
+      setError(out?.error || "Încărcarea imaginii a eșuat.");
       return;
     }
     setEdit((prev) => ({ ...prev, image: out.image }));
@@ -157,13 +157,13 @@ export default function AdminProductsPage() {
       stock: Number(form.stock) || 0,
       image: String(form.image || "").trim(),
       images: String(form.images || "").split(",").map((x) => x.trim()).filter(Boolean),
-      category: String(form.category || "uncategorized"),
+      category: String(form.category || "fără categorie"),
       featured: Boolean(form.featured)
     };
     const res = await adminCreateProduct(payload);
     setSaving(false);
     if (!res?.ok) {
-      setError(res?.error || "Unable to create the product.");
+      setError(res?.error || "Nu am putut crea produsul.");
       return;
     }
     setForm({
@@ -173,7 +173,7 @@ export default function AdminProductsPage() {
       stock: 0,
       image: "",
       images: "",
-      category: "uncategorized",
+      category: "fără categorie",
       featured: false
     });
     await reload();
@@ -188,7 +188,7 @@ export default function AdminProductsPage() {
       stock: Number(p.stock) || 0,
       image: p.image || "",
       images: Array.isArray(p.images) ? p.images.join(", ") : "",
-      category: p.category || "uncategorized",
+      category: p.category || "fără categorie",
       featured: Boolean(p.featured)
     });
   }
@@ -203,13 +203,13 @@ export default function AdminProductsPage() {
       stock: Number(edit.stock) || 0,
       image: String(edit.image || "").trim(),
       images: String(edit.images || "").split(",").map((x) => x.trim()).filter(Boolean),
-      category: String(edit.category || "uncategorized"),
+      category: String(edit.category || "fără categorie"),
       featured: Boolean(edit.featured)
     };
     const res = await adminUpdateProduct(productId, payload);
     setSaving(false);
     if (!res?.ok) {
-      setError(res?.error || "Unable to save the product.");
+      setError(res?.error || "Nu am putut salva produsul.");
       return;
     }
     setEditingId(null);
@@ -221,17 +221,17 @@ export default function AdminProductsPage() {
     setError(null);
     const res = await adminUpdateProduct(p.id, { featured: !p.featured });
     setSaving(false);
-    if (!res?.ok) setError(res?.error || "Unable to update the featured status.");
+    if (!res?.ok) setError(res?.error || "Nu am putut actualiza statusul de produs recomandat.");
     await reload();
   }
 
   async function remove(p) {
-    if (!confirm(`Delete product: ${p.name}?`)) return;
+    if (!confirm(`Ștergi produsul: ${p.name}?`)) return;
     setSaving(true);
     setError(null);
     const res = await adminDeleteProduct(p.id);
     setSaving(false);
-    if (!res?.ok) setError(res?.error || "Unable to delete the product.");
+    if (!res?.ok) setError(res?.error || "Nu am putut șterge produsul.");
     await reload();
   }
 
@@ -240,30 +240,30 @@ export default function AdminProductsPage() {
   return (
     <div className="container">
       <div style={{ display: "flex", justifyContent: "space-between", gap: 12, alignItems: "center" }}>
-        <h1>Admin Products</h1>
-        <button className="btn" onClick={logoutAdmin}>Admin logout</button>
+        <h1>Produse admin</h1>
+        <button className="btn" onClick={logoutAdmin}>Ieșire admin</button>
       </div>
 
       {error && <p style={{ color: "red" }}>{error}</p>}
 
       <div style={{ margin: "16px 0" }}>
-        <input value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Search products..." style={{ width: "100%", padding: 10 }} />
+        <input value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Caută produse..." style={{ width: "100%", padding: 10 }} />
       </div>
 
-      <h2>Add product</h2>
+      <h2>Adaugă produs</h2>
       <form onSubmit={create} style={{ display: "grid", gap: 10, maxWidth: 520 }}>
-        <input name="name" value={form.name} onChange={updateField} placeholder="Name" required />
-        <textarea name="description" value={form.description} onChange={updateField} placeholder="Product description" rows={3} />
-        <input name="priceCents" value={form.priceCents} onChange={updateField} placeholder="Price cents" type="number" min="0" required />
-        <input name="stock" value={form.stock} onChange={updateField} placeholder="Stock" type="number" min="0" />
+        <input name="name" value={form.name} onChange={updateField} placeholder="Nume" required />
+        <textarea name="description" value={form.description} onChange={updateField} placeholder="Descriere produs" rows={3} />
+        <input name="priceCents" value={form.priceCents} onChange={updateField} placeholder="Preț în bani (cents)" type="number" min="0" required />
+        <input name="stock" value={form.stock} onChange={updateField} placeholder="Stoc" type="number" min="0" />
 
         <div style={{ display: "grid", gap: 8 }}>
-          <label style={{ fontWeight: 600 }}>Upload image</label>
+          <label style={{ fontWeight: 600 }}>Încarcă imagine</label>
           <input type="file" accept="image/*" onChange={handleCreateImageFile} />
-          {uploading && <div>Uploading...</div>}
-          <input name="image" value={form.image} onChange={updateField} placeholder="Image path (/uploads/... or /images/...)" />
-          <input name="images" value={form.images} onChange={updateField} placeholder="Extra images (max 2), separated by commas" />
-          {resolveImage(form.image) && <img src={resolveImage(form.image)} alt="preview" style={{ width: 140, height: 140, objectFit: "cover", borderRadius: 10, border: "1px solid #333" }} />}
+          {uploading && <div>Se încarcă...</div>}
+          <input name="image" value={form.image} onChange={updateField} placeholder="Cale imagine (/uploads/... sau /images/...)" />
+          <input name="images" value={form.images} onChange={updateField} placeholder="Imagini extra (maxim 2), separate prin virgulă" />
+          {resolveImage(form.image) && <img src={resolveImage(form.image)} alt="previzualizare" style={{ width: 140, height: 140, objectFit: "cover", borderRadius: 10, border: "1px solid #333" }} />}
         </div>
 
         <select name="category" value={form.category} onChange={updateField}>
@@ -272,18 +272,18 @@ export default function AdminProductsPage() {
 
         <label style={{ display: "flex", alignItems: "center", gap: 8 }}>
           <input type="checkbox" name="featured" checked={form.featured} onChange={updateField} />
-          Featured
+          Recomandat
         </label>
 
-        <button className="btn" disabled={saving || uploading}>{saving ? "Saving..." : "Create"}</button>
+        <button className="btn" disabled={saving || uploading}>{saving ? "Se salvează..." : "Creează"}</button>
       </form>
 
       <hr style={{ margin: "24px 0" }} />
 
-      <h2>Products</h2>
+      <h2>Produse</h2>
 
       {loading ? (
-        <p>Loading...</p>
+        <p>Se încarcă...</p>
       ) : (
         <div style={{ display: "grid", gap: 12 }}>
           {filtered.map((p) => {
@@ -301,16 +301,16 @@ export default function AdminProductsPage() {
                       <div>
                         <strong>{p.name}</strong>
                         <div>{(p.priceCents / 100).toFixed(2)} RON</div>
-                        <div>Stock: {p.stock}</div>
-                        <div>Category: {p.category}</div>
-                        <div>Featured: {String(p.featured)}</div>
-                        <div style={{ maxWidth: 560, color: "var(--secondary)" }}>Description: {p.description || "-"}</div>
-                        <div style={{ opacity: 0.8, wordBreak: "break-all" }}>Image: {p.image || "-"}</div>
+                        <div>Stoc: {p.stock}</div>
+                        <div>Categorie: {p.category}</div>
+                        <div>Recomandat: {String(p.featured)}</div>
+                        <div style={{ maxWidth: 560, color: "var(--secondary)" }}>Descriere: {p.description || "-"}</div>
+                        <div style={{ opacity: 0.8, wordBreak: "break-all" }}>Imagine: {p.image || "-"}</div>
                       </div>
                     ) : (
                       <div style={{ display: "grid", gap: 8, minWidth: 340 }}>
                         <input name="name" value={edit.name} onChange={updateEditField} />
-                        <textarea name="description" rows={3} value={edit.description} onChange={updateEditField} placeholder="Product description" />
+                        <textarea name="description" rows={3} value={edit.description} onChange={updateEditField} placeholder="Descriere produs" />
                         <input name="priceCents" type="number" min="0" value={edit.priceCents} onChange={updateEditField} />
                         <input name="stock" type="number" min="0" value={edit.stock} onChange={updateEditField} />
                         <select name="category" value={edit.category} onChange={updateEditField}>
@@ -318,12 +318,12 @@ export default function AdminProductsPage() {
                         </select>
                         <label style={{ display: "flex", alignItems: "center", gap: 8 }}>
                           <input type="checkbox" name="featured" checked={edit.featured} onChange={updateEditField} />
-                          Featured
+                          Recomandat
                         </label>
                         <div style={{ display: "grid", gap: 6 }}>
                           <input type="file" accept="image/*" onChange={handleEditImageFile} />
                           <input name="image" value={edit.image} onChange={updateEditField} />
-                          <input name="images" value={edit.images} onChange={updateEditField} placeholder="Extra images (max 2), separated by commas" />
+                          <input name="images" value={edit.images} onChange={updateEditField} placeholder="Imagini extra (maxim 2), separate prin virgulă" />
                         </div>
                       </div>
                     )}
@@ -332,14 +332,14 @@ export default function AdminProductsPage() {
                   <div style={{ display: "grid", gap: 8, alignContent: "start" }}>
                     {!isEditing ? (
                       <>
-                        <button className="btn" type="button" onClick={() => startEdit(p)} disabled={saving || uploading}>Edit</button>
-                        <button className="btn" type="button" onClick={() => toggleFeatured(p)} disabled={saving || uploading}>Toggle Featured</button>
-                        <button className="btn" type="button" onClick={() => remove(p)} disabled={saving || uploading}>Delete</button>
+                        <button className="btn" type="button" onClick={() => startEdit(p)} disabled={saving || uploading}>Editează</button>
+                        <button className="btn" type="button" onClick={() => toggleFeatured(p)} disabled={saving || uploading}>Comută recomandat</button>
+                        <button className="btn" type="button" onClick={() => remove(p)} disabled={saving || uploading}>Șterge</button>
                       </>
                     ) : (
                       <>
-                        <button className="btn" type="button" onClick={() => saveEdit(p.id)} disabled={saving || uploading}>{saving ? "Saving..." : "Save"}</button>
-                        <button className="btn" type="button" onClick={() => setEditingId(null)} disabled={saving || uploading}>Cancel</button>
+                        <button className="btn" type="button" onClick={() => saveEdit(p.id)} disabled={saving || uploading}>{saving ? "Se salvează..." : "Salvează"}</button>
+                        <button className="btn" type="button" onClick={() => setEditingId(null)} disabled={saving || uploading}>Renunță</button>
                       </>
                     )}
                   </div>

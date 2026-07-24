@@ -27,7 +27,7 @@ export default function ProductsPage() {
         if (active) setItems(Array.isArray(products) ? products : []);
       } catch (err) {
         console.error("Failed to load products:", err);
-        if (active) setError("We could not load the products.");
+        if (active) setError("Nu am putut încărca produsele.");
       } finally {
         if (active) setLoading(false);
       }
@@ -40,7 +40,7 @@ export default function ProductsPage() {
     };
   }, []);
 
-  const breadcrumbs = [{ label: "Home", href: "/" }, { label: "Products" }];
+  const breadcrumbs = [{ label: "Acasă", href: "/" }, { label: "Produse" }];
 
   const visibleItems = items.filter((product) => {
     if (!query) return true;
@@ -54,35 +54,35 @@ export default function ProductsPage() {
   return (
     <>
       <Head>
-        <title>{query ? `Search: ${query} - Evamat` : "All Products - Evamat"}</title>
+        <title>{query ? `Căutare: ${query} - Evamat` : "Toate produsele - Evamat"}</title>
         <meta
           name="description"
-          content="Discover all products available in our shop: balloons, decorations, and festive accessories."
+          content="Descoperă toate produsele disponibile în magazinul nostru: baloane, decorațiuni și accesorii festive."
         />
       </Head>
 
       <main className="container">
         <section style={{ marginBottom: 32 }}>
           <Breadcrumb items={breadcrumbs} />
-          <h1>{query ? `Results for "${query}"` : "All products"}</h1>
+          <h1>{query ? `Rezultate pentru "${query}"` : "Toate produsele"}</h1>
           <p style={{ maxWidth: 640 }}>
-            Browse our full catalog of products for parties and special events.
+            Explorează întregul nostru catalog de produse pentru petreceri și evenimente speciale.
           </p>
         </section>
 
-        {loading && <p>Loading products...</p>}
+        {loading && <p>Se încarcă produsele...</p>}
 
         {!loading && error && <p style={{ color: "red" }}>{error}</p>}
 
         {!loading && !error && visibleItems.length === 0 && (
           <EmptyState
-            title={query ? "No products found" : "No products available"}
+            title={query ? "Nu am găsit produse" : "Nu există produse disponibile"}
             message={
               query
-                ? "Try a simpler search term or browse the full catalog."
-                : "There are no products available right now."
+                ? "Încearcă un termen de căutare mai simplu sau explorează întregul catalog."
+                : "Nu există produse disponibile în acest moment."
             }
-            actionLabel={query ? "View all products" : "Browse categories"}
+            actionLabel={query ? "Vezi toate produsele" : "Vezi categoriile"}
             actionHref={query ? "/products" : "/"}
           />
         )}

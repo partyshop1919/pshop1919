@@ -4,17 +4,17 @@ export default function PrivacyPage() {
   return (
     <>
       <Head>
-        <title>Privacy Policy - Evamat</title>
+        <title>Politica de confidențialitate - Evamat</title>
       </Head>
       <main className="container">
-        <h1>Privacy Policy</h1>
-        <p>This page explains what data we collect and how we use it to process orders.</p>
-        <h3>Collected data</h3>
-        <p>Name, email, phone number, shipping address, and order details.</p>
-        <h3>Purpose</h3>
-        <p>Order processing, customer communication, legal compliance, and fraud prevention.</p>
-        <h3>Your rights</h3>
-        <p>You can request access, correction, or deletion of your data via the store contact email.</p>
+        <h1>Politica de confidențialitate</h1>
+        <p>Această pagină explică ce date colectăm și cum le folosim pentru procesarea comenzilor.</p>
+        <h3>Date colectate</h3>
+        <p>Nume, email, număr de telefon, adresă de livrare și detalii despre comandă.</p>
+        <h3>Scop</h3>
+        <p>Procesarea comenzilor, comunicarea cu clienții, conformarea legală și prevenirea fraudelor.</p>
+        <h3>Drepturile tale</h3>
+        <p>Poți solicita accesul, corectarea sau ștergerea datelor tale prin emailul de contact al magazinului.</p>
       </main>
     </>
   );

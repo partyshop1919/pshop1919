@@ -32,7 +32,7 @@ export default function LoginPage() {
         body: JSON.stringify(form)
       });
       const data = await res.json();
-      if (!res.ok) throw new Error(data.message || "Login failed");
+      if (!res.ok) throw new Error(data.message || "Autentificarea a eșuat");
       loginUser(data.token, data.user);
       router.push("/");
     } catch (err) {
@@ -45,33 +45,33 @@ export default function LoginPage() {
   return (
     <div className="container auth-page">
       <div className="auth-card">
-        <h2>Sign in</h2>
-        <p className="auth-muted">You can sign in instantly with social login.</p>
+        <h2>Intră în cont</h2>
+        <p className="auth-muted">Te poți autentifica instant și cu login social.</p>
 
         <div className="auth-social">
           <a className="auth-social-btn google" href={`${BACKEND_URL}/api/auth/oauth/google/start`}>
             <span className="auth-social-logo" aria-hidden="true"><img src="/icons/google.svg" alt="" /></span>
-            <span>Continue with Google</span>
+            <span>Continuă cu Google</span>
           </a>
           <a className="auth-social-btn apple" href={`${BACKEND_URL}/api/auth/oauth/apple/start`}>
             <span className="auth-social-logo" aria-hidden="true"><img src="/icons/apple.svg" alt="" /></span>
-            <span>Continue with Apple</span>
+            <span>Continuă cu Apple</span>
           </a>
           <a className="auth-social-btn github" href={`${BACKEND_URL}/api/auth/oauth/github/start`}>
             <span className="auth-social-logo" aria-hidden="true"><img src="/icons/github.svg" alt="" /></span>
-            <span>Continue with GitHub</span>
+            <span>Continuă cu GitHub</span>
           </a>
         </div>
 
         <div className="auth-divider">
-          <span>or</span>
+          <span>sau</span>
         </div>
 
         <form onSubmit={handleLogin}>
           <label>Email</label>
           <input type="email" name="email" value={form.email} onChange={updateField} required style={{ width: "100%", padding: 8, marginTop: 6 }} />
 
-          <label style={{ marginTop: 12, display: "block" }}>Password</label>
+          <label style={{ marginTop: 12, display: "block" }}>Parolă</label>
           <div className="password-field" style={{ marginTop: 6 }}>
             <input
               type={showPassword ? "text" : "password"}
@@ -85,21 +85,21 @@ export default function LoginPage() {
               type="button"
               className="password-toggle"
               onClick={() => setShowPassword((prev) => !prev)}
-              aria-label={showPassword ? "Hide password" : "Show password"}
+              aria-label={showPassword ? "Ascunde parola" : "Arată parola"}
               aria-pressed={showPassword}
             >
-              {showPassword ? "Hide" : "Show"}
+              {showPassword ? "Ascunde" : "Arată"}
             </button>
           </div>
 
           {error && <div style={{ color: "red", marginTop: 12 }}>{error}</div>}
 
           <button type="submit" disabled={loading} style={{ marginTop: 18, padding: "8px 16px" }}>
-            {loading ? "Signing in..." : "Sign in"}
+            {loading ? "Se autentifică..." : "Intră în cont"}
           </button>
 
           <p style={{ marginTop: 12 }}>
-            Don&apos;t have an account? <a href="/register">Create one</a>
+            Nu ai cont? <a href="/register">Creează unul</a>
           </p>
         </form>
       </div>

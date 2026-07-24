@@ -84,7 +84,7 @@ export default function PartyBuilderPage() {
     const data = await buildPartyPlan(form);
     setLoading(false);
     if (!data) {
-      setError("We could not generate the party plan. Please try again.");
+      setError("Nu am putut genera planul pentru petrecere. Încearcă din nou.");
       return;
     }
     setPlan(data);
@@ -129,7 +129,7 @@ export default function PartyBuilderPage() {
         next[i] = { ...next[i], quantity: (Number(next[i].quantity) || 1) + 1 };
         return next;
       }
-      return [...next, { id, name: String(product.name || "Product"), slug: String(product.slug || ""), image: String(product.image || ""), category: String(product.category || "uncategorized"), priceCents: Number(product.priceCents) || 0, quantity: 1 }];
+      return [...next, { id, name: String(product.name || "Produs"), slug: String(product.slug || ""), image: String(product.image || ""), category: String(product.category || "fără categorie"), priceCents: Number(product.priceCents) || 0, quantity: 1 }];
     });
   }
 
@@ -153,54 +153,54 @@ export default function PartyBuilderPage() {
   return (
     <>
       <Head>
-        <title>Party Builder - Evamat</title>
+        <title>Constructor petrecere - Evamat</title>
       </Head>
       <main className="container party-builder-page">
         <section className="party-builder-hero">
-          <h1>Party Builder</h1>
-          <p>Configure your event and receive a recommended list of products and quantities.</p>
+          <h1>Constructor petrecere</h1>
+          <p>Configurează evenimentul și primești o listă recomandată de produse și cantități.</p>
           <div className="party-builder-badges">
-            <span>Smart recommendations</span>
-            <span>Automatic quantity planning</span>
-            <span>Fast cart setup</span>
+            <span>Recomandări inteligente</span>
+            <span>Planificare automată a cantităților</span>
+            <span>Adăugare rapidă în coș</span>
           </div>
         </section>
 
         <form onSubmit={onSubmit} className="party-builder-form">
           <label>
-            Event type
+            Tip eveniment
             <select name="eventType" value={form.eventType} onChange={onChange}>
-              <option value="adult-birthday">Adult birthday</option>
-              <option value="child-birthday">Children&apos;s birthday</option>
+              <option value="adult-birthday">Zi de naștere adulți</option>
+              <option value="child-birthday">Zi de naștere copii</option>
               <option value="baby-shower">Baby shower</option>
               <option value="gender-reveal">Gender reveal</option>
             </select>
           </label>
 
           <label>
-            Number of guests
+            Număr de invitați
             <input name="guests" type="number" min="5" max="200" value={form.guests} onChange={onChange} />
           </label>
 
           <label>
-            Budget
+            Buget
             <select name="budgetTier" value={form.budgetTier} onChange={onChange}>
-              <option value="low">Low</option>
-              <option value="medium">Medium</option>
-              <option value="high">High</option>
+              <option value="low">Mic</option>
+              <option value="medium">Mediu</option>
+              <option value="high">Mare</option>
             </select>
           </label>
 
           <label>
-            Venue
+            Locație
             <select name="location" value={form.location} onChange={onChange}>
-              <option value="indoor">Indoor</option>
-              <option value="outdoor">Outdoor</option>
+              <option value="indoor">Interior</option>
+              <option value="outdoor">Exterior</option>
             </select>
           </label>
 
           <button className="btn" type="submit" disabled={loading}>
-            {loading ? "Generating..." : "Generate plan"}
+            {loading ? "Se generează..." : "Generează planul"}
           </button>
         </form>
 
@@ -208,11 +208,11 @@ export default function PartyBuilderPage() {
 
         {plan && (
           <section className="party-builder-result">
-            <h2>Recommended plan</h2>
+            <h2>Plan recomandat</h2>
             {!!plan?.notes?.length && <ul className="party-builder-notes">{plan.notes.map((n, idx) => <li key={idx}>{n}</li>)}</ul>}
 
             {!mergedItems.length ? (
-              <p>No suitable products are currently available.</p>
+              <p>Momentan nu sunt disponibile produse potrivite.</p>
             ) : (
               <>
                 <div className="party-builder-items">
@@ -223,10 +223,10 @@ export default function PartyBuilderPage() {
                         <strong>{it.name}</strong>
                         <div className="party-builder-item-category">{it.category}</div>
                         <div className="party-builder-item-qty">
-                          Quantity:
-                          <button type="button" className="pb-qty-btn" onClick={() => changeItemQuantity(it, -1)} aria-label={`Decrease quantity for ${it.name}`}>-</button>
+                          Cantitate:
+                          <button type="button" className="pb-qty-btn" onClick={() => changeItemQuantity(it, -1)} aria-label={`Scade cantitatea pentru ${it.name}`}>-</button>
                           <strong>{it.quantity}</strong>
-                          <button type="button" className="pb-qty-btn" onClick={() => changeItemQuantity(it, 1)} aria-label={`Increase quantity for ${it.name}`}>+</button>
+                          <button type="button" className="pb-qty-btn" onClick={() => changeItemQuantity(it, 1)} aria-label={`Crește cantitatea pentru ${it.name}`}>+</button>
                         </div>
                       </div>
                       <div className="party-builder-item-price">{((Number(it.lineTotalCents) || 0) / 100).toFixed(2)} RON</div>
@@ -234,15 +234,15 @@ export default function PartyBuilderPage() {
                   ))}
                 </div>
 
-                <p className="party-builder-total"><strong>Estimated total: {totalRON} RON</strong></p>
+                <p className="party-builder-total"><strong>Total estimat: {totalRON} RON</strong></p>
 
                 <div className="party-builder-actions">
-                  <button className="btn" type="button" onClick={addPlanToCart}>Add plan to cart</button>
-                  <button className="btn secondary" type="button" onClick={openCatalog}>Add more products</button>
-                  <button className="btn secondary full" type="button" onClick={() => { if (window.confirm("Would you like to clear the generated plan?")) setPlan(null); }} style={{ marginTop: 10 }}>
-                    Clear plan
+                  <button className="btn" type="button" onClick={addPlanToCart}>Adaugă planul în coș</button>
+                  <button className="btn secondary" type="button" onClick={openCatalog}>Adaugă mai multe produse</button>
+                  <button className="btn secondary full" type="button" onClick={() => { if (window.confirm("Vrei să golești planul generat?")) setPlan(null); }} style={{ marginTop: 10 }}>
+                    Golește planul
                   </button>
-                  <Link className="btn" href="/cart">View cart</Link>
+                  <Link className="btn" href="/cart">Vezi coșul</Link>
                 </div>
               </>
             )}
@@ -253,12 +253,12 @@ export default function PartyBuilderPage() {
           <div className="pb-modal-overlay" onClick={() => setCatalogOpen(false)}>
             <div className="pb-modal" onClick={(e) => e.stopPropagation()}>
               <div className="pb-modal-head">
-                <h3>Add products to the plan</h3>
-                <button type="button" className="btn secondary" onClick={() => setCatalogOpen(false)}>Close</button>
+                <h3>Adaugă produse în plan</h3>
+                <button type="button" className="btn secondary" onClick={() => setCatalogOpen(false)}>Închide</button>
               </div>
 
               {catalogLoading ? (
-                <p>Loading products...</p>
+                <p>Se încarcă produsele...</p>
               ) : (
                 <div className="pb-modal-grid">
                   {catalog.map((p) => (
@@ -266,7 +266,7 @@ export default function PartyBuilderPage() {
                       <img src={resolveImage(p.image)} alt={p.name} />
                       <h4>{p.name}</h4>
                       <p>{(Number(p.priceCents || 0) / 100).toFixed(2)} RON</p>
-                      <button type="button" className="btn" onClick={() => addProductToPlan(p)}>Add</button>
+                      <button type="button" className="btn" onClick={() => addProductToPlan(p)}>Adaugă</button>
                     </article>
                   ))}
                 </div>

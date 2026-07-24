@@ -72,7 +72,7 @@ export default function CartPage() {
   if (!mounted) {
     return (
       <div className="container">
-        <p>Loading cart...</p>
+        <p>Se încarcă coșul...</p>
       </div>
     );
   }
@@ -80,10 +80,10 @@ export default function CartPage() {
   if (items.length === 0) {
     return (
       <div className="container cart-page">
-        <h1>Your cart</h1>
-        <p>Your cart is empty.</p>
+        <h1>Coșul tău</h1>
+        <p>Coșul tău este gol.</p>
         <Link href="/" className="btn">
-          Browse products
+          Vezi produsele
         </Link>
       </div>
     );
@@ -92,7 +92,7 @@ export default function CartPage() {
   if (loading || !summary) {
     return (
       <div className="container">
-        <p>Validating cart...</p>
+        <p>Se verifică coșul...</p>
       </div>
     );
   }
@@ -100,23 +100,23 @@ export default function CartPage() {
   return (
     <div className="container cart-page">
       <button type="button" className="back-link" onClick={() => router.back()}>
-        Back to shopping
+        Înapoi la cumpărături
       </button>
 
-      <h1>Your cart</h1>
+      <h1>Coșul tău</h1>
 
       {errors.length > 0 && (
         <div style={{ border: "1px solid #f1c40f", padding: 12, borderRadius: 8, marginBottom: 16 }}>
-          <strong>Attention:</strong>
+          <strong>Atenție:</strong>
           <ul style={{ marginTop: 8 }}>
             {errors.map((e, idx) => (
               <li key={`${e.code}-${e.productId}-${idx}`}>
-                {e.message} ({e.code}) - product: <code>{String(e.productId)}</code>
+                {e.message} ({e.code}) - produs: <code>{String(e.productId)}</code>
               </li>
             ))}
           </ul>
           <div style={{ marginTop: 8, color: "var(--secondary)" }}>
-            Please remove or adjust the flagged products before checking out.
+            Elimină sau ajustează produsele marcate înainte să finalizezi comanda.
           </div>
         </div>
       )}
@@ -129,7 +129,7 @@ export default function CartPage() {
             const p = byId.get(itemId);
             const missing = !p;
             const perItemErrors = errorsByProductId.get(itemId) || [];
-            const name = missing ? "Unavailable product" : String(p.name || "");
+            const name = missing ? "Produs indisponibil" : String(p.name || "");
             const priceCents = missing ? 0 : Number(p.priceCents) || 0;
             const stock = missing ? 0 : Number(p.stock) || 0;
             const imageUrl = missing ? null : resolveImage(p.image);
@@ -160,23 +160,23 @@ export default function CartPage() {
                       type="button"
                       onClick={() => updateQty(itemId, quantity + 1)}
                       disabled={missing || !canIncrease}
-                      title={!canIncrease && !missing ? "Insufficient stock" : ""}
+                      title={!canIncrease && !missing ? "Stoc insuficient" : ""}
                     >
                       +
                     </button>
                   </div>
 
                   {!missing && quantity > stock && (
-                    <p style={{ color: "red", marginTop: 8 }}>The quantity exceeds available stock. Reduce it.</p>
+                    <p style={{ color: "red", marginTop: 8 }}>Cantitatea depășește stocul disponibil. Redu cantitatea.</p>
                   )}
 
                   {!missing && quantity === stock && (
-                    <p style={{ color: "red", marginTop: 8 }}>You have reached the maximum available stock.</p>
+                    <p style={{ color: "red", marginTop: 8 }}>Ai atins cantitatea maximă disponibilă.</p>
                   )}
 
                   {missing && (
                     <p style={{ color: "red", marginTop: 8 }}>
-                      This product is no longer available. Please remove it from your cart.
+                      Acest produs nu mai este disponibil. Te rugăm să îl elimini din coș.
                     </p>
                   )}
 
@@ -192,7 +192,7 @@ export default function CartPage() {
                 <div className="cart-actions">
                   <strong>{((priceCents * quantity) / 100).toFixed(2)} RON</strong>
                   <button type="button" className="link-btn" onClick={() => removeFromCart(itemId)}>
-                    Remove
+                    Elimină
                   </button>
                 </div>
               </div>
@@ -201,10 +201,10 @@ export default function CartPage() {
         </div>
 
         <div className="cart-summary">
-          <h2>Order summary</h2>
+          <h2>Sumar comandă</h2>
 
           <div className="summary-row">
-            <span>Products total</span>
+            <span>Total produse</span>
             <span>{(Number(summary.grandTotalCents || 0) / 100).toFixed(2)} RON</span>
           </div>
 
@@ -215,9 +215,9 @@ export default function CartPage() {
             </div>
 
             <div className="summary-row">
-              <span>Shipping</span>
+              <span>Livrare</span>
               <span>
-                {Number(summary.shippingCents || 0) === 0 ? "Free" : `${(Number(summary.shippingCents || 0) / 100).toFixed(2)} RON`}
+                {Number(summary.shippingCents || 0) === 0 ? "Gratuită" : `${(Number(summary.shippingCents || 0) / 100).toFixed(2)} RON`}
               </span>
             </div>
 
@@ -231,19 +231,19 @@ export default function CartPage() {
             className="btn full"
             onClick={() => router.push("/checkout")}
             disabled={hasBlockingErrors}
-            title={hasBlockingErrors ? "Fix the cart issues before checkout" : ""}
+            title={hasBlockingErrors ? "Rezolvă problemele din coș înainte de checkout" : ""}
           >
-            Proceed to checkout
+            Continuă spre checkout
           </button>
           <button
             className="btn secondary full"
             type="button"
             onClick={() => {
-              if (window.confirm("Do you want to clear the entire cart?")) clearCart();
+              if (window.confirm("Sigur vrei să golești întregul coș?")) clearCart();
             }}
             style={{ marginTop: 10 }}
           >
-            Clear cart
+            Golește coșul
           </button>
         </div>
       </div>

@@ -4,17 +4,17 @@ export default function TermsPage() {
   return (
     <>
       <Head>
-        <title>Terms and Conditions - Evamat</title>
+        <title>Termeni și condiții - Evamat</title>
       </Head>
       <main className="container">
-        <h1>Terms and Conditions</h1>
-        <p>By using this website, you agree to the terms below.</p>
-        <h3>Orders and payment</h3>
-        <p>Orders are confirmed subject to stock availability. Payment can be cash on delivery or card.</p>
-        <h3>Shipping and returns</h3>
-        <p>Shipping and return conditions apply in accordance with current legislation.</p>
-        <h3>Limitation of liability</h3>
-        <p>The information is provided in good faith; we reserve the right to update it without prior notice.</p>
+        <h1>Termeni și condiții</h1>
+        <p>Prin utilizarea acestui website, ești de acord cu termenii de mai jos.</p>
+        <h3>Comenzi și plată</h3>
+        <p>Comenzile sunt confirmate în funcție de disponibilitatea stocului. Plata se poate face ramburs sau cu cardul.</p>
+        <h3>Livrare și retur</h3>
+        <p>Condițiile de livrare și retur se aplică în conformitate cu legislația în vigoare.</p>
+        <h3>Limitarea răspunderii</h3>
+        <p>Informațiile sunt oferite cu bună-credință; ne rezervăm dreptul de a le actualiza fără notificare prealabilă.</p>
       </main>
     </>
   );

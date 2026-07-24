@@ -64,11 +64,11 @@ export async function sendConfirmationEmail({ to, token }) {
   const confirmUrl = `${BACKEND_URL}/api/auth/confirm-email?token=${encodeURIComponent(String(token || ""))}`;
   return sendMail({
     to,
-    subject: "Confirm your email address",
+    subject: "Confirmă adresa de email",
     html: `
-      <h2>Welcome to Evamat!</h2>
-      <p>Please confirm your email address to activate your account.</p>
-      <p><a href="${confirmUrl}">Confirm email</a></p>
+      <h2>Bine ai venit la Evamat!</h2>
+      <p>Te rugăm să îți confirmi adresa de email pentru a-ți activa contul.</p>
+      <p><a href="${confirmUrl}">Confirmă emailul</a></p>
     `
   });
 }
@@ -94,14 +94,14 @@ export async function sendOrderConfirmationEmail({ to, order }) {
 
   return sendMail({
     to,
-    subject: `Order confirmation #${orderId}`,
+    subject: `Confirmare comandă #${orderId}`,
     html: `
       <div style="font-family: Arial, sans-serif; max-width: 640px; margin: 0 auto;">
-        <h2>Your order has been received</h2>
-        <p>Order number: <strong>#${orderId}</strong></p>
+        <h2>Comanda ta a fost înregistrată</h2>
+        <p>Număr comandă: <strong>#${orderId}</strong></p>
         <p>Status: <strong>${orderStatus}</strong></p>
 
-        <h3>Products</h3>
+        <h3>Produse</h3>
         <table style="width:100%; border-collapse:collapse;">
           ${itemsHtml}
           <tr>
@@ -110,7 +110,7 @@ export async function sendOrderConfirmationEmail({ to, order }) {
           </tr>
         </table>
 
-        <p style="margin-top:16px;">View your orders: <a href="${ordersUrl}">${ordersUrl}</a></p>
+        <p style="margin-top:16px;">Vezi comenzile tale: <a href="${ordersUrl}">${ordersUrl}</a></p>
       </div>
     `
   });

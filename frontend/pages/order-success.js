@@ -11,17 +11,17 @@ function formatRON(cents) {
 }
 
 function paymentLabel(method) {
-  if (method === "cod") return "Cash on delivery";
-  if (method === "card") return "Online card payment";
+  if (method === "cod") return "Ramburs la livrare";
+  if (method === "card") return "Plată online cu cardul";
   return method || "-";
 }
 
 function statusLabel(status) {
-  if (status === "pending") return "Processing";
-  if (status === "confirmed") return "Confirmed";
-  if (status === "shipped") return "Shipped";
-  if (status === "delivered") return "Delivered";
-  if (status === "cancelled") return "Cancelled";
+  if (status === "pending") return "În procesare";
+  if (status === "confirmed") return "Confirmată";
+  if (status === "shipped") return "Expediată";
+  if (status === "delivered") return "Livrată";
+  if (status === "cancelled") return "Anulată";
   return status || "-";
 }
 
@@ -48,19 +48,19 @@ export default function OrderSuccessPage() {
       setErr(null);
       try {
         const token = getUserToken();
-        if (!token) throw new Error("You need to be signed in to view your order details.");
+        if (!token) throw new Error("Trebuie să fii autentificat pentru a vedea detaliile comenzii.");
         const res = await fetch(`${API_URL}/orders/${encodeURIComponent(String(orderId))}`, {
           headers: { Authorization: `Bearer ${token}` }
         });
-        if (res.status === 401) throw new Error("Your session has expired. Please sign in again.");
+        if (res.status === 401) throw new Error("Sesiunea a expirat. Te rugăm să te autentifici din nou.");
         if (!res.ok) {
           const data = await res.json().catch(() => ({}));
-          throw new Error(data?.error || "We could not load the order details.");
+          throw new Error(data?.error || "Nu am putut încărca detaliile comenzii.");
         }
         const data = await res.json();
         if (active) setOrder(data);
       } catch (e) {
-        if (active) setErr(e?.message || "Failed to load the order.");
+        if (active) setErr(e?.message || "Încărcarea comenzii a eșuat.");
       } finally {
         if (active) setLoading(false);
       }
@@ -79,28 +79,28 @@ export default function OrderSuccessPage() {
   return (
     <div className="container order-success-page">
       <div className="order-success-box">
-        <h1>Order placed successfully!</h1>
-        {orderId && <p>Order number: <strong>{orderId}</strong></p>}
+        <h1>Comanda a fost plasată cu succes!</h1>
+        {orderId && <p>Număr comandă: <strong>{orderId}</strong></p>}
 
         {loading ? (
-          <p>Loading order details...</p>
+          <p>Se încarcă detaliile comenzii...</p>
         ) : err ? (
           <>
             <p style={{ color: "red" }}>{err}</p>
-            <p>You can also view the order from <Link href="/orders">My Orders</Link>.</p>
+            <p>Poți vedea comanda și din pagina <Link href="/orders">Comenzile mele</Link>.</p>
           </>
         ) : order ? (
           <>
             <div style={{ marginTop: 14, textAlign: "left" }}>
               <div style={{ display: "grid", gap: 6 }}>
                 <div style={{ display: "flex", justifyContent: "space-between" }}><span>Status</span><strong>{statusLabel(order.status)}</strong></div>
-                <div style={{ display: "flex", justifyContent: "space-between" }}><span>Payment</span><strong>{paymentLabel(order.paymentMethod)}</strong></div>
-                <div style={{ display: "flex", justifyContent: "space-between" }}><span>Products subtotal</span><strong>{formatRON(totals.subtotal)}</strong></div>
-                <div style={{ display: "flex", justifyContent: "space-between" }}><span>Shipping</span><strong>{totals.shipping === 0 ? "Free" : formatRON(totals.shipping)}</strong></div>
+                <div style={{ display: "flex", justifyContent: "space-between" }}><span>Plată</span><strong>{paymentLabel(order.paymentMethod)}</strong></div>
+                <div style={{ display: "flex", justifyContent: "space-between" }}><span>Subtotal produse</span><strong>{formatRON(totals.subtotal)}</strong></div>
+                <div style={{ display: "flex", justifyContent: "space-between" }}><span>Livrare</span><strong>{totals.shipping === 0 ? "Gratuită" : formatRON(totals.shipping)}</strong></div>
                 <div style={{ display: "flex", justifyContent: "space-between", fontSize: 18 }}><span>Total</span><strong>{formatRON(totals.total)}</strong></div>
 
                 <div>
-                  <strong>Shipping address</strong>
+                  <strong>Adresă de livrare</strong>
                   <div style={{ marginTop: 6, opacity: 0.9 }}>
                     {order.customer?.name}<br />
                     {order.customer?.phone}<br />
@@ -110,7 +110,7 @@ export default function OrderSuccessPage() {
                 </div>
 
                 <div style={{ marginTop: 10 }}>
-                  <strong>Products</strong>
+                  <strong>Produse</strong>
                   <ul style={{ marginTop: 8 }}>
                     {(order.items || []).map((it) => (
                       <li key={it.id}>{it.quantity} x {it.name} - {formatRON(it.priceCents)}</li>
@@ -120,15 +120,15 @@ export default function OrderSuccessPage() {
               </div>
             </div>
 
-            <p style={{ marginTop: 14 }}>You will receive a confirmation email shortly.</p>
+            <p style={{ marginTop: 14 }}>Vei primi în scurt timp un email de confirmare.</p>
           </>
         ) : (
-          <p>We could not find this order.</p>
+          <p>Nu am putut găsi această comandă.</p>
         )}
 
         <div className="order-success-actions" style={{ marginTop: 16, display: "flex", gap: 10, justifyContent: "center" }}>
-          <Link href="/" className="btn">Back to home</Link>
-          <Link href="/orders" className="btn secondary">View my orders</Link>
+          <Link href="/" className="btn">Înapoi acasă</Link>
+          <Link href="/orders" className="btn secondary">Vezi comenzile mele</Link>
         </div>
       </div>
     </div>

@@ -8,21 +8,21 @@ export default function FaqPage() {
       </Head>
       <main className="container info-page">
         <section className="info-card">
-          <h1>Frequently asked questions</h1>
-          <p className="info-lead">Quick answers to the most common questions.</p>
+          <h1>Întrebări frecvente</h1>
+          <p className="info-lead">Răspunsuri rapide la cele mai frecvente întrebări.</p>
 
           <div className="faq-list">
             <article className="faq-item">
-              <h3>How long does delivery take?</h3>
-              <p>Usually 24-48 hours for in-stock products.</p>
+              <h3>Cât durează livrarea?</h3>
+              <p>De obicei 24-48 de ore pentru produsele aflate în stoc.</p>
             </article>
             <article className="faq-item">
-              <h3>Can I pay by card?</h3>
-              <p>Yes, online card payments are available through Stripe.</p>
+              <h3>Pot plăti cu cardul?</h3>
+              <p>Da, plățile online cu cardul sunt disponibile prin Stripe.</p>
             </article>
             <article className="faq-item">
-              <h3>How can I check my order status?</h3>
-              <p>From your account, on the My Orders page.</p>
+              <h3>Cum verific statusul comenzii?</h3>
+              <p>Din contul tău, în pagina Comenzile mele.</p>
             </article>
           </div>
         </section>

@@ -4,9 +4,9 @@ const prisma = new PrismaClient();
 
 const PRODUCTS = [
   {
-    name: "Red Latex Balloon",
+    name: "Balon latex roșu",
     slug: "balon-latex-rosu",
-    category: "Latex Balloons",
+    category: "Baloane latex",
     priceCents: 300,
     stock: 100,
     image: "/images/products/balon-latex-rosu.jpg",
@@ -18,9 +18,9 @@ const PRODUCTS = [
     featured: true
   },
   {
-    name: "Number 5 Balloon",
+    name: "Balon cifră 5",
     slug: "balon-cifra-5",
-    category: "Number Balloons",
+    category: "Baloane cifre",
     priceCents: 1500,
     stock: 100,
     image: "/images/products/Balon-latex-5.jpg",
@@ -32,9 +32,9 @@ const PRODUCTS = [
     featured: true
   },
   {
-    name: "Birthday Garland",
+    name: "Ghirlandă aniversară",
     slug: "ghirlanda-aniversara",
-    category: "Garlands",
+    category: "Ghirlande",
     priceCents: 2500,
     stock: 100,
     image: "/images/products/Ghirlanda-aniversara.jpg",
@@ -46,9 +46,9 @@ const PRODUCTS = [
     featured: true
   },
   {
-    name: "Party Cups Set",
+    name: "Set pahare petrecere",
     slug: "set-pahare-petrecere",
-    category: "Cups & Plates",
+    category: "Pahare și farfurii",
     priceCents: 1200,
     stock: 100,
     image: "/images/products/set-pahare-petrecere.jpg",
@@ -60,9 +60,9 @@ const PRODUCTS = [
     featured: false
   },
   {
-    name: "Foil Balloon",
+    name: "Balon folie",
     slug: "balon-folie",
-    category: "Foil Balloons",
+    category: "Baloane folie",
     priceCents: 1500,
     stock: 100,
     image: "/images/products/baloane-folie.png",
@@ -88,9 +88,9 @@ const PRODUCTS = [
     featured: false
   },
   {
-    name: "Banner Happy New Year",
+    name: "Banner La mulți ani",
     slug: "banner-happy-new-year",
-    category: "Banners",
+    category: "Bannere",
     priceCents: 1500,
     stock: 100,
     image: "/images/products/happynewyear.jpg",
@@ -102,9 +102,9 @@ const PRODUCTS = [
     featured: false
   },
   {
-    name: "Birthday Candle Set",
+    name: "Set lumânări aniversare",
     slug: "set-lumanari-aniversare",
-    category: "Candles",
+    category: "Lumânări",
     priceCents: 799,
     stock: 80,
     image: "/images/products/candles.jpeg",
@@ -112,9 +112,9 @@ const PRODUCTS = [
     featured: false
   },
   {
-    name: "Party Hats Set",
+    name: "Set coifuri petrecere",
     slug: "set-coifuri-petrecere",
-    category: "Party Hats & Accessories",
+    category: "Coifuri și accesorii",
     priceCents: 1299,
     stock: 80,
     image: "/images/products/hats.jpg",
@@ -122,9 +122,9 @@ const PRODUCTS = [
     featured: false
   },
   {
-    name: "Party Plates Set",
+    name: "Set farfurii petrecere",
     slug: "set-farfurii-petrecere",
-    category: "Cups & Plates",
+    category: "Pahare și farfurii",
     priceCents: 1399,
     stock: 80,
     image: "/images/products/set-farfurii-petrecere.jpg",
@@ -135,9 +135,9 @@ const PRODUCTS = [
     featured: false
   },
   {
-    name: "Pastel Balloon Set - 50 Pieces",
+    name: "Set baloane pastel - 50 bucăți",
     slug: "set-baloane-pastel-50-buc",
-    category: "Latex Balloons",
+    category: "Baloane latex",
     priceCents: 2999,
     stock: 80,
     image: "/images/products/set-baloane-pastel-50-buc.jpg",
@@ -149,9 +149,9 @@ const PRODUCTS = [
     featured: true
   },
   {
-    name: "DIY Balloon Arch - 120 Pieces",
+    name: "Arc baloane DIY - 120 piese",
     slug: "arc-baloane-diy-120-piese",
-    category: "Latex Balloons",
+    category: "Baloane latex",
     priceCents: 8999,
     stock: 40,
     image: "/images/products/arc-baloane-diy-120-piese.jpg",
@@ -163,9 +163,9 @@ const PRODUCTS = [
     featured: true
   },
   {
-    name: "Premium Happy Birthday Banner",
+    name: "Banner premium La mulți ani",
     slug: "banner-la-multi-ani-premium",
-    category: "Banners",
+    category: "Bannere",
     priceCents: 2499,
     stock: 70,
     image: "/images/products/banner-la-multi-ani-premium.jpg",
@@ -176,7 +176,7 @@ const PRODUCTS = [
     featured: false
   },
   {
-    name: "Multicolor Confetti Cannon - 40 cm",
+    name: "Tun confetti multicolor - 40 cm",
     slug: "tun-confetti-multicolor-40cm",
     category: "Confetti",
     priceCents: 1999,
@@ -190,9 +190,9 @@ const PRODUCTS = [
     featured: false
   },
   {
-    name: "Cups and Plates Set - 24 Guests",
+    name: "Set pahare și farfurii - 24 persoane",
     slug: "set-pahare-si-farfurii-24-persoane",
-    category: "Cups & Plates",
+    category: "Pahare și farfurii",
     priceCents: 4599,
     stock: 60,
     image: "/images/products/set-pahare-si-farfurii-24-persoane.jpg",
@@ -204,9 +204,9 @@ const PRODUCTS = [
     featured: false
   },
   {
-    name: "Manual Balloon Pump",
+    name: "Pompă manuală pentru baloane",
     slug: "pompa-manuala-baloane",
-    category: "Party Hats & Accessories",
+    category: "Coifuri și accesorii",
     priceCents: 2499,
     stock: 75,
     image: "/images/products/balloons.jpg",
@@ -214,9 +214,9 @@ const PRODUCTS = [
     featured: false
   },
   {
-    name: "Balloon Arch Strip",
+    name: "Bandă pentru arc de baloane",
     slug: "banda-prindere-arc-baloane",
-    category: "Party Hats & Accessories",
+    category: "Coifuri și accesorii",
     priceCents: 899,
     stock: 120,
     image: "/images/products/decor.png",
@@ -224,9 +224,9 @@ const PRODUCTS = [
     featured: false
   },
   {
-    name: "Balloon Weights Set - 10 Pieces",
+    name: "Set greutăți pentru baloane - 10 bucăți",
     slug: "greutati-baloane-set-10",
-    category: "Party Hats & Accessories",
+    category: "Coifuri și accesorii",
     priceCents: 1599,
     stock: 60,
     image: "/images/products/baloane-folie.png",
@@ -236,9 +236,9 @@ const PRODUCTS = [
 ];
 
 function buildDescription(product) {
-  const name = String(product?.name || "Product");
-  const category = String(product?.category || "party supplies");
-  return `${name} is part of the ${category} collection and is suitable for birthdays, themed celebrations, and special events.`;
+  const name = String(product?.name || "Produs");
+  const category = String(product?.category || "articole de petrecere");
+  return `${name} face parte din colecția ${category} și este potrivit pentru aniversări, petreceri tematice și evenimente speciale.`;
 }
 
 async function main() {

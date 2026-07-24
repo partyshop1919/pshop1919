@@ -40,10 +40,10 @@ export default function CheckoutPage() {
   const disableSubmit = submitting || Boolean(stockErrorProductId) || isFormInvalid || hasBlockingErrors || !hasItems;
 
   const submitBlocker = useMemo(() => {
-    if (!hasItems) return "Your cart is empty.";
-    if (stockErrorProductId || hasBlockingErrors) return "Your cart contains unavailable products or insufficient stock.";
-    if (isFormInvalid) return "Complete the shipping details: full name, valid phone, county, city, and address.";
-    if (!acceptedLegal) return "Please accept the Terms and Privacy Policy.";
+    if (!hasItems) return "Coșul tău este gol.";
+    if (stockErrorProductId || hasBlockingErrors) return "Coșul conține produse indisponibile sau stoc insuficient.";
+    if (isFormInvalid) return "Completează datele de livrare: nume complet, telefon valid, județ, oraș și adresă.";
+    if (!acceptedLegal) return "Te rugăm să accepți Termenii și Politica de confidențialitate.";
     return "";
   }, [acceptedLegal, hasBlockingErrors, hasItems, isFormInvalid, stockErrorProductId]);
 
@@ -55,7 +55,7 @@ export default function CheckoutPage() {
       const data = await res.json().catch(() => ({}));
       return { res, data };
     } catch (e) {
-      if (e?.name === "AbortError") throw new Error("The server took too long to respond. Please try again in a few seconds.");
+      if (e?.name === "AbortError") throw new Error("Serverul a răspuns prea greu. Te rugăm să încerci din nou în câteva secunde.");
       throw e;
     } finally {
       clearTimeout(timeoutId);
@@ -82,7 +82,7 @@ export default function CheckoutPage() {
       } catch {
         if (!active) return;
         setSummary(null);
-        setError("We could not validate the cart. Please try again.");
+        setError("Nu am putut valida coșul. Te rugăm să încerci din nou.");
       } finally {
         if (active) setLoading(false);
       }
@@ -101,13 +101,13 @@ export default function CheckoutPage() {
   async function submitOrder(e) {
     e.preventDefault();
     if (!acceptedLegal) {
-      const msg = "Please accept the Terms and Conditions and Privacy Policy before confirming the order.";
+      const msg = "Te rugăm să accepți Termenii și Condițiile și Politica de confidențialitate înainte de confirmarea comenzii.";
       setError(msg);
       if (typeof window !== "undefined") window.alert(msg);
       return;
     }
     if (disableSubmit) {
-      setError(submitBlocker || "We cannot place the order yet. Please review your details.");
+      setError(submitBlocker || "Comanda nu poate fi trimisă încă. Verifică datele completate.");
       return;
     }
 
@@ -116,7 +116,7 @@ export default function CheckoutPage() {
 
     try {
       const token = getUserToken();
-      if (!token) throw new Error("You need to be signed in to place an order.");
+      if (!token) throw new Error("Trebuie să fii autentificat pentru a plasa o comandă.");
 
       const payload = {
         customer: {
@@ -139,13 +139,13 @@ export default function CheckoutPage() {
         });
         if (res.status === 409) {
           setStockErrorProductId(data?.productId ? String(data.productId) : null);
-          throw new Error("A product is no longer in stock. Please go back to your cart.");
+          throw new Error("Un produs nu mai este în stoc. Te rugăm să revii în coș.");
         }
         if (res.status === 401) {
-          throw new Error(data?.error || data?.message || "Authentication failed. Please sign in again.");
+          throw new Error(data?.error || data?.message || "Autentificarea a eșuat. Te rugăm să te autentifici din nou.");
         }
-        if (!res.ok) throw new Error(data?.details || data?.error || "We could not start the card payment.");
-        if (!data?.url) throw new Error("Missing Stripe checkout URL.");
+        if (!res.ok) throw new Error(data?.details || data?.error || "Nu am putut porni plata cu cardul.");
+        if (!data?.url) throw new Error("Lipsește linkul pentru checkout Stripe.");
         window.location.assign(data.url);
         return;
       }
@@ -158,89 +158,89 @@ export default function CheckoutPage() {
       if (res.status === 409) {
         const data = await res.json().catch(() => ({}));
         setStockErrorProductId(data?.productId ? String(data.productId) : null);
-        throw new Error("A product is no longer in stock. Please go back to your cart.");
+        throw new Error("Un produs nu mai este în stoc. Te rugăm să revii în coș.");
       }
       if (res.status === 401) {
         const data = await res.json().catch(() => ({}));
-        throw new Error(data?.error || data?.message || "Authentication failed. Please sign in again.");
+        throw new Error(data?.error || data?.message || "Autentificarea a eșuat. Te rugăm să te autentifici din nou.");
       }
       if (!res.ok) {
         const data = await res.json().catch(() => ({}));
-        throw new Error(data?.error || data?.message || "The order could not be placed.");
+        throw new Error(data?.error || data?.message || "Comanda nu a putut fi plasată.");
       }
 
       const data = await res.json();
       clearCart();
       router.push(`/order-success?orderId=${encodeURIComponent(data.id)}`);
     } catch (err) {
-      setError(err?.message || "An error occurred while placing the order.");
+      setError(err?.message || "A apărut o eroare la plasarea comenzii.");
     } finally {
       setSubmitting(false);
     }
   }
 
   if (!loading && !hasItems) {
-    return <div className="container"><h1>Checkout</h1><p>Your cart is empty.</p><button className="btn" onClick={() => router.push("/cart")}>Back to cart</button></div>;
+    return <div className="container"><h1>Finalizare comandă</h1><p>Coșul tău este gol.</p><button className="btn" onClick={() => router.push("/cart")}>Înapoi la coș</button></div>;
   }
 
-  if (loading) return <div className="container"><p>Loading checkout...</p></div>;
+  if (loading) return <div className="container"><p>Se încarcă finalizarea comenzii...</p></div>;
 
   return (
     <div className="container checkout-page">
-      <button type="button" className="back-link" onClick={() => router.back()}>Back to cart</button>
-      <h1>Checkout</h1>
+      <button type="button" className="back-link" onClick={() => router.back()}>Înapoi la coș</button>
+      <h1>Finalizare comandă</h1>
 
       <div style={{ display: "flex", gap: 10, flexWrap: "wrap", marginBottom: 12 }}>
-        <span style={{ border: "1px solid #ddd", borderRadius: 999, padding: "4px 10px" }}>Secure Stripe payment</span>
-        <span style={{ border: "1px solid #ddd", borderRadius: 999, padding: "4px 10px" }}>GDPR protected data</span>
-        <span style={{ border: "1px solid #ddd", borderRadius: 999, padding: "4px 10px" }}>Fast support</span>
+        <span style={{ border: "1px solid #ddd", borderRadius: 999, padding: "4px 10px" }}>Plată securizată Stripe</span>
+        <span style={{ border: "1px solid #ddd", borderRadius: 999, padding: "4px 10px" }}>Date protejate GDPR</span>
+        <span style={{ border: "1px solid #ddd", borderRadius: 999, padding: "4px 10px" }}>Suport rapid</span>
       </div>
 
       {error && <p style={{ color: "red" }}>{error}</p>}
 
       {hasBlockingErrors && (
         <div style={{ border: "1px solid #f1c40f", padding: 12, borderRadius: 8, marginBottom: 16 }}>
-          <strong>Your cart has issues:</strong>
+          <strong>Există probleme în coș:</strong>
           <ul style={{ marginTop: 8 }}>
             {validateErrors.map((e, idx) => <li key={`${e.code}-${e.productId}-${idx}`}>{e.message} ({e.code})</li>)}
           </ul>
-          <p style={{ marginTop: 8 }}>Please return to the cart and fix the issues before confirming the order.</p>
-          <button className="btn" type="button" onClick={() => router.push("/cart")}>Back to cart</button>
+          <p style={{ marginTop: 8 }}>Te rugăm să revii în coș și să rezolvi problemele înainte de confirmarea comenzii.</p>
+          <button className="btn" type="button" onClick={() => router.push("/cart")}>Înapoi la coș</button>
         </div>
       )}
 
       {summary && (
         <div style={{ marginBottom: 18 }}>
           <div style={{ display: "grid", gap: 6, maxWidth: 520 }}>
-            <div style={{ display: "flex", justifyContent: "space-between" }}><span>Products subtotal</span><strong>{(subtotalCents / 100).toFixed(2)} RON</strong></div>
-            <div style={{ display: "flex", justifyContent: "space-between" }}><span>Shipping</span><strong>{shippingCents === 0 ? "Free" : `${(shippingCents / 100).toFixed(2)} RON`}</strong></div>
+            <div style={{ display: "flex", justifyContent: "space-between" }}><span>Subtotal produse</span><strong>{(subtotalCents / 100).toFixed(2)} RON</strong></div>
+            <div style={{ display: "flex", justifyContent: "space-between" }}><span>Livrare</span><strong>{shippingCents === 0 ? "Gratuită" : `${(shippingCents / 100).toFixed(2)} RON`}</strong></div>
             <div style={{ display: "flex", justifyContent: "space-between", fontSize: 18, marginTop: 6 }}><span>Total</span><strong>{(grandTotalCents / 100).toFixed(2)} RON</strong></div>
           </div>
         </div>
       )}
 
       <form className="checkout-form" onSubmit={submitOrder}>
-        <h3 style={{ margin: "8px 0 0" }}>Shipping details</h3>
-        <label>Full name<input name="name" value={form.name} onChange={updateField} required /></label>
-        <label>Phone<input name="phone" value={form.phone} onChange={updateField} placeholder="07xxxxxxxx" inputMode="tel" required /></label>
-        <label>County<select name="county" value={form.county} onChange={updateField} required><option value="">Choose county</option>{COUNTIES_RO.map((c) => <option key={c} value={c}>{c}</option>)}</select></label>
-        <label>City<input name="city" value={form.city} onChange={updateField} required /></label>
-        <label>Shipping address<textarea name="address" value={form.address} onChange={updateField} required /></label>
-        <label>Postal code (optional)<input name="postalCode" value={form.postalCode} onChange={updateField} /></label>
+        <h3 style={{ margin: "8px 0 0" }}>Date de livrare</h3>
+        <label>Nume complet<input name="name" value={form.name} onChange={updateField} required /></label>
+        <label>Telefon<input name="phone" value={form.phone} onChange={updateField} placeholder="07xxxxxxxx" inputMode="tel" required /></label>
+        <label>Județ<select name="county" value={form.county} onChange={updateField} required><option value="">Alege județul</option>{COUNTIES_RO.map((c) => <option key={c} value={c}>{c}</option>)}</select></label>
+        <label>Oraș<input name="city" value={form.city} onChange={updateField} required /></label>
+        <label>Adresă de livrare<textarea name="address" value={form.address} onChange={updateField} required /></label>
+        <label>Cod poștal (opțional)<input name="postalCode" value={form.postalCode} onChange={updateField} /></label>
 
-        <h3 style={{ margin: "10px 0 0" }}>Payment method</h3>
+        <h3 style={{ margin: "10px 0 0" }}>Metodă de plată</h3>
         <div style={{ display: "grid", gap: 10 }}>
-          <label style={{ display: "flex", gap: 10, alignItems: "center" }}><input type="radio" name="paymentMethod" value="cod" checked={paymentMethod === "cod"} onChange={() => setPaymentMethod("cod")} />Cash on delivery</label>
-          <label style={{ display: "flex", gap: 10, alignItems: "center" }}><input type="radio" name="paymentMethod" value="card" checked={paymentMethod === "card"} onChange={() => setPaymentMethod("card")} />Online card payment (Stripe)</label>
+          <label style={{ display: "flex", gap: 10, alignItems: "center" }}><input type="radio" name="paymentMethod" value="cod" checked={paymentMethod === "cod"} onChange={() => setPaymentMethod("cod")} />Ramburs la livrare</label>
+          <label style={{ display: "flex", gap: 10, alignItems: "center" }}><input type="radio" name="paymentMethod" value="card" checked={paymentMethod === "card"} onChange={() => setPaymentMethod("card")} />Plată online cu cardul (Stripe)</label>
         </div>
 
         <label className="auth-inline-check" style={{ marginTop: 8 }}>
           <input type="checkbox" checked={acceptedLegal} onChange={(e) => setAcceptedLegal(e.target.checked)} required />
-          <span>I have read and agree to the <Link href="/termeni-si-conditii">Terms and Conditions</Link> and the <Link href="/politica-confidentialitate">Privacy Policy</Link>.</span>
+          <span>Am citit și sunt de acord cu <Link href="/termeni-si-conditii">Termenii și Condițiile</Link> și cu <Link href="/politica-confidentialitate">Politica de confidențialitate</Link>.</span>
         </label>
 
         <button className="btn full" disabled={disableSubmit}>
-          {submitting ? "Placing order..." : hasBlockingErrors ? "Fix cart issues" : stockErrorProductId ? "Update cart" : "Confirm order"}
+          {submitting ? "Se plasează comanda..." : hasBlockingErrors ? "Rezolvă problemele din coș" : stockErrorProductId ? "Actualizează coșul" : "Confirmă comanda"}
         </button>
         {disableSubmit && !submitting && submitBlocker ? <p style={{ marginTop: 8, color: "#8a5a4f" }}>{submitBlocker}</p> : null}
       </form>

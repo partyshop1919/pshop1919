@@ -98,7 +98,7 @@ export default function Navbar() {
       </div>
 
       <Link href="/party-builder" className="nav-category-label">
-        Party Builder
+        Constructor petrecere
       </Link>
 
       <form className="nav-search" onSubmit={submitSearch}>
@@ -112,10 +112,10 @@ export default function Navbar() {
           type="search"
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
-          placeholder="What are you looking for? For example, helium..."
-          aria-label="Search products"
+          placeholder="Ce cauți? De exemplu, heliu..."
+          aria-label="Caută produse"
         />
-        <button type="submit">Search</button>
+        <button type="submit">Caută</button>
       </form>
 
       <div className="nav-right">
@@ -125,7 +125,7 @@ export default function Navbar() {
               <path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.6l-1-1a5.5 5.5 0 0 0-7.8 7.8l1 1L12 21l7.8-7.6 1-1a5.5 5.5 0 0 0 0-7.8Z" />
             </svg>
           </span>
-          <span>Favorites</span>
+          <span>Favorite</span>
           {favoriteCount > 0 && <span className="cart-badge">{favoriteCount}</span>}
         </Link>
 
@@ -138,7 +138,7 @@ export default function Navbar() {
                   <circle cx="12" cy="7" r="4" />
                 </svg>
               </span>
-              <span>Account</span>
+              <span>Cont</span>
             </Link>
             <button type="button" className="nav-action-link nav-action-button" onClick={logoutUser}>
               <span className="nav-action-icon" aria-hidden="true">
@@ -148,7 +148,7 @@ export default function Navbar() {
                   <path d="M21 12H9" />
                 </svg>
               </span>
-              <span>Log out</span>
+              <span>Ieșire</span>
             </button>
           </>
         ) : (
@@ -159,7 +159,7 @@ export default function Navbar() {
                 <circle cx="12" cy="7" r="4" />
               </svg>
             </span>
-            <span>Sign in</span>
+            <span>Intră în cont</span>
           </Link>
         )}
 
@@ -170,13 +170,13 @@ export default function Navbar() {
               <path d="M9 8.5V7a3 3 0 0 1 6 0v1.5" />
             </svg>
           </span>
-          <span>{cartCount > 0 ? `Cart (${cartCount})` : "Empty cart"}</span>
+          <span>{cartCount > 0 ? `Coș (${cartCount})` : "Coș gol"}</span>
         </Link>
 
         {isAdmin && (
           <>
             <Link href="/admin/products" className="admin-shortcut">
-              Admin Panel
+              Panou admin
             </Link>
             <button type="button" className="nav-action-link nav-action-button" onClick={logoutAdmin}>
               <span className="nav-action-icon" aria-hidden="true">
@@ -186,7 +186,7 @@ export default function Navbar() {
                   <path d="M21 12H9" />
                 </svg>
               </span>
-              <span>Admin logout</span>
+              <span>Ieșire admin</span>
             </button>
           </>
         )}

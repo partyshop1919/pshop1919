@@ -4,16 +4,16 @@ export default function ReturnPage() {
   return (
     <>
       <Head>
-        <title>Returns - Evamat</title>
+        <title>Retur - Evamat</title>
       </Head>
       <main className="container info-page">
         <section className="info-card">
-          <h1>Return policy</h1>
-          <p className="info-lead">A simple and transparent process, in line with current legislation.</p>
+          <h1>Politica de retur</h1>
+          <p className="info-lead">Un proces simplu și transparent, în conformitate cu legislația în vigoare.</p>
           <div className="info-grid">
-            <div><h3>Timeframe</h3><p>Products can be returned within 14 calendar days.</p></div>
-            <div><h3>Conditions</h3><p>Products must be unused and in their original packaging.</p></div>
-            <div><h3>Return support</h3><p>Email us at support@evamat.ro and we will guide you step by step.</p></div>
+            <div><h3>Termen</h3><p>Produsele pot fi returnate în termen de 14 zile calendaristice.</p></div>
+            <div><h3>Condiții</h3><p>Produsele trebuie să fie nefolosite și în ambalajul original.</p></div>
+            <div><h3>Asistență retur</h3><p>Scrie-ne la support@evamat.ro și te ghidăm pas cu pas.</p></div>
           </div>
         </section>
       </main>

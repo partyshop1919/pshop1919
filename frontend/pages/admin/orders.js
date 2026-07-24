@@ -8,11 +8,11 @@ function formatRON(cents) {
 }
 
 const STATUS_OPTIONS = [
-  { value: "pending", label: "pending" },
-  { value: "confirmed", label: "confirmed" },
-  { value: "shipped", label: "shipped" },
-  { value: "delivered", label: "delivered" },
-  { value: "cancelled", label: "cancelled" }
+  { value: "pending", label: "în așteptare" },
+  { value: "confirmed", label: "confirmată" },
+  { value: "shipped", label: "expediată" },
+  { value: "delivered", label: "livrată" },
+  { value: "cancelled", label: "anulată" }
 ];
 
 export default function AdminOrders() {
@@ -34,7 +34,7 @@ export default function AdminOrders() {
     } catch (e) {
       console.error("ADMIN LOAD ORDERS ERROR", e);
       setOrders([]);
-      setError("Unable to load orders.");
+      setError("Nu am putut încărca comenzile.");
     } finally {
       setLoading(false);
     }
@@ -53,7 +53,7 @@ export default function AdminOrders() {
   async function changeStatus(orderId, nextStatus) {
     const status = String(nextStatus || "").trim();
     if (!statusValues.has(status)) {
-      alert("Invalid status");
+      alert("Status invalid");
       return;
     }
     setBusyId(orderId);
@@ -63,8 +63,8 @@ export default function AdminOrders() {
       await loadOrders();
     } catch (e) {
       console.error("UPDATE STATUS ERROR", e);
-      setError("Unable to update the order status.");
-      alert("Update failed");
+      setError("Nu am putut actualiza statusul comenzii.");
+      alert("Actualizarea a eșuat");
     } finally {
       setBusyId(null);
     }
@@ -76,7 +76,7 @@ export default function AdminOrders() {
       setCopiedId(String(id));
       setTimeout(() => setCopiedId(null), 1200);
     } catch {
-      alert("Unable to copy the ID.");
+      alert("Nu am putut copia ID-ul.");
     }
   }
 
@@ -86,18 +86,18 @@ export default function AdminOrders() {
     <AdminGuard>
       <div className="container">
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", gap: 12 }}>
-          <h1 style={{ margin: 0 }}>Admin - Orders</h1>
-          <button className="btn" type="button" onClick={loadOrders} disabled={loading}>Refresh</button>
+          <h1 style={{ margin: 0 }}>Admin - Comenzi</h1>
+          <button className="btn" type="button" onClick={loadOrders} disabled={loading}>Reîmprospătează</button>
         </div>
 
-        {loading && <p style={{ marginTop: 12 }}>Loading...</p>}
+        {loading && <p style={{ marginTop: 12 }}>Se încarcă...</p>}
         {error && <p style={{ color: "red", marginTop: 12 }}>{error}</p>}
 
         {!loading && orders.length === 0 && (
           <div className="empty-state" style={{ marginTop: 20 }}>
             <div className="empty-icon">Mail</div>
-            <h3>No orders available</h3>
-            <p>The first order will appear here once it is placed.</p>
+            <h3>Nu există comenzi</h3>
+            <p>Prima comandă va apărea aici după ce este plasată.</p>
           </div>
         )}
 
@@ -127,25 +127,25 @@ export default function AdminOrders() {
                   <div style={{ display: "flex", justifyContent: "space-between", gap: 14, flexWrap: "wrap" }}>
                     <div style={{ minWidth: 320 }}>
                       <div style={{ display: "flex", alignItems: "center", gap: 10, flexWrap: "wrap" }}>
-                        <strong>Order #{id}</strong>
-                        {copiedId === id && <span style={{ fontSize: 12, color: "var(--secondary)" }}>Copied</span>}
+                        <strong>Comanda #{id}</strong>
+                        {copiedId === id && <span style={{ fontSize: 12, color: "var(--secondary)" }}>Copiat</span>}
                       </div>
 
                       {createdAt && <div style={{ fontSize: 13, color: "var(--secondary)", marginTop: 2 }}>{createdAt.toLocaleString()}</div>}
 
                       <div style={{ marginTop: 10, display: "grid", gap: 4 }}>
-                        <div><strong>Customer:</strong> {customerName}</div>
+                        <div><strong>Client:</strong> {customerName}</div>
                         <div><strong>Email:</strong> {customerEmail}</div>
-                        <div><strong>Phone:</strong> {customerPhone}</div>
-                        <div style={{ marginTop: 6 }}><strong>Shipping:</strong> {customerAddress}, {customerCity}, {customerCounty}{postalCode ? ` (${postalCode})` : ""}</div>
+                        <div><strong>Telefon:</strong> {customerPhone}</div>
+                        <div style={{ marginTop: 6 }}><strong>Livrare:</strong> {customerAddress}, {customerCity}, {customerCounty}{postalCode ? ` (${postalCode})` : ""}</div>
                       </div>
 
                       <div style={{ marginTop: 12, display: "grid", gap: 4 }}>
                         <div>Subtotal: <strong>{formatRON(subtotal)}</strong></div>
-                        <div>Shipping: <strong>{shipping === 0 ? "Free" : formatRON(shipping)}</strong></div>
+                        <div>Livrare: <strong>{shipping === 0 ? "Gratuită" : formatRON(shipping)}</strong></div>
                         <div>Total: <strong>{formatRON(total)}</strong></div>
-                        <div>Payment: <strong>{paymentMethod}</strong> - <strong>{paymentStatus}</strong></div>
-                        <div>Current status: <strong>{status}</strong></div>
+                        <div>Plată: <strong>{paymentMethod}</strong> - <strong>{paymentStatus}</strong></div>
+                        <div>Status curent: <strong>{status}</strong></div>
                       </div>
                     </div>
 
@@ -154,13 +154,13 @@ export default function AdminOrders() {
                       <select value={statusValues.has(status) ? status : "pending"} onChange={(e) => changeStatus(id, e.target.value)} style={{ width: "100%", padding: 10, borderRadius: 10, border: "1px solid var(--border)" }} disabled={isBusy}>
                         {STATUS_OPTIONS.map((opt) => <option key={opt.value} value={opt.value}>{opt.label}</option>)}
                       </select>
-                      <button className="btn" style={{ marginTop: 10, width: "100%" }} type="button" onClick={() => copyId(id)} disabled={isBusy}>Copy ID</button>
+                      <button className="btn" style={{ marginTop: 10, width: "100%" }} type="button" onClick={() => copyId(id)} disabled={isBusy}>Copiază ID</button>
                     </div>
                   </div>
 
                   {Array.isArray(order?.items) && order.items.length > 0 && (
                     <div style={{ marginTop: 12 }}>
-                      <strong>Products:</strong>
+                      <strong>Produse:</strong>
                       <ul style={{ marginTop: 6 }}>
                         {order.items.map((item) => <li key={String(item.id || `${item.name}-${item.quantity}`)}>{Number(item.quantity || 0)} x {item.name} - {formatRON(item.priceCents)}</li>)}
                       </ul>

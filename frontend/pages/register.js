@@ -29,7 +29,7 @@ export default function RegisterPage() {
       return;
     }
     if (!acceptedLegal) {
-      setError("You must accept the Terms and the Privacy Policy.");
+      setError("Trebuie să accepți Termenii și Politica de confidențialitate.");
       return;
     }
 
@@ -45,11 +45,11 @@ export default function RegisterPage() {
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.message);
-      setMessage("Account created. Please check your email to confirm it.");
+      setMessage("Contul a fost creat. Verifică emailul pentru confirmare.");
       setForm({ email: "", password: "" });
       setAcceptedLegal(false);
     } catch (err) {
-      setError(err.message || "Registration failed");
+      setError(err.message || "Înregistrarea a eșuat");
     } finally {
       setLoading(false);
     }
@@ -58,7 +58,7 @@ export default function RegisterPage() {
   return (
     <div className="container auth-page">
       <div className="auth-card">
-        <h1>Create account</h1>
+        <h1>Creează cont</h1>
         {message && <p style={{ color: "green" }}>{message}</p>}
         {error && <p style={{ color: "red" }}>{error}</p>}
 
@@ -72,34 +72,34 @@ export default function RegisterPage() {
               aria-describedby={`${emailPopupId}-desc`}
               onClick={(e) => e.stopPropagation()}
             >
-              <button type="button" className="auth-popup-close" aria-label="Close alert" onClick={() => setShowEmailPopup(false)}>
+              <button type="button" className="auth-popup-close" aria-label="Închide alerta" onClick={() => setShowEmailPopup(false)}>
                 X
               </button>
               <div className="auth-popup-icon" aria-hidden="true">!</div>
-              <h2 id={`${emailPopupId}-title`}>Invalid email</h2>
+              <h2 id={`${emailPopupId}-title`}>Email invalid</h2>
               <p id={`${emailPopupId}-desc`}>
-                Please enter a valid email address, for example <strong>name@domain.com</strong>.
+                Te rugăm să introduci o adresă de email validă, de exemplu <strong>nume@domeniu.com</strong>.
               </p>
               <button type="button" className="btn" onClick={() => setShowEmailPopup(false)}>
-                Got it
+                Am înțeles
               </button>
             </div>
           </div>
         )}
 
-        <p className="auth-muted">You can create an account instantly with social login.</p>
+        <p className="auth-muted">Poți crea cont instant și cu autentificare socială.</p>
         <div className="auth-social">
           <a className="auth-social-btn google" href={`${BACKEND_URL}/api/auth/oauth/google/start`}>
             <span className="auth-social-logo" aria-hidden="true"><img src="/icons/google.svg" alt="" /></span>
-            <span>Continue with Google</span>
+            <span>Continuă cu Google</span>
           </a>
           <a className="auth-social-btn apple" href={`${BACKEND_URL}/api/auth/oauth/apple/start`}>
             <span className="auth-social-logo" aria-hidden="true"><img src="/icons/apple.svg" alt="" /></span>
-            <span>Continue with Apple</span>
+            <span>Continuă cu Apple</span>
           </a>
           <a className="auth-social-btn github" href={`${BACKEND_URL}/api/auth/oauth/github/start`}>
             <span className="auth-social-logo" aria-hidden="true"><img src="/icons/github.svg" alt="" /></span>
-            <span>Continue with GitHub</span>
+            <span>Continuă cu GitHub</span>
           </a>
         </div>
 
@@ -114,7 +114,7 @@ export default function RegisterPage() {
           </label>
 
           <label>
-            Password
+            Parolă
             <div className="password-field">
               <input
                 type={showPassword ? "text" : "password"}
@@ -127,10 +127,10 @@ export default function RegisterPage() {
                 type="button"
                 className="password-toggle"
                 onClick={() => setShowPassword((prev) => !prev)}
-                aria-label={showPassword ? "Hide password" : "Show password"}
+                aria-label={showPassword ? "Ascunde parola" : "Arată parola"}
                 aria-pressed={showPassword}
               >
-                {showPassword ? "Hide" : "Show"}
+                {showPassword ? "Ascunde" : "Arată"}
               </button>
             </div>
           </label>
@@ -138,13 +138,13 @@ export default function RegisterPage() {
           <label className="auth-inline-check">
             <input type="checkbox" checked={acceptedLegal} onChange={(e) => setAcceptedLegal(e.target.checked)} required />
             <span>
-              I agree to the <Link href="/termeni-si-conditii">Terms and Conditions</Link> and the{" "}
-              <Link href="/politica-confidentialitate">Privacy Policy</Link>.
+              Sunt de acord cu <Link href="/termeni-si-conditii">Termenii și Condițiile</Link> și cu{" "}
+              <Link href="/politica-confidentialitate">Politica de confidențialitate</Link>.
             </span>
           </label>
 
           <button className="btn full" disabled={loading || !acceptedLegal}>
-            {loading ? "Creating account..." : "Create account"}
+            {loading ? "Se creează contul..." : "Creează cont"}
           </button>
         </form>
       </div>

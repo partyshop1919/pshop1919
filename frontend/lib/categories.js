@@ -1,127 +1,127 @@
 export const categories = [
   {
     id: 1,
-    name: "Balloons",
+    name: "Baloane",
     slug: "baloane",
     image: "/images/products/baloane.jpg",
-    seoTitle: "Party Balloons - Evamat",
-    seoDescription: "Discover every kind of balloon for parties: latex, number, foil, and more.",
-    h1: "Balloons for every kind of party",
-    intro: "Explore our full range of party balloons for birthdays, themed events, and special moments.",
+    seoTitle: "Baloane pentru petreceri - Evamat",
+    seoDescription: "Descoperă toate tipurile de baloane pentru petreceri: latex, cifre, folie și multe altele.",
+    h1: "Baloane pentru orice tip de petrecere",
+    intro: "Explorează gama noastră completă de baloane pentru aniversări, evenimente tematice și momente speciale.",
     children: [
       {
         id: 11,
-        name: "Latex Balloons",
+        name: "Baloane latex",
         slug: "baloane-latex",
         image: "/images/categories/baloane-latex.jpg",
-        seoTitle: "Latex Balloons - Great Prices | Evamat",
-        seoDescription: "Shop latex balloons for parties. Multiple colors, fast delivery, and great prices.",
-        h1: "Colorful latex balloons for parties",
-        intro: "Latex balloons are ideal for decorating parties and festive events in many colors and sizes."
+        seoTitle: "Baloane latex - Prețuri bune | Evamat",
+        seoDescription: "Cumpără baloane latex pentru petreceri. Culori variate, livrare rapidă și prețuri bune.",
+        h1: "Baloane latex colorate pentru petreceri",
+        intro: "Baloanele latex sunt ideale pentru decorarea petrecerilor și evenimentelor festive în multe culori și dimensiuni."
       },
       {
         id: 12,
-        name: "Number Balloons",
+        name: "Baloane cifre",
         slug: "baloane-cifre",
         image: "/images/categories/baloane-cifre.jpg",
-        seoTitle: "Number Balloons - Special Birthdays | Evamat",
-        seoDescription: "Number balloons for birthdays and special occasions. Many styles and fast delivery.",
-        h1: "Number balloons for birthdays",
-        intro: "Number balloons are perfect for celebrating ages and special milestones at parties."
+        seoTitle: "Baloane cifre - Zile speciale | Evamat",
+        seoDescription: "Baloane cifre pentru aniversări și ocazii speciale. Multe stiluri și livrare rapidă.",
+        h1: "Baloane cifre pentru aniversări",
+        intro: "Baloanele cifre sunt perfecte pentru sărbătorirea vârstelor și momentelor importante la petreceri."
       },
       {
         id: 13,
-        name: "Foil Balloons",
+        name: "Baloane folie",
         slug: "baloane-folie",
         image: "/images/categories/baloane-folie.jpg",
-        seoTitle: "Foil Balloons - Premium Designs | Evamat",
-        seoDescription: "Choose foil balloons for memorable parties with modern design and premium quality.",
-        h1: "Foil balloons for parties",
-        intro: "Foil balloons add extra style to your party decor and come in a wide variety of shapes."
+        seoTitle: "Baloane folie - Design premium | Evamat",
+        seoDescription: "Alege baloane folie pentru petreceri memorabile, cu design modern și calitate premium.",
+        h1: "Baloane folie pentru petreceri",
+        intro: "Baloanele folie adaugă stil decorului tău și sunt disponibile într-o varietate mare de forme."
       }
     ]
   },
   {
     id: 2,
-    name: "Party Decor",
+    name: "Decor petrecere",
     slug: "decor-petrecere",
     image: "/images/products/decor.png",
-    seoTitle: "Party Decorations - Evamat",
-    seoDescription: "Find party decorations: garlands, banners, confetti, and other festive accessories.",
-    h1: "Decorations for unforgettable parties",
-    intro: "Choose party decorations that turn every event into a memorable moment.",
+    seoTitle: "Decorațiuni pentru petrecere - Evamat",
+    seoDescription: "Găsește decorațiuni pentru petrecere: ghirlande, bannere, confetti și alte accesorii festive.",
+    h1: "Decorațiuni pentru petreceri memorabile",
+    intro: "Alege decorațiuni care transformă orice eveniment într-un moment memorabil.",
     children: [
       {
         id: 21,
-        name: "Garlands",
+        name: "Ghirlande",
         slug: "ghirlande",
         image: "/images/ghirlande.jpg",
-        seoTitle: "Decorative Garlands - Festive Parties | Evamat",
-        seoDescription: "Decorative garlands for parties and events. Easy to install with a strong visual impact.",
-        h1: "Decorative garlands for parties",
-        intro: "Decorative garlands are ideal for creating a festive atmosphere at any type of party."
+        seoTitle: "Ghirlande decorative - Petreceri festive | Evamat",
+        seoDescription: "Ghirlande decorative pentru petreceri și evenimente. Ușor de montat și cu impact vizual puternic.",
+        h1: "Ghirlande decorative pentru petreceri",
+        intro: "Ghirlandele decorative sunt ideale pentru a crea o atmosferă festivă la orice tip de petrecere."
       },
       {
         id: 22,
         name: "Confetti",
         slug: "confetti",
         image: "/images/confetti.jpg",
-        seoTitle: "Party Confetti - Wow Effect | Evamat",
-        seoDescription: "Colorful confetti for fun parties. Ideal for birthdays and special events.",
-        h1: "Colorful confetti for events",
-        intro: "Confetti adds color and energy to any celebration and works well for every occasion."
+        seoTitle: "Confetti pentru petreceri - Efect wow | Evamat",
+        seoDescription: "Confetti colorat pentru petreceri vesele. Ideal pentru aniversări și evenimente speciale.",
+        h1: "Confetti colorat pentru evenimente",
+        intro: "Confetti adaugă culoare și energie oricărei sărbători și se potrivește pentru orice ocazie."
       },
       {
         id: 23,
-        name: "Banners",
+        name: "Bannere",
         slug: "bannere",
         image: "/images/bannere.jpg",
-        seoTitle: "Birthday Banners - Festive Messages | Evamat",
-        seoDescription: "Birthday and party banners for decorating celebrations. Various styles and fast delivery.",
-        h1: "Festive and birthday banners",
-        intro: "Banners are essential decorative pieces for sharing festive messages at parties."
+        seoTitle: "Bannere aniversare - Mesaje festive | Evamat",
+        seoDescription: "Bannere pentru aniversări și petreceri, ideale pentru decorarea evenimentelor. Stiluri variate și livrare rapidă.",
+        h1: "Bannere festive și aniversare",
+        intro: "Bannerele sunt elemente decorative esențiale pentru a transmite mesaje festive la petreceri."
       }
     ]
   },
   {
     id: 3,
-    name: "Birthday Essentials",
+    name: "Articole aniversare",
     slug: "articole-aniversare",
     image: "/images/products/set-pahare-si-farfurii-24-persoane.jpg",
-    seoTitle: "Birthday Essentials - Evamat",
-    seoDescription: "Candles, hats, cups, and other birthday supplies for memorable parties.",
-    h1: "Birthday essentials for parties",
-    intro: "Choose the key birthday supplies you need for festive tables and memorable moments.",
+    seoTitle: "Articole aniversare - Evamat",
+    seoDescription: "Lumânări, coifuri, pahare și alte articole aniversare pentru petreceri memorabile.",
+    h1: "Articole aniversare pentru petreceri",
+    intro: "Alege articolele esențiale de aniversare de care ai nevoie pentru mese festive și momente memorabile.",
     children: [
       {
         id: 31,
-        name: "Candles",
+        name: "Lumânări",
         slug: "lumanari",
         image: "/images/products/candles.jpeg",
-        seoTitle: "Birthday Candles - Evamat",
-        seoDescription: "Birthday cake candles in a variety of colors and styles.",
-        h1: "Candles for birthday cakes",
-        intro: "Complete your birthday cake with candles suitable for any age."
+        seoTitle: "Lumânări aniversare - Evamat",
+        seoDescription: "Lumânări pentru tort aniversar, în culori și stiluri variate.",
+        h1: "Lumânări pentru tort aniversar",
+        intro: "Completează tortul aniversar cu lumânări potrivite pentru orice vârstă."
       },
       {
         id: 32,
-        name: "Party Hats & Accessories",
+        name: "Coifuri și accesorii",
         slug: "coifuri-si-accesorii",
         image: "/images/products/hats.jpg",
-        seoTitle: "Party Hats and Accessories - Evamat",
-        seoDescription: "Festive hats and accessories for birthdays and themed parties.",
-        h1: "Party hats and accessories",
-        intro: "Fun accessories that bring color and energy to any celebration."
+        seoTitle: "Coifuri și accesorii de petrecere - Evamat",
+        seoDescription: "Coifuri festive și accesorii pentru aniversări și petreceri tematice.",
+        h1: "Coifuri și accesorii de petrecere",
+        intro: "Accesorii vesele care aduc culoare și energie oricărei sărbători."
       },
       {
         id: 33,
-        name: "Cups & Plates",
+        name: "Pahare și farfurii",
         slug: "pahare-si-farfurii",
         image: "/images/products/set-pahare-petrecere.jpg",
-        seoTitle: "Party Cups and Plates - Evamat",
-        seoDescription: "Sets of cups and plates for birthdays, events, and parties.",
-        h1: "Cups and plates for parties",
-        intro: "Practical and festive sets for serving drinks and desserts."
+        seoTitle: "Pahare și farfurii pentru petrecere - Evamat",
+        seoDescription: "Seturi de pahare și farfurii pentru aniversări, evenimente și petreceri.",
+        h1: "Pahare și farfurii pentru petreceri",
+        intro: "Seturi practice și festive pentru servirea băuturilor și deserturilor."
       }
     ]
   }

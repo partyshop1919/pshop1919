@@ -80,6 +80,16 @@ export const categories = [
         seoDescription: "Bannere pentru aniversări și petreceri, ideale pentru decorarea evenimentelor. Stiluri variate și livrare rapidă.",
         h1: "Bannere festive și aniversare",
         intro: "Bannerele sunt elemente decorative esențiale pentru a transmite mesaje festive la petreceri."
+      },
+      {
+        id: 24,
+        name: "Accesorii pentru baloane",
+        slug: "accesorii-pentru-baloane",
+        image: "/images/products/pompa-electrica-de-baloane.jpeg",
+        seoTitle: "Accesorii pentru baloane - Evamat",
+        seoDescription: "Pompe, benzi pentru arcada, buline adezive si alte accesorii utile pentru decoruri cu baloane.",
+        h1: "Accesorii pentru baloane si decoruri festive",
+        intro: "Gaseste accesoriile esentiale pentru montarea rapida a arcadelor, buchetelor si decorurilor profesionale cu baloane."
       }
     ]
   },

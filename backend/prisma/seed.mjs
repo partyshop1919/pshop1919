@@ -790,20 +790,12 @@ const PRODUCTS = [
     priceCents: 3999,
     stock: 20,
     image: "/images/products/set-5-baloane-dino.png",
-    images: ["/images/products/set-5-baloane-dino.png"],
+    images: [
+      "/images/products/set-5-baloane-dino.png",
+      "/images/products/set-5-baloane-dino2.png"
+    ],
     featured: false,
-    description: "Set de 5 baloane cu tema dinozauri, potrivit pentru decor aniversar complet si distractiv."
-  },
-  {
-    name: "Set 5 baloane dinozauri model 2",
-    slug: "set-5-baloane-dinozauri-model-2",
-    category: "Baloane folie",
-    priceCents: 3999,
-    stock: 20,
-    image: "/images/products/set-5-baloane-dino2.png",
-    images: ["/images/products/set-5-baloane-dino2.png"],
-    featured: false,
-    description: "Set de 5 baloane dinozauri, varianta colorata pentru petreceri tematice si decoruri atractive."
+    description: "Set de 5 baloane cu tema dinozauri, potrivit pentru decor aniversar complet si distractiv, cu mai multe variante de imagine in galerie."
   },
   {
     name: "Set 5 baloane dinozauri model 3",
@@ -812,20 +804,12 @@ const PRODUCTS = [
     priceCents: 3999,
     stock: 20,
     image: "/images/products/set-5-baloane-dino3.png",
-    images: ["/images/products/set-5-baloane-dino3.png"],
+    images: [
+      "/images/products/set-5-baloane-dino3.png",
+      "/images/products/set-5-baloane-dino4.png"
+    ],
     featured: false,
-    description: "Set de 5 baloane dinozauri pentru aniversari tematice si decoruri memorabile."
-  },
-  {
-    name: "Set 5 baloane dinozauri model 4",
-    slug: "set-5-baloane-dinozauri-model-4",
-    category: "Baloane folie",
-    priceCents: 3999,
-    stock: 20,
-    image: "/images/products/set-5-baloane-dino4.png",
-    images: ["/images/products/set-5-baloane-dino4.png"],
-    featured: false,
-    description: "Set de 5 baloane dinozauri, potrivit pentru petreceri tematice creative si colorate."
+    description: "Set de 5 baloane dinozauri pentru aniversari tematice si decoruri memorabile, cu doua variante de imagine in galerie."
   },
   {
     name: "Set 5 baloane briosa",
@@ -979,6 +963,24 @@ function buildDescription(product) {
 }
 
 async function main() {
+  await prisma.productImage.deleteMany({
+    where: {
+      product: {
+        slug: {
+          in: ["set-5-baloane-dinozauri-model-2", "set-5-baloane-dinozauri-model-4"]
+        }
+      }
+    }
+  });
+
+  await prisma.product.deleteMany({
+    where: {
+      slug: {
+        in: ["set-5-baloane-dinozauri-model-2", "set-5-baloane-dinozauri-model-4"]
+      }
+    }
+  });
+
   for (const product of PRODUCTS) {
     const { images, ...base } = product;
     const description = String(base.description || "").trim() || buildDescription(base);

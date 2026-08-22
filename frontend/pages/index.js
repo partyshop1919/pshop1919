@@ -13,9 +13,13 @@ const SSR_API_URL =
     ? "https://api.evamat.ro/api"
     : "http://localhost:4000/api");
 
+const CLIENT_API_URL =
+  process.env.NEXT_PUBLIC_API_URL ||
+  "https://api.evamat.ro/api";
+
 export default function HomePage({ initialItems = [] }) {
-  const [items] = useState(Array.isArray(initialItems) ? initialItems : []);
-  const [loading] = useState(false);
+  const [items, setItems] = useState(Array.isArray(initialItems) ? initialItems : []);
+  const [loading, setLoading] = useState(!Array.isArray(initialItems) || initialItems.length === 0);
   const testimonials = [
     { id: 1, name: "Andreea, București", text: "Comanda a ajuns repede, iar decorul a arătat exact cum ne-am dorit pentru aniversare.", rating: 5 },
     { id: 2, name: "Mihai, Cluj-Napoca", text: "Constructorul de petrecere m-a ajutat să aleg produsele potrivite pentru numărul de invitați.", rating: 5 },
@@ -46,6 +50,54 @@ export default function HomePage({ initialItems = [] }) {
     const interval = setInterval(() => setFeaturedSlideIndex((prev) => (prev + 1) % featuredSlides.length), 4200);
     return () => clearInterval(interval);
   }, [featuredSlides.length]);
+
+  useEffect(() => {
+    if (Array.isArray(initialItems) && initialItems.length > 0) {
+      setItems(initialItems);
+      setLoading(false);
+      return;
+    }
+
+    let cancelled = false;
+
+    async function loadProductsWithRetry() {
+      setLoading(true);
+
+      for (let attempt = 0; attempt < 4; attempt += 1) {
+        try {
+          const res = await fetch(`${CLIENT_API_URL}/products`, {
+            headers: { Accept: "application/json" }
+          });
+
+          if (!res.ok) {
+            throw new Error(`Failed with status ${res.status}`);
+          }
+
+          const data = await res.json().catch(() => ({}));
+          const nextItems = Array.isArray(data?.items) ? data.items : [];
+
+          if (!cancelled) {
+            setItems(nextItems);
+            setLoading(false);
+          }
+          return;
+        } catch {
+          if (attempt === 3) {
+            if (!cancelled) setLoading(false);
+            return;
+          }
+
+          await new Promise((resolve) => setTimeout(resolve, 1200 * (attempt + 1)));
+        }
+      }
+    }
+
+    loadProductsWithRetry();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [initialItems]);
 
   return (
     <>
@@ -93,6 +145,14 @@ export default function HomePage({ initialItems = [] }) {
                   ))}
                 </div>
               </div>
+            </div>
+          )}
+
+          {loading && featuredSlides.length === 0 && (
+            <div className="empty-state">
+              <div className="empty-icon">...</div>
+              <h3>Se încarcă produsele</h3>
+              <p>Încercăm din nou să preluăm produsele recomandate.</p>
             </div>
           )}
 

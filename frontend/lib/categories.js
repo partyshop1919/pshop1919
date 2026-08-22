@@ -55,7 +55,7 @@ export const categories = [
         id: 21,
         name: "Ghirlande",
         slug: "ghirlande",
-        image: "/images/ghirlande.jpg",
+        image: "/images/products/Ghirlanda-aniversara.jpg",
         seoTitle: "Ghirlande decorative - Petreceri festive | Evamat",
         seoDescription: "Ghirlande decorative pentru petreceri și evenimente. Ușor de montat și cu impact vizual puternic.",
         h1: "Ghirlande decorative pentru petreceri",
@@ -75,7 +75,7 @@ export const categories = [
         id: 23,
         name: "Bannere",
         slug: "bannere",
-        image: "/images/bannere.jpg",
+        image: "/images/products/banner-la-multi-ani-premium.jpg",
         seoTitle: "Bannere aniversare - Mesaje festive | Evamat",
         seoDescription: "Bannere pentru aniversări și petreceri, ideale pentru decorarea evenimentelor. Stiluri variate și livrare rapidă.",
         h1: "Bannere festive și aniversare",
@@ -136,3 +136,4 @@ export const categories = [
     ]
   }
 ];
+

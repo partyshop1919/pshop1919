@@ -55,7 +55,7 @@ export default function CheckoutPage() {
       const data = await res.json().catch(() => ({}));
       return { res, data };
     } catch (e) {
-      if (e?.name === "AbortError") throw new Error("Serverul a răspuns prea greu. Te rugăm să încerci din nou în câteva secunde.");
+      if (e?.name === "AbortError") throw new Error("Serverul nu a răspuns la timp. Verifică istoricul comenzilor înainte de a încerca din nou.");
       throw e;
     } finally {
       clearTimeout(timeoutId);
@@ -150,26 +150,22 @@ export default function CheckoutPage() {
         return;
       }
 
-      const res = await fetch(`${API_URL}/orders`, {
+      const { res, data } = await fetchJsonWithTimeout(`${API_URL}/orders`, {
         method: "POST",
         headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
         body: JSON.stringify(payload)
       });
       if (res.status === 409) {
-        const data = await res.json().catch(() => ({}));
         setStockErrorProductId(data?.productId ? String(data.productId) : null);
         throw new Error("Un produs nu mai este în stoc. Te rugăm să revii în coș.");
       }
       if (res.status === 401) {
-        const data = await res.json().catch(() => ({}));
         throw new Error(data?.error || data?.message || "Autentificarea a eșuat. Te rugăm să te autentifici din nou.");
       }
       if (!res.ok) {
-        const data = await res.json().catch(() => ({}));
         throw new Error(data?.error || data?.message || "Comanda nu a putut fi plasată.");
       }
 
-      const data = await res.json();
       clearCart();
       router.push(`/order-success?orderId=${encodeURIComponent(data.id)}`);
     } catch (err) {
@@ -196,7 +192,6 @@ export default function CheckoutPage() {
         <span style={{ border: "1px solid #ddd", borderRadius: 999, padding: "4px 10px" }}>Suport rapid</span>
       </div>
 
-      {error && <p style={{ color: "red" }}>{error}</p>}
 
       {hasBlockingErrors && (
         <div style={{ border: "1px solid #f1c40f", padding: 12, borderRadius: 8, marginBottom: 16 }}>
@@ -219,7 +214,7 @@ export default function CheckoutPage() {
         </div>
       )}
 
-      <form className="checkout-form" onSubmit={submitOrder}>
+      <form className="checkout-form" onSubmit={submitOrder} aria-busy={submitting}>
         <h3 style={{ margin: "8px 0 0" }}>Date de livrare</h3>
         <label>Nume complet<input name="name" value={form.name} onChange={updateField} required /></label>
         <label>Telefon<input name="phone" value={form.phone} onChange={updateField} placeholder="07xxxxxxxx" inputMode="tel" required /></label>
@@ -239,6 +234,8 @@ export default function CheckoutPage() {
           <span>Am citit și sunt de acord cu <Link href="/termeni-si-conditii">Termenii și Condițiile</Link> și cu <Link href="/politica-confidentialitate">Politica de confidențialitate</Link>.</span>
         </label>
 
+        {error && <p role="alert" style={{ color: "crimson", margin: "8px 0" }}>{error} <Link href="/orders">Vezi comenzile mele</Link></p>}
+        {submitting && <p role="status" style={{ margin: "8px 0" }}>{paymentMethod === "card" ? "Se pregătește pagina de plată. Vei fi redirecționat către Stripe." : "Se trimite comanda."} Te rugăm să aștepți, fără să reîncarci pagina.</p>}
         <button className="btn full" disabled={disableSubmit}>
           {submitting ? "Se plasează comanda..." : hasBlockingErrors ? "Rezolvă problemele din coș" : stockErrorProductId ? "Actualizează coșul" : "Confirmă comanda"}
         </button>

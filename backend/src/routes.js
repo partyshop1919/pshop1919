@@ -30,7 +30,11 @@ function getStripeClient() {
     err.statusCode = 500;
     throw err;
   }
-  return new Stripe(stripeKey, { apiVersion: "2024-06-20" });
+  return new Stripe(stripeKey, {
+    apiVersion: "2024-06-20",
+    timeout: 20000,
+    maxNetworkRetries: 0
+  });
 }
 
 function getFrontendUrl() {
@@ -724,6 +728,7 @@ router.post("/cart/validate", (req, res, next) => {
    Body: { customer, items }
 ============================================================ */
 router.post("/payments/stripe/create-session", userAuth, async (req, res) => {
+  let stage = "configuration";
   try {
     const stripeClient = getStripeClient();
     const body = req.body || {};
@@ -744,6 +749,7 @@ router.post("/payments/stripe/create-session", userAuth, async (req, res) => {
       return jsonError(res, 400, "Missing customer data");
     }
 
+    stage = "load-user";
     const user = await prisma.user.findUnique({
       where: { id: req.user.userId },
       select: { id: true, email: true }
@@ -762,6 +768,7 @@ router.post("/payments/stripe/create-session", userAuth, async (req, res) => {
     if (qtyById.size === 0) return jsonError(res, 400, "Invalid items");
 
     const ids = [...qtyById.keys()];
+    stage = "load-products";
     const products = await prisma.product.findMany({
       where: { id: { in: ids }, deletedAt: null },
       select: { id: true, name: true, priceCents: true, stock: true }
@@ -806,6 +813,7 @@ router.post("/payments/stripe/create-session", userAuth, async (req, res) => {
     const grandTotalCents = subtotalCents + shippingCents;
 
     // 2) Create order as pending + unpaid + card (NU scădem stoc încă)
+    stage = "create-order";
     const order = await prisma.order.create({
       data: {
         userId: user.id,
@@ -851,6 +859,7 @@ router.post("/payments/stripe/create-session", userAuth, async (req, res) => {
       });
     }
 
+    stage = "stripe-session";
     const session = await stripeClient.checkout.sessions.create({
       mode: "payment",
       payment_method_types: ["card"],
@@ -864,6 +873,7 @@ router.post("/payments/stripe/create-session", userAuth, async (req, res) => {
     });
 
     // 4) Save session id on order
+    stage = "save-session";
     await prisma.order.update({
       where: { id: order.id },
       data: { stripeSessionId: session.id }
@@ -871,7 +881,16 @@ router.post("/payments/stripe/create-session", userAuth, async (req, res) => {
 
     return res.json({ ok: true, url: session.url, orderId: order.id });
   } catch (e) {
-    console.error("STRIPE CREATE SESSION ERROR:", e);
+    console.error("STRIPE CREATE SESSION ERROR:", {
+      stage, type: e?.type, code: e?.code, message: e?.message,
+      requestId: e?.requestId
+    });
+    if (e?.type === "StripeConnectionError") {
+      return jsonError(res, 504, "Conexiunea cu serviciul de plată a durat prea mult. Verifică istoricul comenzilor înainte de a încerca din nou.");
+    }
+    if (e?.type === "StripeAuthenticationError") {
+      return jsonError(res, 503, "Plata cu cardul nu este disponibilă momentan. Configurarea serviciului de plată trebuie verificată.");
+    }
     if (e?.statusCode) {
       return jsonError(res, e.statusCode, e.message);
     }

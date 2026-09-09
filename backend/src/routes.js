@@ -10,6 +10,8 @@ import { verifyPassword } from "./utils/crypto.js";
 import { sendOrderConfirmationEmail } from "./utils/mailer.js";
 import Stripe from "stripe";
 import express from "express";
+import { buildPartyPlan } from "./party-builder.js";
+import { calculateShippingCents } from "./shipping.js";
 
 const router = Router();
 const prisma = new PrismaClient();
@@ -63,12 +65,6 @@ const productUpdateSchema = z.object({
 });
 
 
-/* ============================================================
-   SHIPPING CONSTANTS
-============================================================ */
-
-const FREE_SHIPPING_THRESHOLD_CENTS = 19900; // 199 RON
-const SHIPPING_FLAT_CENTS = 1999; // 19.99 RON
 /* =====================
    HELPERS
 ===================== */
@@ -228,133 +224,22 @@ router.post("/upload/product-image", adminAuth, uploadProductImage.single("image
    POST /api/party-builder
    Body: { eventType, guests, budgetTier, location }
 ===================== */
-router.post("/party-builder", async (req, res) => {
-  const eventType = String(req.body?.eventType || "adult-birthday").trim().toLowerCase();
-  const budgetTier = String(req.body?.budgetTier || "medium").trim().toLowerCase();
-  const location = String(req.body?.location || "indoor").trim().toLowerCase();
-  const guests = clampInt(req.body?.guests, 5, 200);
-
-  const categories = new Set(["Latex Balloons", "Foil Balloons", "Garlands", "Confetti", "Banners"]);
-  if (eventType === "child-birthday") {
-    categories.add("Party Hats & Accessories");
-    categories.add("Cups & Plates");
-  }
-  if (eventType === "baby-shower" || eventType === "gender-reveal") {
-    categories.add("Cups & Plates");
-  }
-  if (budgetTier === "low") {
-    categories.delete("Foil Balloons");
-  }
-
-  const products = await prisma.product.findMany({
-    where: {
-      deletedAt: null,
-      stock: { gt: 0 },
-      category: { in: Array.from(categories) }
-    },
-    orderBy: [{ featured: "desc" }, { priceCents: "asc" }],
-    select: {
-      id: true,
-      name: true,
-      description: true,
-      slug: true,
-      image: true,
-      priceCents: true,
-      stock: true,
-      category: true
-    }
-  });
-
-  if (!products.length) {
-    return res.json({
-      eventType,
-      guests,
-      budgetTier,
-      location,
-      notes: ["We could not find enough suitable products for this plan."],
-      items: [],
-      totalCents: 0
+router.post("/party-builder", async (req, res, next) => {
+  try {
+    // Category aliases are resolved by the planner so Romanian and legacy
+    // English catalog entries are both eligible.
+    const products = await prisma.product.findMany({
+      where: { deletedAt: null, stock: { gt: 0 } },
+      orderBy: [{ featured: "desc" }, { priceCents: "asc" }],
+      select: {
+        id: true, name: true, description: true, slug: true,
+        image: true, priceCents: true, stock: true, category: true
+      }
     });
+    return res.json(buildPartyPlan(products, req.body || {}));
+  } catch (error) {
+    return next(error);
   }
-
-  const byCategory = new Map();
-  for (const p of products) {
-    const key = String(p.category || "uncategorized");
-    if (!byCategory.has(key)) byCategory.set(key, []);
-    byCategory.get(key).push(p);
-  }
-
-  function pickOne(category) {
-    const arr = byCategory.get(category) || [];
-    return arr[0] || null;
-  }
-
-  const basePlan = [];
-  const balloonQty = Math.max(15, Math.ceil(guests * (location === "outdoor" ? 1.8 : 1.5)));
-  const bannerQty = guests > 20 ? 2 : 1;
-  const confettiQty = guests > 25 ? 3 : 1;
-  const cupsQty = Math.max(1, Math.ceil(guests / 8));
-  const hatsQty = Math.max(1, Math.ceil(guests / 10));
-
-  const latex = pickOne("Latex Balloons");
-  if (latex) basePlan.push({ product: latex, quantity: balloonQty });
-
-  const foil = pickOne("Foil Balloons");
-  if (foil && budgetTier !== "low") basePlan.push({ product: foil, quantity: Math.max(1, Math.ceil(guests / 12)) });
-
-  const garland = pickOne("Garlands");
-  if (garland) basePlan.push({ product: garland, quantity: guests > 30 ? 2 : 1 });
-
-  const confetti = pickOne("Confetti");
-  if (confetti) basePlan.push({ product: confetti, quantity: confettiQty });
-
-  const banner = pickOne("Banners");
-  if (banner) basePlan.push({ product: banner, quantity: bannerQty });
-
-  if (eventType === "child-birthday") {
-    const hats = pickOne("Party Hats & Accessories");
-    if (hats) basePlan.push({ product: hats, quantity: hatsQty });
-  }
-
-  if (eventType === "child-birthday" || eventType === "baby-shower" || eventType === "gender-reveal") {
-    const table = pickOne("Cups & Plates");
-    if (table) basePlan.push({ product: table, quantity: cupsQty });
-  }
-
-  // Avoid zero/negative quantities and clamp by stock.
-  const items = basePlan
-    .map(({ product, quantity }) => {
-      const qty = Math.max(1, Math.min(Number(product.stock) || 1, Number(quantity) || 1));
-      return {
-        id: product.id,
-        name: product.name,
-        description: product.description,
-        slug: product.slug,
-        image: product.image,
-        category: product.category,
-        priceCents: product.priceCents,
-        quantity: qty,
-        lineTotalCents: qty * (Number(product.priceCents) || 0)
-      };
-    })
-    .filter((x) => x.quantity > 0);
-
-  const totalCents = items.reduce((sum, it) => sum + (Number(it.lineTotalCents) || 0), 0);
-
-  const notes = [];
-  if (guests > 20) notes.push("Additional decor has been included for larger groups.");
-  if (budgetTier === "low") notes.push("This plan prioritizes budget-friendly options.");
-  if (location === "outdoor") notes.push("For outdoor events, a larger quantity of balloons is recommended.");
-
-  return res.json({
-    eventType,
-    guests,
-    budgetTier,
-    location,
-    notes,
-    items,
-    totalCents
-  });
 });
 /* =====================
    PRODUCTS (PUBLIC)
@@ -717,109 +602,120 @@ router.delete("/favorites/:productId", userAuth, async (req, res) => {
      errors: [{ code, productId, message, available, requested }]
 ============================================================ */
 
-router.post("/cart/validate", async (req, res) => {
-  const items = Array.isArray(req.body.items) ? req.body.items : [];
+router.post("/cart/validate", (req, res, next) => {
+  // Guests can validate carts; supplied credentials must be valid.
+  if (req.headers.authorization) return userAuth(req, res, next);
+  return next();
+}, async (req, res, next) => {
+  try {
+    const items = Array.isArray(req.body.items) ? req.body.items : [];
 
-  // aggregate quantities by product id
-  const qtyById = new Map();
-  for (const it of items) {
-    const id = String(it?.id || "").trim();
-    const q = Math.max(1, Number(it?.quantity) || 1);
-    if (!id) continue;
-    qtyById.set(id, (qtyById.get(id) || 0) + q);
-  }
+    // aggregate quantities by product id
+    const qtyById = new Map();
+    for (const it of items) {
+      const id = String(it?.id || "").trim();
+      const q = Math.max(1, Number(it?.quantity) || 1);
+      if (!id) continue;
+      qtyById.set(id, (qtyById.get(id) || 0) + q);
+    }
 
-  if (qtyById.size === 0) {
+    if (qtyById.size === 0) {
+      return res.json({
+        items: [],
+        subtotalCents: 0,
+        shippingCents: 0,
+        grandTotalCents: 0,
+        totalEUR: "0.00",
+        errors: []
+      });
+    }
+
+    const ids = [...qtyById.keys()];
+
+    const products = await prisma.product.findMany({
+      where: { id: { in: ids }, deletedAt: null },
+      select: {
+        id: true,
+        name: true,
+        priceCents: true,
+        stock: true,
+        image: true
+      }
+    });
+
+    const productById = new Map(products.map((p) => [String(p.id), p]));
+
+    const errors = [];
+    const validated = [];
+
+    let subtotalCents = 0;
+
+    // validate each requested id (even if product missing)
+    for (const pid of ids) {
+      const requested = qtyById.get(pid) || 0;
+      const p = productById.get(pid);
+
+      if (!p) {
+        errors.push({
+          code: "NOT_FOUND",
+          productId: pid,
+          message: "Produsul nu mai este disponibil."
+        });
+        continue;
+      }
+
+      const available = Number(p.stock) || 0;
+
+      if (requested > available) {
+        errors.push({
+          code: "OUT_OF_STOCK",
+          productId: pid,
+          available,
+          requested,
+          message:
+            available <= 0
+              ? "Produsul este momentan indisponibil."
+              : `Stoc insuficient. Disponibil: ${available}.`
+        });
+      }
+
+      // allow line item, but clamp quantity to available (so totals make sense)
+      const qty = Math.max(0, Math.min(requested, available));
+      if (qty === 0) continue;
+
+      const lineTotalCents = (Number(p.priceCents) || 0) * qty;
+      subtotalCents += lineTotalCents;
+
+      validated.push({
+        id: p.id,
+        name: p.name,
+        priceCents: p.priceCents,
+        stock: p.stock,
+        image: p.image,
+        quantity: qty,
+        lineTotalCents
+      });
+    }
+
+    const user = req.user ? await prisma.user.findUnique({
+      where: { id: req.user.userId },
+      select: { email: true }
+    }) : null;
+    const shippingCents = calculateShippingCents(subtotalCents, user);
+
+    const grandTotalCents = subtotalCents + (validated.length > 0 ? shippingCents : 0);
+
     return res.json({
-      items: [],
-      subtotalCents: 0,
-      shippingCents: 0,
-      grandTotalCents: 0,
-      totalEUR: "0.00",
-      errors: []
+      items: validated,
+      subtotalCents,
+      shippingCents: validated.length > 0 ? shippingCents : 0,
+      grandTotalCents,
+      totalEUR: (grandTotalCents / 100).toFixed(2), // legacy field (optional)
+      errors
     });
+  } catch (error) {
+    return next(error);
   }
-
-  const ids = [...qtyById.keys()];
-
-  const products = await prisma.product.findMany({
-    where: { id: { in: ids }, deletedAt: null },
-    select: {
-      id: true,
-      name: true,
-      priceCents: true,
-      stock: true,
-      image: true
-    }
-  });
-
-  const productById = new Map(products.map((p) => [String(p.id), p]));
-
-  const errors = [];
-  const validated = [];
-
-  let subtotalCents = 0;
-
-  // validate each requested id (even if product missing)
-  for (const pid of ids) {
-    const requested = qtyById.get(pid) || 0;
-    const p = productById.get(pid);
-
-    if (!p) {
-      errors.push({
-        code: "NOT_FOUND",
-        productId: pid,
-        message: "Produsul nu mai este disponibil."
-      });
-      continue;
-    }
-
-    const available = Number(p.stock) || 0;
-
-    if (requested > available) {
-      errors.push({
-        code: "OUT_OF_STOCK",
-        productId: pid,
-        available,
-        requested,
-        message:
-          available <= 0
-            ? "Produsul este momentan indisponibil."
-            : `Stoc insuficient. Disponibil: ${available}.`
-      });
-    }
-
-    // allow line item, but clamp quantity to available (so totals make sense)
-    const qty = Math.max(0, Math.min(requested, available));
-    if (qty === 0) continue;
-
-    const lineTotalCents = (Number(p.priceCents) || 0) * qty;
-    subtotalCents += lineTotalCents;
-
-    validated.push({
-      id: p.id,
-      name: p.name,
-      priceCents: p.priceCents,
-      stock: p.stock,
-      image: p.image,
-      quantity: qty,
-      lineTotalCents
-    });
-  }
-
-  const shippingCents =
-    subtotalCents >= FREE_SHIPPING_THRESHOLD_CENTS ? 0 : SHIPPING_FLAT_CENTS;
-
-  const grandTotalCents = subtotalCents + (validated.length > 0 ? shippingCents : 0);
-
-  return res.json({
-    items: validated,
-    subtotalCents,
-    shippingCents: validated.length > 0 ? shippingCents : 0,
-    grandTotalCents,
-    totalEUR: (grandTotalCents / 100).toFixed(2), // legacy field (optional)
-    errors
-  });
 });
 
 /* ============================================================
@@ -905,8 +801,7 @@ router.post("/payments/stripe/create-session", userAuth, async (req, res) => {
       });
     }
 
-    const shippingCents =
-      subtotalCents >= FREE_SHIPPING_THRESHOLD_CENTS ? 0 : SHIPPING_FLAT_CENTS;
+    const shippingCents = calculateShippingCents(subtotalCents, user);
 
     const grandTotalCents = subtotalCents + shippingCents;
 
@@ -1237,8 +1132,7 @@ router.post("/orders", userAuth, async (req, res) => {
       }
 
       // Shipping
-      const shippingCents =
-        subtotalCents >= FREE_SHIPPING_THRESHOLD_CENTS ? 0 : SHIPPING_FLAT_CENTS;
+      const shippingCents = calculateShippingCents(subtotalCents, user);
 
       const grandTotalCents = subtotalCents + shippingCents;
 

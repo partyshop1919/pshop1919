@@ -127,7 +127,9 @@ export async function fetchProductRecommendations(productId) {
 ===================== */
 export async function validateCart(items) {
   try {
-    const res = await api.post("/cart/validate", { items });
+    const res = await api.post("/cart/validate", { items }, {
+      headers: authHeader(getUserToken())
+    });
     const rawItems = Array.isArray(res.data?.items) ? res.data.items : [];
     const subtotalCents = Number(res.data?.subtotalCents ?? res.data?.totalCents ?? 0) || 0;
     const shippingCents = Number(res.data?.shippingCents ?? 0) || 0;

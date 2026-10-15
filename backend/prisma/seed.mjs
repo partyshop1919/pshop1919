@@ -410,6 +410,56 @@ const PRODUCTS = [
     description: "Pompa electrica de baloane pentru umflare rapida si eficienta, ideala pentru pregatirea decorurilor de petrecere si a aranjamentelor mari."
   },
   {
+    name: "Butelie cu heliu de unică folosință – până la 50 de baloane",
+    slug: "butelie-heliu-50-baloane",
+    category: "Accesorii pentru baloane",
+    priceCents: 25000,
+    stock: 30,
+    image: "/images/products/butelie_heliu_50.jpeg",
+    images: ["/images/products/butelie_heliu_50.jpeg"],
+    featured: true,
+    description: `Dă culoare petrecerii tale cu baloane plutitoare! Butelia cu heliu de unică folosință este ideală pentru umflarea a aproximativ 50 de baloane din latex de 30 cm. Potrivită pentru aniversări, petreceri, botezuri, nunți și alte evenimente.
+
+Capacitate estimată și timp de plutire:
+• Latex 24 cm: până la 50 de baloane; 5–7 ore.
+• Latex 26 cm: până la 35 de baloane; aproximativ 10 ore.
+• Latex 30 cm: până la 25 de baloane; aproximativ 12 ore.
+• Folie 45 cm: până la 28 de baloane; aproximativ 96 de ore.
+
+Ușor de utilizat, ideală pentru decoruri festive și pentru umflarea rapidă și simplă a baloanelor. Creează un decor spectaculos și transformă orice eveniment într-o amintire de neuitat!`
+  },
+  {
+    name: "Butelie cu heliu de unică folosință – până la 30 de baloane",
+    slug: "butelie-heliu-30-baloane",
+    category: "Accesorii pentru baloane",
+    priceCents: 16000,
+    stock: 30,
+    image: "/images/products/butelie_heliu.jpeg",
+    images: ["/images/products/butelie_heliu.jpeg", "/images/products/butelie_heliu1.jpeg"],
+    featured: true,
+    description: `Butelie cu heliu de unică folosință, pentru umflarea rapidă a baloanelor la aniversări, nunți, botezuri, petreceri și evenimente corporate. Capacitate: până la 30 de baloane, în funcție de tipul și dimensiunea acestora.
+
+Tip balon și capacitate estimată:
+• Latex 24 cm: până la 30 de baloane; timp de plutire 5–7 ore.
+• Latex 26 cm: până la 20 de baloane; timp de plutire aproximativ 10 ore.
+• Latex 30 cm: până la 12 baloane; timp de plutire aproximativ 12 ore.
+• Folie 45 cm: până la 12 baloane; timp de plutire aproximativ 96 de ore.
+• Folie 86 cm: până la 3 baloane.
+
+Cum se folosește:
+1. Deschide valva rotind mânerul verde.
+2. Atașează balonul pe distribuitorul negru.
+3. Înclină distribuitorul spre stânga sau spre dreapta pentru a elibera heliul.
+4. Când balonul este umflat, eliberează distribuitorul și închide valva.
+5. Sigilează balonul: fă un nod pentru latex sau presează supapa pentru folie.
+
+Avantaje: ușor de folosit, gaz neinflamabil, recipient 100% reciclabil, sigilat și de unică folosință, cu greutate redusă. Heliul rămas poate fi folosit ulterior, fără să fie necesară golirea completă a buteliei. Depozitează la temperatură normală.
+
+Atenție: nu inhala heliul, deoarece poate provoca asfixiere. Utilizează produsul numai sub supravegherea unui adult.
+
+Transformă orice petrecere într-un moment memorabil cu decoruri spectaculoase și baloane cu heliu.`
+  },
+  {
     name: "Balon folie La multi ani auriu",
     slug: "balon-folie-la-multi-ani-auriu",
     category: "Baloane folie",
@@ -956,6 +1006,144 @@ const PRODUCTS = [
   },
 ];
 
+// The latex balloons are one product family with three purchasable sizes.
+for (const product of [...PRODUCTS]) {
+  if (product.category !== "Baloane latex" || !product.slug.startsWith("balon-latex-")) continue;
+  const color = product.name.replace(/^Balon(?:e)? latex\s*/i, "").trim() || "colorat";
+  const group = `latex-${product.slug}`;
+  const commonDescription = `Baloane din latex ${color}, potrivite pentru arcade, buchete și decoruri de petrecere. Alege dimensiunea și cantitatea potrivite pentru evenimentul tău.`;
+  product.name = `Baloane latex ${color}`;
+  product.description = commonDescription;
+  product.priceCents = 2700;
+  product.variantGroup = group;
+  product.variantLabel = "30 cm · set 100 buc";
+  product.variantOrder = 0;
+  for (const variant of [
+    { suffix: "13cm", label: "13 cm · set 100 buc", priceCents: 2000, order: 1 },
+    { suffix: "45cm", label: "45 cm · 1 buc", priceCents: 400, order: 2 }
+  ]) {
+    PRODUCTS.push({
+      ...product,
+      slug: `${group}-${variant.suffix}`,
+      priceCents: variant.priceCents,
+      variantLabel: variant.label,
+      variantOrder: variant.order,
+      images: [...(product.images || [])]
+    });
+  }
+}
+
+// Chrome latex balloons use the client's separate pack sizes and prices.
+const chromeLatexColors = [
+  { slug: "rose-gold", name: "Rose gold", image: "Balon_latex_chrome_rosegold.jpeg" },
+  { slug: "argintiu", name: "argintiu", image: "Balon_latex_chrome_argintiu.jpeg" },
+  { slug: "albastru", name: "albastru", image: "Balon_latex_chrome_albastru.jpeg" },
+  { slug: "auriu", name: "auriu", image: "Balon_latex_chrome_auriu.jpeg" },
+  { slug: "roz-lila", name: "roz lila", image: "Balon_latex_chrome_rozlila.jpeg" },
+  { slug: "sampanie", name: "șampanie", image: "Balon_latex_chrome_sampanie.jpeg" },
+  { slug: "verde-smarald", name: "verde smarald", image: "Balon_latex_chrome_verdesmarald.jpeg" },
+  { slug: "verde", name: "verde", image: "Balon_latex_chrome_verde.jpeg" },
+  { slug: "roz", name: "roz", image: "Balon_latex_chrome_roz.jpeg" },
+  { slug: "mov", name: "mov", image: "Balon_latex_chrome_mov.jpeg" }
+];
+const chromeDescription = (color) =>
+  `Balon latex cromat ${color}, cu suprafață lucioasă și reflexii metalice care creează un efect vizual elegant. Forma clasică și culoarea intensă îl fac potrivit pentru nunți, botezuri, aniversări, petreceri și arcade organice de baloane. Se poate umfla cu aer sau heliu.`;
+for (const color of chromeLatexColors) {
+  const group = `latex-chrome-${color.slug}`;
+  const image = `/images/products/${color.image}`;
+  const name = `Balon latex crom ${color.name}`;
+  const description = chromeDescription(color.name);
+  const variants = [
+    { suffix: "30cm-50buc", slug: `${group}-30cm-50buc`, label: "30 cm · set 50 buc", priceCents: 2800, order: 0 },
+    { suffix: "13cm-100buc", slug: `${group}-13cm-100buc`, label: "13 cm · set 100 buc", priceCents: 3500, order: 1 },
+    { suffix: "45cm", slug: `${group}-45cm`, label: "45 cm · 1 buc", priceCents: 500, order: 2 }
+  ];
+  for (const variant of variants) {
+    PRODUCTS.push({
+      name,
+      slug: variant.slug,
+      category: "Baloane latex",
+      priceCents: variant.priceCents,
+      stock: 100,
+      image,
+      images: [image],
+      featured: false,
+      description,
+      variantGroup: group,
+      variantLabel: variant.label,
+      variantOrder: variant.order
+    });
+  }
+}
+
+// La mulți ani foil balloons share one color selector and the client price.
+const birthdayFoil = PRODUCTS.filter((product) => product.slug.startsWith("balon-folie-la-multi-ani-"));
+const birthdayColors = [
+  { slug: "auriu", label: "Auriu", image: "balon-folie-lamultiani-auriu.png" },
+  { slug: "argintiu", label: "Argintiu", image: "balon-folie-lamultiani-argintiu.png" },
+  { slug: "multicolor", label: "Multicolor", image: "balon-folie-lamultiani-auriu.png" },
+  { slug: "rose-gold", label: "Rose gold", image: "balon-folie-lamultiani-auriu.png" },
+  { slug: "albastru", label: "Albastru", image: "balon-folie-lamultiani-auriu.png" },
+  { slug: "rosu", label: "Roșu", image: "balon-folie-lamultiani-rosu.png" },
+  { slug: "roz", label: "Roz", image: "balon-folie-lamultiani-mov.png" }
+];
+for (const [index, color] of birthdayColors.entries()) {
+  const existing = birthdayFoil.find((product) =>
+    product.slug.endsWith(`-${color.slug}`) || (color.slug === "rose-gold" && product.slug.endsWith("-mov"))
+  );
+  const base = existing || birthdayFoil[0];
+  if (!base) continue;
+  const group = "balon-folie-la-multi-ani";
+  const updated = {
+    ...base,
+    name: `Balon folie „La mulți ani” – ${color.label}`,
+    slug: `${group}-${color.slug}`,
+    description: `Balon din folie „La mulți ani”, ${color.label.toLowerCase()}, de 40 cm. Transformă aniversarea într-un moment special. Potrivit pentru decorarea petrecerilor și fotografii; poate fi folosit individual sau împreună cu arcade și buchete de baloane.`,
+    priceCents: 1500,
+    variantGroup: group,
+    variantLabel: color.label,
+    variantOrder: index,
+    image: `/images/products/${color.image}`,
+    images: [`/images/products/${color.image}`],
+    category: "Baloane folie",
+    featured: index === 0
+  };
+  if (existing) Object.assign(existing, updated);
+  else PRODUCTS.push(updated);
+}
+
+// The existing 45 cm foil star is sold by color; retain both supplied photos.
+const foilStarOptions = [
+  {
+    slug: "balon-stea-argintiu",
+    label: "Argintiu · 45 cm",
+    name: "Balon din folie steluță argintiu – 45 cm",
+    image: "/images/products/balon-folie-stea-argintiu.jpg",
+    order: 0
+  },
+  {
+    slug: "balon-stea-auriu",
+    label: "Auriu · 45 cm",
+    name: "Balon din folie steluță auriu – 45 cm",
+    image: "/images/products/balon-folie-stea-gold.jpeg",
+    order: 1
+  }
+];
+for (const option of foilStarOptions) {
+  const product = PRODUCTS.find((item) => item.slug === option.slug);
+  if (!product) continue;
+  Object.assign(product, {
+    name: option.name,
+    description: `Balon din folie metalizată în formă de stea, ${option.label.split(" · ")[0].toLowerCase()}, cu aspect lucios. Potrivit pentru aniversări, petreceri și decoruri festive. Se poate umfla cu aer sau cu heliu.`,
+    priceCents: 500,
+    variantGroup: "balon-folie-stea-45cm",
+    variantLabel: option.label,
+    variantOrder: option.order,
+    image: option.image,
+    images: [option.image]
+  });
+}
+
 function buildDescription(product) {
   const name = String(product?.name || "Produs");
   const category = String(product?.category || "articole de petrecere");
@@ -963,6 +1151,18 @@ function buildDescription(product) {
 }
 
 async function main() {
+  // Retire the duplicate gold star entry; the gold option above is canonical.
+  await prisma.product.updateMany({
+    where: { slug: "balon-stea-gold", deletedAt: null },
+    data: { deletedAt: new Date() }
+  });
+
+  // Retire the old purple color option that is not in the client's new color list.
+  await prisma.product.updateMany({
+    where: { slug: "balon-folie-la-multi-ani-mov", deletedAt: null },
+    data: { deletedAt: new Date() }
+  });
+
   await prisma.productImage.deleteMany({
     where: {
       product: {
@@ -994,7 +1194,10 @@ async function main() {
         priceCents: base.priceCents,
         stock: base.stock,
         image: base.image,
-        featured: base.featured
+        featured: base.featured,
+        variantGroup: base.variantGroup || null,
+        variantLabel: base.variantLabel || null,
+        variantOrder: base.variantOrder || 0
       }
     });
 

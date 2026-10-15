@@ -257,7 +257,8 @@ router.get("/products", async (req, res) => {
   const { featured, category, search } = req.query;
 
   const where = {
-    deletedAt: null
+    deletedAt: null,
+    OR: [{ variantGroup: null }, { variantOrder: 0 }]
   };
 
   if (featured === "1" || featured === "true") where.featured = true;
@@ -279,6 +280,9 @@ router.get("/products", async (req, res) => {
       image: true,
       category: true,
       featured: true,
+      variantGroup: true,
+      variantLabel: true,
+      variantOrder: true,
       images: {
         orderBy: { sortOrder: "asc" },
         select: { url: true }
@@ -314,6 +318,9 @@ router.get("/products/slug/:slug", async (req, res) => {
       image: true,
       category: true,
       featured: true,
+      variantGroup: true,
+      variantLabel: true,
+      variantOrder: true,
       images: {
         orderBy: { sortOrder: "asc" },
         select: { url: true }
@@ -322,9 +329,17 @@ router.get("/products/slug/:slug", async (req, res) => {
   });
 
   if (!product) return res.status(404).json({ error: "Product not found" });
+  const variants = product.variantGroup
+    ? await prisma.product.findMany({
+        where: { variantGroup: product.variantGroup, deletedAt: null },
+        orderBy: { variantOrder: "asc" },
+        select: { id: true, name: true, slug: true, priceCents: true, stock: true, variantLabel: true }
+      })
+    : [];
   res.json({
     item: {
       ...product,
+      variants,
       images: normalizeProductImages(product)
     }
   });

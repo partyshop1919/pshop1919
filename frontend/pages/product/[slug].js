@@ -97,7 +97,29 @@ export default function ProductPage() {
           <div>
             <h1 style={{ marginTop: 0 }}>{product.name}</h1>
             <p style={{ fontSize: 18 }}><strong>{(product.priceCents / 100).toFixed(2)} RON</strong></p>
-            {product.description ? <p style={{ opacity: 0.9, lineHeight: 1.6, marginTop: 8 }}>{product.description}</p> : null}
+            {Array.isArray(product.variants) && product.variants.length > 1 && (
+              <div style={{ margin: "14px 0" }}>
+                <p style={{ marginBottom: 8 }}><strong>{product.variantGroup?.startsWith("latex-") ? "Dimensiune și cantitate" : "Culoare"}:</strong> {product.variantLabel}</p>
+                <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
+                  {product.variants.map((variant) => (
+                    <button
+                      key={variant.id}
+                      className="btn"
+                      type="button"
+                      aria-pressed={variant.id === product.id}
+                      onClick={() => router.push(`/product/${variant.slug}`)}
+                      style={{
+                        border: variant.id === product.id ? "2px solid #111" : "1px solid #ccc",
+                        fontWeight: variant.id === product.id ? 700 : 400
+                      }}
+                    >
+                      {variant.variantLabel} · {(variant.priceCents / 100).toFixed(2)} lei
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
+            {product.description ? <p style={{ opacity: 0.9, lineHeight: 1.6, marginTop: 8, whiteSpace: "pre-line" }}>{product.description}</p> : null}
             <p style={{ opacity: 0.8 }}>Disponibilitate: <strong>{product.stock}</strong> în stoc</p>
 
             <div style={{ display: "flex", gap: 10, marginTop: 16 }}>

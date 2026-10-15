@@ -30,6 +30,9 @@ model Product {
 
   category   String   @default("uncategorized")
   featured   Boolean  @default(false)
+  variantGroup String?
+  variantLabel String?
+  variantOrder Int      @default(0)
 
   slug      String    @unique
   deletedAt DateTime?
